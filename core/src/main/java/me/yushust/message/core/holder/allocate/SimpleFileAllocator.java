@@ -40,7 +40,7 @@ public class SimpleFileAllocator implements NodeFileAllocator {
             if (resource == null) {
                 return Optional.empty();
             }
-            NodeFile file = nodeFileLoader.load(resource);
+            NodeFile file = nodeFileLoader.loadAndCreate(resource, language);
             loadedFiles.put(language, file);
             return Optional.of(file);
         } catch (IOException e) {

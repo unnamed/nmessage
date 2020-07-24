@@ -9,9 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <version>${core.version}</version>
-
-    <artifactId>core</artifactId>
+    <artifactId>all</artifactId>
     <build>
         <plugins>
             <plugin>
@@ -25,5 +23,23 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.7.0-M1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.yushust.message</groupId>
+            <artifactId>core</artifactId>
+            <version>${core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.yushust.message</groupId>
+            <artifactId>bukkit-formatters</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

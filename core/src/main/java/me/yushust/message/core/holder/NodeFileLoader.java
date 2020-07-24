@@ -8,6 +8,6 @@ public interface NodeFileLoader {
 
     NodeFile load(File file) throws IOException;
 
-    NodeFile load(InputStream inputStream) throws IOException;
+    NodeFile loadAndCreate(InputStream inputStream, String fileName) throws IOException;
 
 }
