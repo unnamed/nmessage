@@ -1,5 +1,6 @@
 package me.yushust.message.core;
 
+import me.yushust.message.core.MessageProviderSettings.ProvideStrategy;
 import me.yushust.message.core.handle.StringList;
 import me.yushust.message.core.holder.LoadSource;
 import me.yushust.message.core.holder.NodeFile;
@@ -22,18 +23,19 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
     private final NodeFileAllocator nodeFileAllocator;
     private final String fileFormat;
     private final String defaultLanguageFile;
-    private LanguageProvider<T> languageProvider;
+    private LanguageProvider<T> languageProvider = new DummyLanguageProvider<>();
+    private MessageProviderSettings settings;
 
     public SimpleMessageProvider(LoadSource loadSource, NodeFileLoader nodeFileLoader,
-                                 LanguageProvider<T> languageProvider, String fileFormat) {
+                                 String fileFormat, MessageProviderSettings settings) {
         this.nodeFileAllocator = new SimpleFileAllocator(nodeFileLoader, loadSource);
-        this.languageProvider = languageProvider;
         this.fileFormat = fileFormat;
-        this.defaultLanguageFile = fileFormat.replace("%lang%", DEFAULT_LANGUAGE);
+        this.settings = settings;
+        this.defaultLanguageFile = fileFormat.replace("%lang%", settings.getDefaultLanguage());
     }
 
     public SimpleMessageProvider(LoadSource loadSource, NodeFileLoader nodeFileLoader, String fileFormat) {
-        this(loadSource, nodeFileLoader, DummyLanguageProvider.getInstance(), fileFormat);
+        this(loadSource, nodeFileLoader, fileFormat, new MessageProviderSettings());
     }
 
     public SimpleMessageProvider(LoadSource loadSource, NodeFileLoader nodeFileLoader) {
@@ -45,12 +47,16 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
         NodeFile nodeFile = getNodeFileFor(propertyHolder);
         Optional<String> optionalMessage = nodeFile.getString(messagePath);
         if (!optionalMessage.isPresent()) {
-            Optional<NodeFile> defaultLanguageFile = nodeFileAllocator.find(defaultLanguageFile);
-            if (defaultLanguageFile.isPresent()) {
-                optionalMessage = defaultLanguageFile.getString(messagePath);
+            Optional<NodeFile> defaultLanguage = nodeFileAllocator.find(defaultLanguageFile);
+            if (defaultLanguage.isPresent()) {
+                optionalMessage = defaultLanguage.get().getString(messagePath);
             }
             if (!optionalMessage.isPresent()) {
-                return "Message not found: " + messagePath;
+                if (settings.getProvideStrategy() == ProvideStrategy.RETURN_NULL) {
+                    return null;
+                } else {
+                    return messagePath;
+                }
             }
         }
         return format(propertyHolder, optionalMessage.get());

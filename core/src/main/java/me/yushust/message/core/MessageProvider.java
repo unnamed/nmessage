@@ -5,8 +5,6 @@ import me.yushust.message.core.intercept.ReplacingMessageInterceptor;
 
 public interface MessageProvider<T> {
 
-    String DEFAULT_LANGUAGE = "def";
-
     String getMessage(T propertyHolder, String messagePath);
 
     StringList getMessages(T propertyHolder, String messagePath);

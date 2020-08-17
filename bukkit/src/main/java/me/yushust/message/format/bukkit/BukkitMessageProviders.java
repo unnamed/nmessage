@@ -26,9 +26,9 @@ public final class BukkitMessageProviders {
         MessageProvider<Player> messageProvider = new SimpleMessageProvider<>(
                 new LoadSource(plugin.getClass().getClassLoader(), plugin.getDataFolder()),
                 nodeFileLoader,
-                languageProvider,
                 fileFormat
         );
+        messageProvider.useLanguageProvider(languageProvider);
         ReplacingMessageInterceptor<Player> interceptor = messageProvider.getInterceptor();
         interceptor.addPlaceholderApplier(DefaultPlaceholderApplier.INSTANCE);
         if (plugin.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
