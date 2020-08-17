@@ -45,7 +45,13 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
         NodeFile nodeFile = getNodeFileFor(propertyHolder);
         Optional<String> optionalMessage = nodeFile.getString(messagePath);
         if (!optionalMessage.isPresent()) {
-            return "Message not found: " + messagePath;
+            Optional<NodeFile> defaultLanguageFile = nodeFileAllocator.find(defaultLanguageFile);
+            if (defaultLanguageFile.isPresent()) {
+                optionalMessage = defaultLanguageFile.getString(messagePath);
+            }
+            if (!optionalMessage.isPresent()) {
+                return "Message not found: " + messagePath;
+            }
         }
         return format(propertyHolder, optionalMessage.get());
     }
