@@ -11,9 +11,7 @@
 
     <modules>
         <module>core</module>
-        <module>yaml</module>
         <module>bukkit</module>
-        <module>all</module>
     </modules>
 
     <properties>
