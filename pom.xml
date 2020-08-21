@@ -9,13 +9,21 @@
     <packaging>pom</packaging>
     <version>0.1.0</version>
 
+    <distributionManagement>
+        <repository>
+            <id>unnamed-releases</id>
+            <url>https://repo.unnamed.team/repository/unnamed-releases</url>
+        </repository>
+    </distributionManagement>
+
     <modules>
         <module>core</module>
         <module>bukkit</module>
     </modules>
 
     <properties>
-        <core.version>0.1.0</core.version>
+        <core.version>0.2.0</core.version>
+        <bukkit.formatters.version>0.2.0</bukkit.formatters.version>
     </properties>
 
 </project>

@@ -1,8 +1,9 @@
 package me.yushust.message.core.handle;
 
+import java.util.AbstractList;
 import java.util.List;
 
-public final class StringList {
+public final class StringList extends AbstractList<String> {
 
     private final List<String> stringList;
 
@@ -25,6 +26,33 @@ public final class StringList {
 
     public List<String> getContents() {
         return stringList;
+    }
+
+
+    // delegate methods to original string list
+    @Override
+    public String get(int index) {
+        return stringList.get(index);
+    }
+
+    @Override
+    public int size() {
+        return stringList.size();
+    }
+
+    @Override
+    public String set(int index, String element) {
+        return stringList.set(index, element);
+    }
+
+    @Override
+    public void add(int index, String element) {
+        stringList.add(index, element);
+    }
+
+    @Override
+    public String remove(int index) {
+        return stringList.remove(index);
     }
 
 }

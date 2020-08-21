@@ -1,20 +1,20 @@
 package me.yushust.message.core;
 
+import static java.util.Objects.requireNonNull;
+
 // A dummy language provider that returns the default language
 // for all language holders
 public class DummyLanguageProvider<T> implements LanguageProvider<T> {
 
-    // lazy-initialized singleton instance
-    private static final LanguageProvider<?> INSTANCE = new DummyLanguageProvider<>();
+    private final String defaultLanguage;
+
+    public DummyLanguageProvider(String defaultLanguage) {
+        this.defaultLanguage = requireNonNull(defaultLanguage);
+    }
 
     @Override
     public String getLanguage(T languageHolder) {
-        return "def";
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> LanguageProvider<T> getInstance() {
-        return (LanguageProvider<T>) INSTANCE;
+        return this.defaultLanguage;
     }
 
 }

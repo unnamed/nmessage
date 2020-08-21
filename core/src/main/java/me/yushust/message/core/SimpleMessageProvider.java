@@ -1,6 +1,5 @@
 package me.yushust.message.core;
 
-import me.yushust.message.core.MessageProviderSettings.ProvideStrategy;
 import me.yushust.message.core.handle.StringList;
 import me.yushust.message.core.holder.LoadSource;
 import me.yushust.message.core.holder.NodeFile;
@@ -20,26 +19,23 @@ import static java.util.Objects.requireNonNull;
 public class SimpleMessageProvider<T> implements MessageProvider<T> {
 
     private final ReplacingMessageInterceptor<T> interceptor = new SimpleMessageInterceptor<>();
+
     private final NodeFileAllocator nodeFileAllocator;
+    private final ProvideStrategy provideStrategy;
     private final String fileFormat;
     private final String defaultLanguageFile;
-    private LanguageProvider<T> languageProvider = new DummyLanguageProvider<>();
-    private MessageProviderSettings settings;
+    private final MessageConsumer<T> messageConsumer;
+    private LanguageProvider<T> languageProvider;
 
-    public SimpleMessageProvider(LoadSource loadSource, NodeFileLoader nodeFileLoader,
-                                 String fileFormat, MessageProviderSettings settings) {
+    SimpleMessageProvider(LoadSource loadSource, NodeFileLoader nodeFileLoader,
+                          ProvideStrategy provideStrategy, String defaultLanguage,
+                          String fileFormat, MessageConsumer<T> messageConsumer) {
         this.nodeFileAllocator = new SimpleFileAllocator(nodeFileLoader, loadSource);
         this.fileFormat = fileFormat;
-        this.settings = settings;
-        this.defaultLanguageFile = fileFormat.replace("%lang%", settings.getDefaultLanguage());
-    }
-
-    public SimpleMessageProvider(LoadSource loadSource, NodeFileLoader nodeFileLoader, String fileFormat) {
-        this(loadSource, nodeFileLoader, fileFormat, new MessageProviderSettings());
-    }
-
-    public SimpleMessageProvider(LoadSource loadSource, NodeFileLoader nodeFileLoader) {
-        this(loadSource, nodeFileLoader, "lang_%lang%.yml");
+        this.provideStrategy = provideStrategy;
+        this.defaultLanguageFile = fileFormat.replace("%lang%", defaultLanguage);
+        this.languageProvider = new DummyLanguageProvider<>(defaultLanguage);
+        this.messageConsumer = messageConsumer;
     }
 
     @Override
@@ -52,7 +48,7 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
                 optionalMessage = defaultLanguage.get().getString(messagePath);
             }
             if (!optionalMessage.isPresent()) {
-                if (settings.getProvideStrategy() == ProvideStrategy.RETURN_NULL) {
+                if (provideStrategy == ProvideStrategy.RETURN_NULL) {
                     return null;
                 } else {
                     return messagePath;
@@ -111,4 +107,15 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
                 );
     }
 
+    @Override
+    public void sendMessage(T propertyHolder, String messagePath) {
+        messageConsumer.sendMessage(propertyHolder, getMessage(propertyHolder, messagePath));
+    }
+
+    @Override
+    public void sendMessage(Iterable<T> propertyHolders, String messagePath) {
+        for (T propertyHolder : propertyHolders) {
+            sendMessage(propertyHolder, messagePath);
+        }
+    }
 }
