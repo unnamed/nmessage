@@ -5,13 +5,13 @@
     <parent>
         <artifactId>lang-api</artifactId>
         <groupId>me.yushust.message</groupId>
-        <version>0.1.0</version>
+        <version>0.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <version>${core.version}</version>
-
     <artifactId>core</artifactId>
+
     <build>
         <plugins>
             <plugin>
@@ -24,6 +24,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>20.0.0</version>
+        </dependency>
+    </dependencies>
 
 
 </project>

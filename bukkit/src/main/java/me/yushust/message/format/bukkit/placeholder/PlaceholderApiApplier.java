@@ -1,17 +1,17 @@
 package me.yushust.message.format.bukkit.placeholder;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.yushust.message.core.placeholder.PlaceholderApplier;
+import me.yushust.message.core.placeholder.PlaceholderReplacer;
 import org.bukkit.entity.Player;
 
-public class PlaceholderApiApplier implements PlaceholderApplier<Player> {
+public class PlaceholderApiApplier implements PlaceholderReplacer<Player> {
 
-    public static final PlaceholderApplier<Player> INSTANCE = new PlaceholderApiApplier();
+    public static final PlaceholderReplacer<Player> INSTANCE = new PlaceholderApiApplier();
 
     private PlaceholderApiApplier() {}
 
     @Override
-    public String applyPlaceholders(Player propertyHolder, String text) {
+    public String replace(Player propertyHolder, String text) {
         return PlaceholderAPI.setPlaceholders(propertyHolder, text);
     }
 

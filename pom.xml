@@ -7,7 +7,7 @@
     <groupId>me.yushust.message</groupId>
     <artifactId>lang-api</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0</version>
+    <version>0.2.1</version>
 
     <distributionManagement>
         <repository>
@@ -22,8 +22,8 @@
     </modules>
 
     <properties>
-        <core.version>0.2.0</core.version>
-        <bukkit.formatters.version>0.2.0</bukkit.formatters.version>
+        <core.version>0.2.1</core.version>
+        <bukkit.formatters.version>0.2.1</bukkit.formatters.version>
     </properties>
 
 </project>
