@@ -23,4 +23,14 @@ public interface PlaceholderReplacer<T> {
      */
     String replace(T propertyHolder, String text);
 
+    /**
+     * Converts a MessageInterceptor to a PlaceholderReplacer
+     * @param interceptor The message interceptor
+     * @param <T> The type of the placeholder replacer
+     * @return The placeholder replacer
+     */
+    static <T> PlaceholderReplacer<T> of(MessageInterceptor interceptor) {
+        return (propertyHolder, text) -> interceptor.intercept(text);
+    }
+
 }

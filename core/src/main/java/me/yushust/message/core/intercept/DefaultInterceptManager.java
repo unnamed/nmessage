@@ -2,7 +2,7 @@ package me.yushust.message.core.intercept;
 
 import me.yushust.message.core.placeholder.PlaceholderReplacer;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -12,7 +12,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
-    private final List<PlaceholderReplacer<T>> replacers = new LinkedList<>();
+    private final List<PlaceholderReplacer<T>> replacers = new ArrayList<>();
 
     /**
      * {@inheritDoc}

@@ -9,8 +9,8 @@ import me.yushust.message.core.localization.DummyLanguageProvider;
 import me.yushust.message.core.localization.LanguageProvider;
 import me.yushust.message.core.placeholder.PlaceholderReplacer;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,8 +22,7 @@ import static java.util.Objects.requireNonNull;
 public final class MessageProviderBuilder<T> {
 
     // optional values
-    private final Set<PlaceholderReplacer<T>> placeholderReplacers = new HashSet<>();
-    private final Set<MessageInterceptor> messageInterceptors = new HashSet<>();
+    private final List<PlaceholderReplacer<T>> placeholderReplacers = new ArrayList<>();
     private LanguageProvider<T> languageProvider = DummyLanguageProvider.getInstance();
     private String defaultLanguage = "en";
     private String fileFormat = "lang_%lang%.yml";
@@ -70,7 +69,7 @@ public final class MessageProviderBuilder<T> {
 
     public MessageProviderBuilder<T> addInterceptor(MessageInterceptor messageInterceptor) {
         requireNonNull(messageInterceptor);
-        this.messageInterceptors.add(messageInterceptor);
+        this.placeholderReplacers.add(PlaceholderReplacer.of(messageInterceptor));
         return this;
     }
 
@@ -99,10 +98,6 @@ public final class MessageProviderBuilder<T> {
                 languageProvider
         );
         InterceptManager<T> interceptManager = provider.getInterceptionManager();
-
-        for (MessageInterceptor messageInterceptor : messageInterceptors) {
-            interceptManager.add(messageInterceptor);
-        }
 
         for (PlaceholderReplacer<T> placeholderReplacer : placeholderReplacers) {
             interceptManager.add(placeholderReplacer);
