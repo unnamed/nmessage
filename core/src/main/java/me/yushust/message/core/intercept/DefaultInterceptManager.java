@@ -51,7 +51,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
         String convertedText = text;
         for (PlaceholderReplacer<T> replacer : this.replacers) {
-            convertedText = replacer.replace(propertyHolder, text);
+            convertedText = replacer.replace(propertyHolder, convertedText);
         }
 
         return convertedText;
