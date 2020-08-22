@@ -1,0 +1,7 @@
+me\yushust\message\format\bukkit\placeholder\DefaultPlaceholderApplier.class
+me\yushust\message\format\bukkit\yaml\YamlConfigurationWrapper.class
+me\yushust\message\format\bukkit\language\SpigotLanguageProvider.class
+me\yushust\message\format\bukkit\yaml\YamlFileLoader.class
+me\yushust\message\format\bukkit\placeholder\PlaceholderApiApplier.class
+me\yushust\message\format\bukkit\ChatColorInterceptor.class
+me\yushust\message\format\bukkit\BukkitMessageAdapt.class
