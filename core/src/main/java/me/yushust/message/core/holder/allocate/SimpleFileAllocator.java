@@ -31,15 +31,31 @@ public class SimpleFileAllocator implements NodeFileAllocator {
 
         requireNonNull(filename);
 
-        if (!this.shouldLoad(filename)) {
-            return this.getCachedFile(filename);
+        Object value = loadedFiles.get(filename);
+
+        if (value == UNDEFINED) {
+            return Optional.empty();
         }
 
-        return Optional.ofNullable(this.createIfResourceIsPresent(filename)
-            .orElseGet(
-                    () -> this.loadIfFileIsPresent(filename)
-                            .orElse(null)
-            ));
+        if (value != null) {
+            if (!(value instanceof NodeFile)) {
+                throw new IllegalStateException(
+                        "A object that isn't 'UNDEFINED' nor instance of NodeFile is in the loaded files map"
+                );
+            }
+            return Optional.of((NodeFile) value);
+        }
+
+        Optional<NodeFile> nodeFile = this.createIfResourceIsPresent(filename);
+
+        if (!nodeFile.isPresent()) {
+            nodeFile = this.loadIfFileIsPresent(filename);
+            if (!nodeFile.isPresent()) {
+                loadedFiles.put(filename, UNDEFINED);
+            }
+        }
+
+        return nodeFile;
     }
 
     @Override
@@ -47,14 +63,9 @@ public class SimpleFileAllocator implements NodeFileAllocator {
 
         requireNonNull(filename);
 
-        if (!this.shouldLoad(filename)) {
-            return this.getCachedFile(filename);
-        }
-
         try (InputStream resource = this.source.getClassLoader().getResourceAsStream(filename)) {
 
             if (resource == null) {
-                this.loadedFiles.put(filename, UNDEFINED);
                 return Optional.empty();
             }
 
@@ -63,7 +74,6 @@ public class SimpleFileAllocator implements NodeFileAllocator {
             return Optional.of(file);
 
         } catch (IOException e) {
-            this.loadedFiles.put(filename, UNDEFINED);
             e.printStackTrace();
             return Optional.empty();
         }
@@ -74,14 +84,9 @@ public class SimpleFileAllocator implements NodeFileAllocator {
 
         requireNonNull(filename);
 
-        if (!this.shouldLoad(filename)) {
-            return this.getCachedFile(filename);
-        }
-
         File file = new File(this.source.getFolder(), filename);
 
         if (!file.exists()) {
-            this.loadedFiles.put(filename, UNDEFINED);
             return Optional.empty();
         }
 
@@ -90,44 +95,9 @@ public class SimpleFileAllocator implements NodeFileAllocator {
             this.loadedFiles.put(filename, nodeFile);
             return Optional.of(nodeFile);
         } catch (IOException e) {
-            this.loadedFiles.put(filename, UNDEFINED);
             e.printStackTrace();
             return Optional.empty();
         }
-    }
-
-    private Optional<NodeFile> getCachedFile(String filename) {
-
-        if (this.shouldLoad(filename)) {
-            return Optional.empty();
-        }
-
-        Object value = this.loadedFiles.get(filename);
-
-        if (value == UNDEFINED) {
-            return Optional.empty();
-        }
-
-        return Optional.of((NodeFile) value);
-    }
-
-    private boolean shouldLoad(String filename) {
-        Object value = this.loadedFiles.get(filename);
-
-        if (value == UNDEFINED) {
-            return false;
-        }
-
-        if (value != null) {
-            if (!(value instanceof NodeFile)) {
-                throw new IllegalStateException(
-                        "A object that isn't 'UNDEFINED' nor instance of NodeFile is in the loaded files map"
-                );
-            }
-            return false;
-        }
-
-        return true;
     }
 
 }
