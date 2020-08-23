@@ -1,10 +1,13 @@
 package me.yushust.message.core;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Strategy executed if a message
  * is not present in a file.
  */
-public enum ProvideStrategy {
+@FunctionalInterface
+public interface ProvideStrategy {
 
     /**
      * The path is returned, for example:
@@ -12,7 +15,7 @@ public enum ProvideStrategy {
      * passing a not existing path,
      * it will return the path.
      */
-    RETURN_PATH,
+    ProvideStrategy RETURN_PATH = (propertyHolder, path) -> path;
 
     /**
      * Null is returned, for example:
@@ -20,6 +23,15 @@ public enum ProvideStrategy {
      * passing a not existing path, it
      * will return null.
      */
-    RETURN_NULL
+    ProvideStrategy RETURN_NULL = (propertyHolder, path) -> null;
+
+    /**
+     * Returns the not found message
+     * @param language The language
+     * @param path The path
+     * @return The not found message (Nullable)
+     */
+    @Nullable
+    String getNotFoundMessage(String language, String path);
 
 }

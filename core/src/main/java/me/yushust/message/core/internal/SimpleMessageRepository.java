@@ -5,98 +5,67 @@ import me.yushust.message.core.ProvideStrategy;
 import me.yushust.message.core.handle.StringList;
 import me.yushust.message.core.holder.NodeFile;
 import me.yushust.message.core.holder.allocate.NodeFileAllocator;
-import me.yushust.message.core.intercept.DefaultInterceptManager;
-import me.yushust.message.core.intercept.InterceptManager;
-import me.yushust.message.core.localization.LanguageProvider;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 
-public class SimpleMessageRepository<T> implements MessageRepository<T> {
+public class SimpleMessageRepository implements MessageRepository {
 
     private final Logger logger = Logger.getLogger(MessageRepository.class.getSimpleName());
-    private final InterceptManager<T> interceptManager = new DefaultInterceptManager<>();
     private final NodeFileAllocator fileAllocator;
 
     private final ProvideStrategy provideStrategy;
     private final String fileFormat;
     private final String defaultLanguageFilename;
 
-    private LanguageProvider<T> languageProvider;
-
-    public SimpleMessageRepository(NodeFileAllocator fileAllocator, LanguageProvider<T> languageProvider,
-                                   ProvideStrategy provideStrategy, String fileFormat, String defaultLanguage) {
+    public SimpleMessageRepository(NodeFileAllocator fileAllocator, ProvideStrategy provideStrategy,
+                                   String fileFormat, String defaultLanguage) {
         this.fileAllocator = fileAllocator;
         this.provideStrategy = provideStrategy;
         this.fileFormat = fileFormat;
         this.defaultLanguageFilename = getFilename(defaultLanguage);
-        this.languageProvider = languageProvider;
     }
 
     @Override
-    public String getMessage(T propertyHolder, String messagePath) {
+    public String getMessage(@Nullable String language, String messagePath) {
 
-        requireNonNull(propertyHolder);
         requireNonNull(messagePath);
 
-        Optional<NodeFile> nodeFile = getNodeFileFor(propertyHolder);
+        Optional<NodeFile> nodeFile = getNodeFileFor(language);
 
         if (!nodeFile.isPresent()) {
-            return getNotFoundValue(messagePath);
+            return provideStrategy.getNotFoundMessage(language, messagePath);
         }
 
         Optional<String> optionalMessage = nodeFile.get().getString(messagePath);
 
         if (!optionalMessage.isPresent()) {
             Optional<NodeFile> defaultLanguage = fileAllocator.find(defaultLanguageFilename);
-
             if (defaultLanguage.isPresent()) {
                 optionalMessage = defaultLanguage.get().getString(messagePath);
             }
         }
 
-        if (!optionalMessage.isPresent()) {
-            return getNotFoundValue(messagePath);
-        }
-
-        return interceptManager.convert(propertyHolder, optionalMessage.get());
+        return optionalMessage.orElseGet(
+                () -> provideStrategy.getNotFoundMessage(language, messagePath)
+        );
     }
 
     @Override
-    public StringList getMessages(T propertyHolder, String messagePath) {
+    public StringList getMessages(@Nullable String language, String messagePath) {
 
-        Optional<NodeFile> nodeFile = getNodeFileFor(propertyHolder);
+        Optional<NodeFile> nodeFile = getNodeFileFor(language);
 
-        if (!nodeFile.isPresent()) {
-            return new StringList(
-                    Collections.singletonList(getNotFoundValue(messagePath))
-            );
-        }
-
-        List<String> messages = nodeFile.get().getStringList(messagePath);
-        messages.replaceAll(line -> interceptManager.convert(propertyHolder, line));
-
-        return new StringList(messages);
-
+        return nodeFile.map(file -> new StringList(file.getStringList(messagePath)))
+                .orElseGet(
+                        () -> StringList.singleton(provideStrategy.getNotFoundMessage(language, messagePath))
+                );
     }
 
-    @Override
-    public void useLanguageProvider(LanguageProvider<T> languageProvider) {
-        requireNonNull(languageProvider);
-        this.languageProvider = languageProvider;
-    }
-
-    @Override
-    public InterceptManager<T> getInterceptionManager() {
-        return this.interceptManager;
-    }
-
-    private Optional<NodeFile> getNodeFileFor(T propertyHolder) {
-        String language = languageProvider.getLanguage(propertyHolder);
+    private Optional<NodeFile> getNodeFileFor(@Nullable String language) {
         Optional<NodeFile> nodeFile = Optional.empty();
         if (language != null) {
             nodeFile = fileAllocator.find(getFilename(language));
@@ -112,14 +81,6 @@ public class SimpleMessageRepository<T> implements MessageRepository<T> {
 
     private String getFilename(String language) {
         return fileFormat.replace("%lang%", language);
-    }
-
-    private String getNotFoundValue(String path) {
-        if (provideStrategy == ProvideStrategy.RETURN_NULL) {
-            return null;
-        } else {
-            return path;
-        }
     }
 
 }

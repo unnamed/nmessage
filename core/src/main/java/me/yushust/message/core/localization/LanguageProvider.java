@@ -9,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface LanguageProvider<T> {
 
+    LanguageProvider<?> DUMMY = languageHolder -> null;
+
     /**
      * Gets the language of the specified
      * property holder.
@@ -18,5 +20,16 @@ public interface LanguageProvider<T> {
      */
     @Nullable
     String getLanguage(T languageHolder);
+
+    /**
+     * The dummy language provider instance
+     * casted to "T"
+     * @param <T> The type to convert
+     * @return The language provider casted to "T"
+     */
+    @SuppressWarnings("unchecked")
+    static <T> LanguageProvider<T> dummy() {
+        return (LanguageProvider<T>) DUMMY;
+    }
 
 }

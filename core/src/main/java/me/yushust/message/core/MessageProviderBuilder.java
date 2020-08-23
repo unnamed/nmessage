@@ -5,7 +5,6 @@ import me.yushust.message.core.holder.NodeFileLoader;
 import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.intercept.MessageInterceptor;
 import me.yushust.message.core.internal.SimpleMessageProvider;
-import me.yushust.message.core.localization.DummyLanguageProvider;
 import me.yushust.message.core.localization.LanguageProvider;
 import me.yushust.message.core.placeholder.PlaceholderReplacer;
 
@@ -23,7 +22,8 @@ public final class MessageProviderBuilder<T> {
 
     // optional values
     private final List<PlaceholderReplacer<T>> placeholderReplacers = new ArrayList<>();
-    private LanguageProvider<T> languageProvider = DummyLanguageProvider.getInstance();
+    private final List<MessageInterceptor> messageInterceptors = new ArrayList<>();
+    private LanguageProvider<T> languageProvider = LanguageProvider.dummy();
     private String defaultLanguage = "en";
     private String fileFormat = "lang_%lang%.yml";
     private ProvideStrategy provideStrategy = ProvideStrategy.RETURN_PATH;
@@ -69,7 +69,7 @@ public final class MessageProviderBuilder<T> {
 
     public MessageProviderBuilder<T> addInterceptor(MessageInterceptor messageInterceptor) {
         requireNonNull(messageInterceptor);
-        this.placeholderReplacers.add(PlaceholderReplacer.of(messageInterceptor));
+        this.messageInterceptors.add(messageInterceptor);
         return this;
     }
 
@@ -91,13 +91,17 @@ public final class MessageProviderBuilder<T> {
             throw new IllegalStateException("The LoadSource and the NodeFileLoader isn't setted!");
         }
 
-        MessageProvider<T> provider = new SimpleMessageProvider<>(
+        MessageProvider<T> provider = SimpleMessageProvider.create(
                 loadSource, nodeFileLoader,
+                languageProvider, messageConsumer,
                 provideStrategy, defaultLanguage,
-                fileFormat, messageConsumer,
-                languageProvider
+                fileFormat
         );
         InterceptManager<T> interceptManager = provider.getInterceptionManager();
+
+        for (MessageInterceptor messageInterceptor : messageInterceptors) {
+            interceptManager.add(messageInterceptor);
+        }
 
         for (PlaceholderReplacer<T> placeholderReplacer : placeholderReplacers) {
             interceptManager.add(placeholderReplacer);

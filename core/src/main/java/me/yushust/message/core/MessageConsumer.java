@@ -7,7 +7,7 @@ package me.yushust.message.core;
  */
 public interface MessageConsumer<T> {
 
-    MessageConsumer<?> dummy = (receiver, message) -> {};
+    MessageConsumer<?> DUMMY = (receiver, message) -> {};
 
     /**
      * Sends a message to the specified property holder
@@ -24,7 +24,7 @@ public interface MessageConsumer<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> MessageConsumer<T> dummy() {
-        return (MessageConsumer<T>) dummy;
+        return (MessageConsumer<T>) DUMMY;
     }
 
 }

@@ -24,9 +24,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
         // the message interceptor is converted to a
         // placeholder replacer
-        this.replacers.add(
-                (propertyHolder, text) -> interceptor.intercept(text)
-        );
+        this.replacers.add(PlaceholderReplacer.of(interceptor));
         return this;
     }
 
