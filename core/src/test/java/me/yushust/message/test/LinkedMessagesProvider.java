@@ -12,6 +12,7 @@ public class LinkedMessagesProvider extends MessageProviderTestCase {
 
         MessageProvider<ConsoleEntity> provider = MessageProvider.<ConsoleEntity>builder()
                 .setRepository(messageRepository)
+                .setLanguageProvider(ConsoleEntity::getLanguage)
                 .build();
 
         ConsoleEntity entity = new ConsoleEntity("en");
