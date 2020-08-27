@@ -142,7 +142,6 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
                     linkedPaths.add(path);
 
-                    // TODO: Pass a collection to getMessage() to avoid StackOverflowError in case of a cyclic linked-messages dependency
                     String message = context.getMessageProvider().getMessage(
                         context.getEntity(), path, linkedPaths
                     );

@@ -7,6 +7,7 @@ import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.localization.LanguageProvider;
 
 import org.jetbrains.annotations.Nullable;
+
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
