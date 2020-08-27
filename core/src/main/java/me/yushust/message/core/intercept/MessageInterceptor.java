@@ -13,7 +13,7 @@ import me.yushust.message.core.placeholder.PlaceholderReplacer;
 @FunctionalInterface
 public interface MessageInterceptor<T> extends PlaceholderReplacer<T> {
 
-    static String[] EMPTY_STRING_ARRAY = new String[0];
+    String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
      * Similar to {@link PlaceholderReplacer} but receives

@@ -2,16 +2,15 @@ package me.yushust.message.test;
 
 import java.io.File;
 
+import me.yushust.message.core.MessageRepository;
 import org.junit.jupiter.api.BeforeEach;
 
 import me.yushust.message.core.holder.LoadSource;
-import me.yushust.message.core.holder.NodeFileLoader;
 import me.yushust.message.core.holder.defaults.PropertiesFileLoader;
 
 public class MessageProviderTestCase {
-    
-    protected LoadSource loadSource;
-    protected NodeFileLoader fileLoader;
+
+    protected MessageRepository messageRepository;
 
     @BeforeEach
     public void prepare() throws Exception {
@@ -20,12 +19,15 @@ public class MessageProviderTestCase {
             this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()
         );
 
-        this.loadSource = new LoadSource(
-            this.getClass().getClassLoader(),
-            folder
-        );
-
-        this.fileLoader = new PropertiesFileLoader(folder);
+        this.messageRepository = MessageRepository.builder()
+                .setLoadSource(
+                        new LoadSource(
+                                this.getClass().getClassLoader(),
+                                folder
+                        )
+                )
+                .setNodeFileLoader(new PropertiesFileLoader(folder))
+                .build();
 
     }
 

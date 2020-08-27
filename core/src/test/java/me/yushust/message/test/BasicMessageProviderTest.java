@@ -4,18 +4,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import me.yushust.message.core.MessageProvider;
-import me.yushust.message.core.MessageProviderBuilder;
 
 public class BasicMessageProviderTest extends MessageProviderTestCase {
 
     @Test
     public void test() {
 
-        MessageProvider<ConsoleEntity> provider = MessageProviderBuilder.<ConsoleEntity>create()
-                .setLoadSource(loadSource)
-                .setDefaultLanguage("en")
-                .setFileFormat("lang_%lang%.properties")
-                .setNodeFileLoader(fileLoader)
+        MessageProvider<ConsoleEntity> provider = MessageProvider.<ConsoleEntity>builder()
+                .setRepository(messageRepository)
                 .build();
 
         ConsoleEntity entity = new ConsoleEntity("en");

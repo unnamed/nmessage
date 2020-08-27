@@ -31,4 +31,8 @@ public interface MessageRepository {
      */
     StringList getMessages(@Nullable String language, String messagePath);
 
+    static MessageRepositoryBuilder builder() {
+        return new MessageRepositoryBuilder();
+    }
+
 }

@@ -1,5 +1,6 @@
 package me.yushust.message.core.intercept;
 
+import me.yushust.message.core.MessageProvider;
 import me.yushust.message.core.placeholder.PlaceholderBox;
 import me.yushust.message.core.placeholder.PlaceholderReplacer;
 
@@ -17,11 +18,41 @@ import static java.util.Objects.requireNonNull;
 public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
     private final Map<String, PlaceholderReplacer<T>> replacers = new LinkedHashMap<>();
-    private final List<MessageInterceptor<T>> interceptors = new ArrayList<>();
+    protected final List<MessageInterceptor<T>> interceptors = new ArrayList<>();
+    private final PlaceholderBox placeholderBox;
     private final String linkedMessagePrefix;
+    protected MessageProvider<T> messageProvider;
+
+    public DefaultInterceptManager(PlaceholderBox placeholderBox, String linkedMessagePrefix) {
+        requireNonNull(placeholderBox);
+        requireNonNull(linkedMessagePrefix);
+        this.placeholderBox = placeholderBox;
+        this.linkedMessagePrefix = linkedMessagePrefix.toLowerCase();
+    }
 
     public DefaultInterceptManager(String linkedMessagePrefix) {
-        this.linkedMessagePrefix = linkedMessagePrefix.toLowerCase();
+        this(PlaceholderBox.DEFAULT, linkedMessagePrefix);
+    }
+
+    public DefaultInterceptManager() {
+        this("path_");
+    }
+
+    @Override
+    public void setMessageProvider(MessageProvider<T> newMessageProvider) {
+
+        if (this.messageProvider != null) {
+            throw new IllegalStateException("The message provider is already defined!");
+        }
+
+        requireNonNull(newMessageProvider);
+        this.messageProvider = newMessageProvider;
+    }
+
+    @Override
+    public MessageProvider<T> getMessageProvider() {
+        checkValidMessageProvider();
+        return messageProvider;
     }
 
     /**
@@ -30,6 +61,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
     @Override
     public InterceptManager<T> add(MessageInterceptor<T> interceptor) {
 
+        checkValidMessageProvider();
         requireNonNull(interceptor);
 
         // the message interceptor is converted to a
@@ -44,6 +76,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
     @Override
     public InterceptManager<T> addReplacer(PlaceholderReplacer<T> replacer) {
 
+        checkValidMessageProvider();
         requireNonNull(replacer);
 
         for (String placeholder : replacer.getPlaceholders()) {
@@ -59,10 +92,9 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
     @Override
     public String convert(InterceptContext<T> context, String text) {
 
+        checkValidMessageProvider();
         requireNonNull(context);
         requireNonNull(text);
-
-        PlaceholderBox box = context.getMessageProvider().getPlaceholderBox();
 
         String convertedText = text;
         char[] characters = convertedText.toCharArray();
@@ -73,7 +105,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
             char character = characters[i];
 
-            if (character != box.getStart() || i + 1 >= characters.length) {
+            if (character != placeholderBox.getStart() || i + 1 >= characters.length) {
                 builder.append(character);
                 continue;
             }
@@ -84,7 +116,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
                 char current = characters[i];
 
-                if (current == box.getEnd()) {
+                if (current == placeholderBox.getEnd()) {
                     closed = true;
                     break;
                 }
@@ -160,6 +192,12 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
     @Override
     public Optional<PlaceholderReplacer<T>> findReplacer(String placeholder) {
         return Optional.ofNullable(replacers.get(placeholder.toLowerCase()));
+    }
+
+    protected void checkValidMessageProvider() {
+        if (messageProvider == null) {
+            throw new IllegalStateException("The message provider isn't defined yet!");
+        }
     }
 
 }

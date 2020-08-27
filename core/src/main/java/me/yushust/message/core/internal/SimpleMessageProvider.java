@@ -2,14 +2,9 @@ package me.yushust.message.core.internal;
 
 import me.yushust.message.core.*;
 import me.yushust.message.core.handle.StringList;
-import me.yushust.message.core.holder.LoadSource;
-import me.yushust.message.core.holder.NodeFileLoader;
-import me.yushust.message.core.holder.allocate.SimpleFileAllocator;
-import me.yushust.message.core.intercept.DefaultInterceptManager;
 import me.yushust.message.core.intercept.InterceptContext;
 import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.localization.LanguageProvider;
-import me.yushust.message.core.placeholder.PlaceholderBox;
 
 import org.jetbrains.annotations.Nullable;
 import static java.util.Objects.requireNonNull;
@@ -19,17 +14,18 @@ import java.util.function.UnaryOperator;
 public class SimpleMessageProvider<T> implements MessageProvider<T> {
 
     private final MessageConsumer<T> messageConsumer;
-    private final InterceptManager<T> interceptManager = new DefaultInterceptManager<>("path_");
+    private final InterceptManager<T> interceptManager;
     private final MessageRepository messageRepository;
-    private final PlaceholderBox placeholderBox;
-    private LanguageProvider<T> languageProvider;
+    private final LanguageProvider<T> languageProvider;
 
-    public SimpleMessageProvider(MessageRepository messageRepository, LanguageProvider<T> languageProvider,
-                                 MessageConsumer<T> messageConsumer, PlaceholderBox placeholderBox) {
+    public SimpleMessageProvider(MessageConsumer<T> messageConsumer, InterceptManager<T> interceptManager,
+                                 MessageRepository messageRepository, LanguageProvider<T> languageProvider) {
+        this.messageConsumer = messageConsumer;
+        this.interceptManager = interceptManager;
         this.messageRepository = messageRepository;
         this.languageProvider = languageProvider;
-        this.messageConsumer = messageConsumer;
-        this.placeholderBox = placeholderBox;
+        // ends the construction stage
+        this.interceptManager.setMessageProvider(this);
     }
 
     @Override
@@ -72,9 +68,8 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
     }
 
     @Override
-    public void useLanguageProvider(LanguageProvider<T> languageProvider) {
-        requireNonNull(languageProvider);
-        this.languageProvider = languageProvider;
+    public LanguageProvider<T> getLanguageProvider() {
+        return languageProvider;
     }
 
     @Override
@@ -104,28 +99,6 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
     @Override
     public StringList getMessages(@Nullable String language, String messagePath) {
         return messageRepository.getMessages(language, messagePath);
-    }
-
-    public static <T> MessageProvider<T> create(LoadSource loadSource, NodeFileLoader nodeFileLoader,
-                                                LanguageProvider<T> languageProvider, MessageConsumer<T> messageConsumer,
-                                                ProvideStrategy provideStrategy, String fileFormat,
-                                                String defaultLanguage, PlaceholderBox placeholderBox) {
-        return new SimpleMessageProvider<>(
-                new SimpleMessageRepository(
-                        new SimpleFileAllocator(nodeFileLoader, loadSource),
-                        provideStrategy,
-                        fileFormat,
-                        defaultLanguage
-                ),
-                languageProvider,
-                messageConsumer,
-                placeholderBox
-        );
-    }
-
-    @Override
-    public PlaceholderBox getPlaceholderBox() {
-        return placeholderBox;
     }
 
 }

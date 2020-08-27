@@ -1,12 +1,10 @@
 package me.yushust.message.core;
 
-import me.yushust.message.core.holder.LoadSource;
-import me.yushust.message.core.holder.NodeFileLoader;
+import me.yushust.message.core.intercept.DefaultInterceptManager;
 import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.intercept.MessageInterceptor;
 import me.yushust.message.core.internal.SimpleMessageProvider;
 import me.yushust.message.core.localization.LanguageProvider;
-import me.yushust.message.core.placeholder.PlaceholderBox;
 import me.yushust.message.core.placeholder.PlaceholderReplacer;
 
 import java.util.ArrayList;
@@ -24,42 +22,16 @@ public final class MessageProviderBuilder<T> {
     // optional values
     private final List<PlaceholderReplacer<T>> placeholderReplacers = new ArrayList<>();
     private final List<MessageInterceptor<T>> messageInterceptors = new ArrayList<>();
+    private InterceptManager<T> interceptManager = new DefaultInterceptManager<>();
     private LanguageProvider<T> languageProvider = LanguageProvider.dummy();
-    private PlaceholderBox placeholderBox = PlaceholderBox.DEFAULT;
-    private String defaultLanguage = "en";
-    private String fileFormat = "lang_%lang%.yml";
-    private ProvideStrategy provideStrategy = ProvideStrategy.RETURN_PATH;
     private MessageConsumer<T> messageConsumer = MessageConsumer.dummy();
 
-    // required values
-    private NodeFileLoader nodeFileLoader;
-    private LoadSource loadSource;
+    // required value
+    private MessageRepository messageRepository;
 
-    public MessageProviderBuilder<T> setLoadSource(LoadSource loadSource) {
-        this.loadSource = loadSource;
-        return this;
-    }
-
-    public MessageProviderBuilder<T> setFileFormat(String fileFormat) {
-        requireNonNull(fileFormat);
-        this.fileFormat = fileFormat;
-        return this;
-    }
-
-    public MessageProviderBuilder<T> setNodeFileLoader(NodeFileLoader nodeFileLoader) {
-        this.nodeFileLoader = nodeFileLoader;
-        return this;
-    }
-
-    public MessageProviderBuilder<T> setProvideStrategy(ProvideStrategy provideStrategy) {
-        requireNonNull(provideStrategy);
-        this.provideStrategy = provideStrategy;
-        return this;
-    }
-
-    public MessageProviderBuilder<T> setDefaultLanguage(String defaultLanguage) {
-        requireNonNull(defaultLanguage);
-        this.defaultLanguage = defaultLanguage;
+    public MessageProviderBuilder<T> setRepository(MessageRepository messageRepository) {
+        requireNonNull(messageRepository);
+        this.messageRepository = messageRepository;
         return this;
     }
 
@@ -87,23 +59,21 @@ public final class MessageProviderBuilder<T> {
         return this;
     }
 
-    public MessageProviderBuilder<T> setPlaceholderBox(PlaceholderBox placeholderBox) {
-        requireNonNull(placeholderBox);
-        this.placeholderBox = placeholderBox;
+    public MessageProviderBuilder<T> setInterceptManager(InterceptManager<T> interceptManager) {
+        requireNonNull(interceptManager);
+        this.interceptManager = interceptManager;
         return this;
     }
 
     public MessageProvider<T> build() {
 
-        if (loadSource == null || nodeFileLoader == null) {
-            throw new IllegalStateException("The LoadSource and the NodeFileLoader isn't setted!");
+        if (messageRepository == null) {
+            throw new IllegalStateException("The message repository isn't setted!");
         }
 
-        MessageProvider<T> provider = SimpleMessageProvider.create(
-                loadSource, nodeFileLoader,
-                languageProvider, messageConsumer,
-                provideStrategy, defaultLanguage,
-                fileFormat, placeholderBox
+        MessageProvider<T> provider = new SimpleMessageProvider<>(
+                messageConsumer, interceptManager,
+                messageRepository, languageProvider
         );
         InterceptManager<T> interceptManager = provider.getInterceptionManager();
 
@@ -116,10 +86,6 @@ public final class MessageProviderBuilder<T> {
         }
 
         return provider;
-    }
-
-    public static <T> MessageProviderBuilder<T> create() {
-        return new MessageProviderBuilder<>();
     }
 
 }

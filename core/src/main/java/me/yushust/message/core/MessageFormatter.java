@@ -4,7 +4,6 @@ import me.yushust.message.core.handle.StringList;
 import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.intercept.MessageInterceptor;
 import me.yushust.message.core.localization.LanguageProvider;
-import me.yushust.message.core.placeholder.PlaceholderBox;
 import me.yushust.message.core.placeholder.PlaceholderReplacer;
 
 /**
@@ -15,12 +14,6 @@ import me.yushust.message.core.placeholder.PlaceholderReplacer;
  * @param <T> The property holder type
  */
 public interface MessageFormatter<T> {
-
-    /**
-     * @return Returns the placeholder container/box used
-     *         to identify placeholders and replace it
-     */
-    PlaceholderBox getPlaceholderBox();
 
     /**
      * Gets a message using the language of the
@@ -50,10 +43,10 @@ public interface MessageFormatter<T> {
     StringList getMessages(T propertyHolder, String messagePath);
 
     /**
-     * Sets the language provider
-     * @param languageProvider The language provider
+     * @return The language provider that is used to
+     * get the entities language.
      */
-    void useLanguageProvider(LanguageProvider<T> languageProvider);
+    LanguageProvider<T> getLanguageProvider();
 
     /**
      * @return Returns the interception manager, using this

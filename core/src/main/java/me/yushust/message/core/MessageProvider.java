@@ -36,4 +36,8 @@ public interface MessageProvider<T> extends MessageRepository, MessageFormatter<
         sendMessage(propertyHolders, messagePath, UnaryOperator.identity());
     }
 
+    static <T> MessageProviderBuilder<T> builder() {
+        return new MessageProviderBuilder<>();
+    }
+
 }
