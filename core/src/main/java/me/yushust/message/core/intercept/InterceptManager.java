@@ -3,11 +3,11 @@ package me.yushust.message.core.intercept;
 import java.util.Optional;
 
 import me.yushust.message.core.MessageProvider;
-import me.yushust.message.core.placeholder.PlaceholderReplacer;
+import me.yushust.message.core.placeholder.PlaceholderProvider;
 
 /**
  * Manages the message interception, either with simple
- * {@link MessageInterceptor} or with {@link PlaceholderReplacer}
+ * {@link MessageInterceptor} or with {@link PlaceholderProvider}
  * @param <T> The property holder type
  */
 public interface InterceptManager<T> {
@@ -43,14 +43,14 @@ public interface InterceptManager<T> {
      * @param replacer The placeholder replacer
      * @return The intercept manager, for a fluent api
      */
-    InterceptManager<T> addReplacer(PlaceholderReplacer<T> replacer);
+    InterceptManager<T> addReplacer(PlaceholderProvider<T> replacer);
 
     /**
      * Finds a placeholder replacer for the specified placeholder
      * @param placeholder The placeholder
      * @return The placeholder replacer, wrapped with Optional
      */
-    Optional<PlaceholderReplacer<T>> findReplacer(String placeholder);
+    Optional<PlaceholderProvider<T>> findReplacer(String placeholder);
 
     /**
      * Calls all message interceptors and placeholder

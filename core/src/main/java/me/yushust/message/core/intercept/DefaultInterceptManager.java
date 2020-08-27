@@ -2,7 +2,7 @@ package me.yushust.message.core.intercept;
 
 import me.yushust.message.core.MessageProvider;
 import me.yushust.message.core.placeholder.PlaceholderBox;
-import me.yushust.message.core.placeholder.PlaceholderReplacer;
+import me.yushust.message.core.placeholder.PlaceholderProvider;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,7 +17,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
-    private final Map<String, PlaceholderReplacer<T>> replacers = new LinkedHashMap<>();
+    private final Map<String, PlaceholderProvider<T>> replacers = new LinkedHashMap<>();
     protected final List<MessageInterceptor<T>> interceptors = new ArrayList<>();
     private final PlaceholderBox placeholderBox;
     private final String linkedMessagePrefix;
@@ -74,7 +74,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
      * {@inheritDoc}
      */
     @Override
-    public InterceptManager<T> addReplacer(PlaceholderReplacer<T> replacer) {
+    public InterceptManager<T> addReplacer(PlaceholderProvider<T> replacer) {
 
         checkValidMessageProvider();
         requireNonNull(replacer);
@@ -134,7 +134,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                 continue;
             }
 
-            Optional<PlaceholderReplacer<T>> optionalReplacer = findReplacer(placeholderString);
+            Optional<PlaceholderProvider<T>> optionalReplacer = findReplacer(placeholderString);
 
             if (!optionalReplacer.isPresent()) {
 
@@ -190,7 +190,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
      * {@inheritDoc}
      */
     @Override
-    public Optional<PlaceholderReplacer<T>> findReplacer(String placeholder) {
+    public Optional<PlaceholderProvider<T>> findReplacer(String placeholder) {
         return Optional.ofNullable(replacers.get(placeholder.toLowerCase()));
     }
 

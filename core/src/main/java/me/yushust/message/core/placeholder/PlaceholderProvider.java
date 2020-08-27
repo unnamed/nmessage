@@ -9,7 +9,7 @@ import me.yushust.message.core.intercept.InterceptContext;
  * holder to get values for a range of placeholders.
  * @param <T> The property holder type
  */
-public interface PlaceholderReplacer<T> {
+public interface PlaceholderProvider<T> {
 
     /**
      * @return An array of acceptable placeholders

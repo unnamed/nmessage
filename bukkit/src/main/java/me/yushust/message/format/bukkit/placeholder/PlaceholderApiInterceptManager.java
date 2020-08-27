@@ -4,7 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.yushust.message.core.intercept.DefaultInterceptManager;
 import me.yushust.message.core.intercept.InterceptContext;
 import me.yushust.message.core.intercept.InterceptManager;
-import me.yushust.message.core.placeholder.PlaceholderReplacer;
+import me.yushust.message.core.placeholder.PlaceholderProvider;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -18,7 +18,7 @@ public class PlaceholderApiInterceptManager extends DefaultInterceptManager<Play
     }
 
     @Override
-    public InterceptManager<Player> addReplacer(PlaceholderReplacer<Player> replacer) {
+    public InterceptManager<Player> addReplacer(PlaceholderProvider<Player> replacer) {
 
         if (!expansion.isRegistered()) {
             PlaceholderAPI.registerExpansion(expansion);

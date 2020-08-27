@@ -5,7 +5,7 @@ import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.intercept.MessageInterceptor;
 import me.yushust.message.core.internal.SimpleMessageProvider;
 import me.yushust.message.core.localization.LanguageProvider;
-import me.yushust.message.core.placeholder.PlaceholderReplacer;
+import me.yushust.message.core.placeholder.PlaceholderProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 public final class MessageProviderBuilder<T> {
 
     // optional values
-    private final List<PlaceholderReplacer<T>> placeholderReplacers = new ArrayList<>();
+    private final List<PlaceholderProvider<T>> placeholderProviders = new ArrayList<>();
     private final List<MessageInterceptor<T>> messageInterceptors = new ArrayList<>();
     private InterceptManager<T> interceptManager = new DefaultInterceptManager<>();
     private LanguageProvider<T> languageProvider = LanguageProvider.dummy();
@@ -35,9 +35,9 @@ public final class MessageProviderBuilder<T> {
         return this;
     }
 
-    public MessageProviderBuilder<T> addPlaceholderReplacer(PlaceholderReplacer<T> replacer) {
+    public MessageProviderBuilder<T> addPlaceholderReplacer(PlaceholderProvider<T> replacer) {
         requireNonNull(replacer);
-        this.placeholderReplacers.add(replacer);
+        this.placeholderProviders.add(replacer);
         return this;
     }
 
@@ -81,8 +81,8 @@ public final class MessageProviderBuilder<T> {
             interceptManager.add(messageInterceptor);
         }
 
-        for (PlaceholderReplacer<T> placeholderReplacer : placeholderReplacers) {
-            interceptManager.addReplacer(placeholderReplacer);
+        for (PlaceholderProvider<T> placeholderProvider : placeholderProviders) {
+            interceptManager.addReplacer(placeholderProvider);
         }
 
         return provider;

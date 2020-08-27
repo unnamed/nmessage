@@ -2,7 +2,7 @@ package me.yushust.message.core.intercept;
 
 import org.jetbrains.annotations.NotNull;
 
-import me.yushust.message.core.placeholder.PlaceholderReplacer;
+import me.yushust.message.core.placeholder.PlaceholderProvider;
 
 /**
  * A functional interface that intercepts
@@ -11,12 +11,12 @@ import me.yushust.message.core.placeholder.PlaceholderReplacer;
  * with String as type parameter
  */
 @FunctionalInterface
-public interface MessageInterceptor<T> extends PlaceholderReplacer<T> {
+public interface MessageInterceptor<T> extends PlaceholderProvider<T> {
 
     String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
-     * Similar to {@link PlaceholderReplacer} but receives
+     * Similar to {@link PlaceholderProvider} but receives
      * the original text and not a placeholder.
      */
     @Override

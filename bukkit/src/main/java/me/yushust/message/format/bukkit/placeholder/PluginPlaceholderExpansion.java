@@ -3,7 +3,7 @@ package me.yushust.message.format.bukkit.placeholder;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.yushust.message.core.intercept.InterceptContext;
 import me.yushust.message.core.intercept.InterceptManager;
-import me.yushust.message.core.placeholder.PlaceholderReplacer;
+import me.yushust.message.core.placeholder.PlaceholderProvider;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -44,7 +44,7 @@ public class PluginPlaceholderExpansion extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, String params) {
 
-        Optional<PlaceholderReplacer<Player>> optionalPlaceholderProvider = interceptManager.findReplacer(params);
+        Optional<PlaceholderProvider<Player>> optionalPlaceholderProvider = interceptManager.findReplacer(params);
 
         return optionalPlaceholderProvider.map(playerPlaceholderReplacer -> playerPlaceholderReplacer.replace(
                 new InterceptContext<>(interceptManager.getMessageProvider(), player),

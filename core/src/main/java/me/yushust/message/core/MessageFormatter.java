@@ -4,12 +4,12 @@ import me.yushust.message.core.handle.StringList;
 import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.intercept.MessageInterceptor;
 import me.yushust.message.core.localization.LanguageProvider;
-import me.yushust.message.core.placeholder.PlaceholderReplacer;
+import me.yushust.message.core.placeholder.PlaceholderProvider;
 
 /**
  * {@link MessageRepository}'s wrapper, gets the language of
  * property holder using {@link LanguageProvider} and replaces
- * some variables using {@link PlaceholderReplacer}s and
+ * some variables using {@link PlaceholderProvider}s and
  * {@link MessageInterceptor}s
  * @param <T> The property holder type
  */
@@ -51,7 +51,7 @@ public interface MessageFormatter<T> {
     /**
      * @return Returns the interception manager, using this
      * you can add simple {@link MessageInterceptor} or
-     * {@link PlaceholderReplacer}
+     * {@link PlaceholderProvider}
      */
     InterceptManager<T> getInterceptionManager();
 

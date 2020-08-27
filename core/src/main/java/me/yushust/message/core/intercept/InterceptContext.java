@@ -1,11 +1,11 @@
 package me.yushust.message.core.intercept;
 
 import me.yushust.message.core.MessageProvider;
-import me.yushust.message.core.placeholder.PlaceholderReplacer;
+import me.yushust.message.core.placeholder.PlaceholderProvider;
 
 /**
  * Represents a context of interception, passed to
- * {@link MessageInterceptor} and {@link PlaceholderReplacer}
+ * {@link MessageInterceptor} and {@link PlaceholderProvider}
  * @param <T> The entity type
  */
 public final class InterceptContext<T> {
