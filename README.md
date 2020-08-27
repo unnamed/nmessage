@@ -31,7 +31,8 @@ MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
 		.setDefaultLanguage("en")
 		.build();
 ```
-NodeFileLoader implementation: (for Bukkit) [YamlNodeFileLoader](https://github.com/yusshu/lang-lib/blob/master/bukkit/src/main/java/me/yushust/message/format/bukkit/yaml/YamlFileLoader.java), and NodeFileWrapper: [YamlConfigurationWrapper](https://github.com/yusshu/lang-lib/blob/master/bukkit/src/main/java/me/yushust/message/format/bukkit/yaml/YamlConfigurationWrapper.java)
+NodeFileLoader implementation: (for Bukkit) [YamlFileLoader](https://github.com/yusshu/lang-lib/blob/master/bukkit/src/main/java/me/yushust/message/format/bukkit/yaml/YamlFileLoader.java), and NodeFileWrapper: [YamlConfigurationWrapper](https://github.com/yusshu/lang-lib/blob/master/bukkit/src/main/java/me/yushust/message/format/bukkit/yaml/YamlConfigurationWrapper.java)
+NodeFileLoader implementation for Properties: (Built in) [PropertiesFileLoader](https://github.com/yusshu/lang-lib/blob/master/core/src/main/java/me/yushust/message/core/holder/defaults/PropertiesFileLoader.java), and NodeFileWrapper: [PropertiesNodeFile](https://github.com/yusshu/lang-lib/blob/master/core/src/main/java/me/yushust/message/core/holder/defaults/PropertiesNodeFile.java)
 ## Getting messages
 
 There are **two ways** to get messages: using the propertyHolder and using the language.
