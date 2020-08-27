@@ -6,6 +6,7 @@ import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.intercept.MessageInterceptor;
 import me.yushust.message.core.internal.SimpleMessageProvider;
 import me.yushust.message.core.localization.LanguageProvider;
+import me.yushust.message.core.placeholder.PlaceholderBox;
 import me.yushust.message.core.placeholder.PlaceholderReplacer;
 
 import java.util.ArrayList;
@@ -22,8 +23,9 @@ public final class MessageProviderBuilder<T> {
 
     // optional values
     private final List<PlaceholderReplacer<T>> placeholderReplacers = new ArrayList<>();
-    private final List<MessageInterceptor> messageInterceptors = new ArrayList<>();
+    private final List<MessageInterceptor<T>> messageInterceptors = new ArrayList<>();
     private LanguageProvider<T> languageProvider = LanguageProvider.dummy();
+    private PlaceholderBox placeholderBox = PlaceholderBox.DEFAULT;
     private String defaultLanguage = "en";
     private String fileFormat = "lang_%lang%.yml";
     private ProvideStrategy provideStrategy = ProvideStrategy.RETURN_PATH;
@@ -67,7 +69,7 @@ public final class MessageProviderBuilder<T> {
         return this;
     }
 
-    public MessageProviderBuilder<T> addInterceptor(MessageInterceptor messageInterceptor) {
+    public MessageProviderBuilder<T> addInterceptor(MessageInterceptor<T> messageInterceptor) {
         requireNonNull(messageInterceptor);
         this.messageInterceptors.add(messageInterceptor);
         return this;
@@ -85,6 +87,12 @@ public final class MessageProviderBuilder<T> {
         return this;
     }
 
+    public MessageProviderBuilder<T> setPlaceholderBox(PlaceholderBox placeholderBox) {
+        requireNonNull(placeholderBox);
+        this.placeholderBox = placeholderBox;
+        return this;
+    }
+
     public MessageProvider<T> build() {
 
         if (loadSource == null || nodeFileLoader == null) {
@@ -95,16 +103,16 @@ public final class MessageProviderBuilder<T> {
                 loadSource, nodeFileLoader,
                 languageProvider, messageConsumer,
                 provideStrategy, defaultLanguage,
-                fileFormat
+                fileFormat, placeholderBox
         );
         InterceptManager<T> interceptManager = provider.getInterceptionManager();
 
-        for (MessageInterceptor messageInterceptor : messageInterceptors) {
+        for (MessageInterceptor<T> messageInterceptor : messageInterceptors) {
             interceptManager.add(messageInterceptor);
         }
 
         for (PlaceholderReplacer<T> placeholderReplacer : placeholderReplacers) {
-            interceptManager.add(placeholderReplacer);
+            interceptManager.addReplacer(placeholderReplacer);
         }
 
         return provider;

@@ -1,6 +1,6 @@
 package me.yushust.message.core;
 
-import me.yushust.message.core.intercept.MessageInterceptor;
+import java.util.function.UnaryOperator;
 
 /**
  * The library main class
@@ -24,7 +24,7 @@ public interface MessageProvider<T> extends MessageRepository, MessageFormatter<
      * @param interceptor The just-in-time interceptor, util for
      *                    replacing variables
      */
-    void sendMessage(Iterable<T> propertyHolders, String messagePath, MessageInterceptor interceptor);
+    void sendMessage(Iterable<T> propertyHolders, String messagePath, UnaryOperator<String> interceptor);
 
     /**
      * Sends a message to the specified receivers using
@@ -33,7 +33,7 @@ public interface MessageProvider<T> extends MessageRepository, MessageFormatter<
      * @param messagePath The message location
      */
     default void sendMessage(Iterable<T> propertyHolders, String messagePath) {
-        sendMessage(propertyHolders, messagePath, MessageInterceptor.identity());
+        sendMessage(propertyHolders, messagePath, UnaryOperator.identity());
     }
 
 }

@@ -1,5 +1,7 @@
 package me.yushust.message.core.intercept;
 
+import java.util.Optional;
+
 import me.yushust.message.core.placeholder.PlaceholderReplacer;
 
 /**
@@ -15,24 +17,32 @@ public interface InterceptManager<T> {
      * @param interceptor The new message interceptor
      * @return The intercept manager, for a fluent api
      */
-    InterceptManager<T> add(MessageInterceptor interceptor);
+    InterceptManager<T> add(MessageInterceptor<T> interceptor);
 
     /**
-     * Adds a placeholder replacer to the list
-     * of placeholder replacers
-     * @param replacer The new placeholder replacer
-     * @return The intercept mananager, for a fluent api
+     * Adds a placeholder replacer that corresponds to the
+     * specified placeholders.
+     * @param replacer The placeholder replacer
+     * @return The intercept manager, for a fluent api
      */
-    InterceptManager<T> add(PlaceholderReplacer<T> replacer);
+    InterceptManager<T> addReplacer(PlaceholderReplacer<T> replacer);
+
+    /**
+     * Finds a placeholder replacer for the specified placeholder
+     * @param placeholder The placeholder
+     * @return The placeholder replacer, wrapped with Optional
+     */
+    Optional<PlaceholderReplacer<T>> findReplacer(String placeholder);
 
     /**
      * Calls all message interceptors and placeholder
      * replacers for the specified property holder
      * and the provided text.
+     * @param context The replacing context
      * @param propertyHolder The property holder
      * @param text The text that will be modified
      * @return The text already converted
      */
-    String convert(T propertyHolder, String text);
+    String convert(InterceptContext<T> context, String text);
 
 }

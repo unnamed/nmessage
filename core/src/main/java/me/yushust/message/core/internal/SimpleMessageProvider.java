@@ -5,23 +5,81 @@ import me.yushust.message.core.handle.StringList;
 import me.yushust.message.core.holder.LoadSource;
 import me.yushust.message.core.holder.NodeFileLoader;
 import me.yushust.message.core.holder.allocate.SimpleFileAllocator;
+import me.yushust.message.core.intercept.DefaultInterceptManager;
+import me.yushust.message.core.intercept.InterceptContext;
 import me.yushust.message.core.intercept.InterceptManager;
-import me.yushust.message.core.intercept.MessageInterceptor;
 import me.yushust.message.core.localization.LanguageProvider;
-import org.jetbrains.annotations.Nullable;
+import me.yushust.message.core.placeholder.PlaceholderBox;
 
-public class SimpleMessageProvider<T> extends SimpleMessageFormatter<T> implements MessageProvider<T> {
+import org.jetbrains.annotations.Nullable;
+import static java.util.Objects.requireNonNull;
+
+import java.util.function.UnaryOperator;
+
+public class SimpleMessageProvider<T> implements MessageProvider<T> {
 
     private final MessageConsumer<T> messageConsumer;
+    private final InterceptManager<T> interceptManager = new DefaultInterceptManager<>("path_");
     private final MessageRepository messageRepository;
-    private final MessageFormatter<T> messageFormatter;
+    private final PlaceholderBox placeholderBox;
+    private LanguageProvider<T> languageProvider;
 
     public SimpleMessageProvider(MessageRepository messageRepository, LanguageProvider<T> languageProvider,
-                                 MessageConsumer<T> messageConsumer) {
-        super(messageRepository, languageProvider);
+                                 MessageConsumer<T> messageConsumer, PlaceholderBox placeholderBox) {
         this.messageRepository = messageRepository;
-        this.messageFormatter = new SimpleMessageFormatter<>(this, languageProvider);
+        this.languageProvider = languageProvider;
         this.messageConsumer = messageConsumer;
+        this.placeholderBox = placeholderBox;
+    }
+
+    @Override
+    public String getMessage(T propertyHolder, String messagePath) {
+
+        requireNonNull(propertyHolder);
+        requireNonNull(messagePath);
+
+        InterceptContext<T> context = new InterceptContext<>(this, propertyHolder);
+        String language = languageProvider.getLanguage(propertyHolder);
+        String message = messageRepository.getMessage(language, messagePath);
+
+        if (message == null) {
+            return null;
+        }
+
+        return interceptManager.convert(context, message);
+    }
+
+    @Override
+    public StringList getMessages(T propertyHolder, String messagePath) {
+
+        requireNonNull(propertyHolder, messagePath);
+        requireNonNull(messagePath, messagePath);
+
+        InterceptContext<T> context = new InterceptContext<>(this, propertyHolder);
+        String language = languageProvider.getLanguage(propertyHolder);
+        StringList messages = messageRepository.getMessages(language, messagePath);
+
+        messages.replaceAll(
+                line -> {
+                    if (line == null) {
+                        return null;
+                    }
+                    return interceptManager.convert(context, line);
+                }
+        );
+
+        return messages;
+    }
+
+    @Override
+    public void useLanguageProvider(LanguageProvider<T> languageProvider) {
+        requireNonNull(languageProvider);
+        this.languageProvider = languageProvider;
+    }
+
+    @Override
+    public InterceptManager<T> getInterceptionManager() {
+        return interceptManager;
     }
 
     @Override
@@ -30,32 +88,12 @@ public class SimpleMessageProvider<T> extends SimpleMessageFormatter<T> implemen
     }
 
     @Override
-    public void sendMessage(Iterable<T> propertyHolders, String messagePath, MessageInterceptor replacer) {
+    public void sendMessage(Iterable<T> propertyHolders, String messagePath, UnaryOperator<String> replacer) {
         for (T propertyHolder : propertyHolders) {
             String message = getMessage(propertyHolder, messagePath);
-            message = replacer.intercept(message);
+            message = replacer.apply(message);
             messageConsumer.sendMessage(propertyHolder, message);
         }
-    }
-
-    @Override
-    public String getMessage(T propertyHolder, String messagePath) {
-        return messageFormatter.getMessage(propertyHolder, messagePath);
-    }
-
-    @Override
-    public StringList getMessages(T propertyHolder, String messagePath) {
-        return messageFormatter.getMessages(propertyHolder, messagePath);
-    }
-
-    @Override
-    public void useLanguageProvider(LanguageProvider<T> languageProvider) {
-        messageFormatter.useLanguageProvider(languageProvider);
-    }
-
-    @Override
-    public InterceptManager<T> getInterceptionManager() {
-        return messageFormatter.getInterceptionManager();
     }
 
     @Override
@@ -71,7 +109,7 @@ public class SimpleMessageProvider<T> extends SimpleMessageFormatter<T> implemen
     public static <T> MessageProvider<T> create(LoadSource loadSource, NodeFileLoader nodeFileLoader,
                                                 LanguageProvider<T> languageProvider, MessageConsumer<T> messageConsumer,
                                                 ProvideStrategy provideStrategy, String fileFormat,
-                                                String defaultLanguage) {
+                                                String defaultLanguage, PlaceholderBox placeholderBox) {
         return new SimpleMessageProvider<>(
                 new SimpleMessageRepository(
                         new SimpleFileAllocator(nodeFileLoader, loadSource),
@@ -80,8 +118,14 @@ public class SimpleMessageProvider<T> extends SimpleMessageFormatter<T> implemen
                         defaultLanguage
                 ),
                 languageProvider,
-                messageConsumer
+                messageConsumer,
+                placeholderBox
         );
+    }
+
+    @Override
+    public PlaceholderBox getPlaceholderBox() {
+        return placeholderBox;
     }
 
 }

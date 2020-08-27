@@ -6,28 +6,23 @@ import org.junit.jupiter.api.Test;
 import me.yushust.message.core.MessageProvider;
 import me.yushust.message.core.MessageProviderBuilder;
 
-public class BasicMessageProviderTest extends MessageProviderTestCase {
-
+public class LinkedMessagesProvider extends MessageProviderTestCase {
+   
     @Test
     public void test() {
 
         MessageProvider<ConsoleEntity> provider = MessageProviderBuilder.<ConsoleEntity>create()
                 .setLoadSource(loadSource)
-                .setDefaultLanguage("en")
-                .setFileFormat("lang_%lang%.properties")
                 .setNodeFileLoader(fileLoader)
+                .setFileFormat("lang_%lang%.properties")
                 .build();
 
         ConsoleEntity entity = new ConsoleEntity("en");
-        Assertions.assertEquals("Hello world!!", provider.getMessage(entity, "hello_world"));
+        Assertions.assertEquals("Heey, I love Burgers", provider.getMessage(entity, "love"));
 
         entity = new ConsoleEntity("es");
-        Assertions.assertEquals("Hola mundo!!", provider.getMessage(entity, "hello_world"));
-
-        entity = new ConsoleEntity("fr");
-        // gets the message using the default language
-        Assertions.assertEquals("Hello world!!", provider.getMessage(entity, "hello_world"));
+        Assertions.assertEquals("Heey, yo amo las Hamburguesas", provider.getMessage(entity, "love"));
 
     }
-
+    
 }

@@ -1,5 +1,9 @@
 package me.yushust.message.core.intercept;
 
+import org.jetbrains.annotations.NotNull;
+
+import me.yushust.message.core.placeholder.PlaceholderReplacer;
+
 /**
  * A functional interface that intercepts
  * messages independently of property holder type
@@ -7,23 +11,21 @@ package me.yushust.message.core.intercept;
  * with String as type parameter
  */
 @FunctionalInterface
-public interface MessageInterceptor {
+public interface MessageInterceptor<T> extends PlaceholderReplacer<T> {
+
+    static String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
-     * Intercepts a message
-     * @param text The text
-     * @return The new message
+     * Similar to {@link PlaceholderReplacer} but receives
+     * the original text and not a placeholder.
      */
-    String intercept(String text);
+    @Override
+    @NotNull
+    String replace(InterceptContext<T> context, String placeholder);
 
-    /**
-     * Returns a message interceptor that
-     * doesn't modify the message and returns
-     * the same message.
-     * @return A "dummy" message interceptor
-     */
-    static MessageInterceptor identity() {
-        return text -> text;
+    @Override
+    default String[] getPlaceholders() {
+        return EMPTY_STRING_ARRAY;
     }
 
 }

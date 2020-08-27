@@ -1,8 +1,9 @@
 package me.yushust.message.format.bukkit;
 
+import me.yushust.message.core.intercept.InterceptContext;
 import me.yushust.message.core.intercept.MessageInterceptor;
 
-public class ChatColorInterceptor implements MessageInterceptor {
+public class ChatColorInterceptor<T> implements MessageInterceptor<T> {
 
     public static final String COLORS = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
     public static final char COLOR_CODE = '§';
@@ -13,7 +14,7 @@ public class ChatColorInterceptor implements MessageInterceptor {
     }
 
     @Override
-    public String intercept(String text) {
+    public String replace(InterceptContext<T> context, String text) {
         char[] chars = text.toCharArray();
         for (int i = 0; i < text.length() - 1; i++) {
             char current = chars[i];
