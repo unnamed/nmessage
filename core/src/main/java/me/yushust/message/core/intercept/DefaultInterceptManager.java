@@ -4,11 +4,7 @@ import me.yushust.message.core.MessageProvider;
 import me.yushust.message.core.placeholder.PlaceholderBox;
 import me.yushust.message.core.placeholder.PlaceholderProvider;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 
@@ -90,7 +86,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
      * {@inheritDoc}
      */
     @Override
-    public String convert(InterceptContext<T> context, String text) {
+    public String convert(InterceptContext<T> context, String text, Collection<String> linkedPaths) {
 
         checkValidMessageProvider();
         requireNonNull(context);
@@ -121,7 +117,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                     break;
                 }
 
-                placeholder.append(character);
+                placeholder.append(current);
             }
 
             String placeholderString = placeholder.toString();
@@ -144,15 +140,19 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                             .substring(linkedMessagePrefix.length())
                             .toLowerCase();
 
+                    linkedPaths.add(path);
+
                     // TODO: Pass a collection to getMessage() to avoid StackOverflowError in case of a cyclic linked-messages dependency
                     String message = context.getMessageProvider().getMessage(
-                        context.getEntity(), path
+                        context.getEntity(), path, linkedPaths
                     );
                 
                     if (message != null) {
                         builder.append(message);
                         continue;
                     }
+
+                    linkedPaths.remove(path);
                 }
 
                 // move the placeholder to the builder

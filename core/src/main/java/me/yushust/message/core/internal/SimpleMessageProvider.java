@@ -9,6 +9,8 @@ import me.yushust.message.core.localization.LanguageProvider;
 import org.jetbrains.annotations.Nullable;
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.UnaryOperator;
 
 public class SimpleMessageProvider<T> implements MessageProvider<T> {
@@ -29,20 +31,31 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
     }
 
     @Override
-    public String getMessage(T propertyHolder, String messagePath) {
+    public String getMessage(T propertyHolder, String messagePath, Collection<String> linkedPaths) {
 
         requireNonNull(propertyHolder);
         requireNonNull(messagePath);
+        requireNonNull(linkedPaths);
 
-        InterceptContext<T> context = new InterceptContext<>(this, propertyHolder);
         String language = languageProvider.getLanguage(propertyHolder);
         String message = messageRepository.getMessage(language, messagePath);
+
+        if (linkedPaths.contains(messagePath)) {
+            return message;
+        }
+
+        InterceptContext<T> context = new InterceptContext<>(this, propertyHolder);
 
         if (message == null) {
             return null;
         }
 
-        return interceptManager.convert(context, message);
+        return interceptManager.convert(context, message, linkedPaths);
+    }
+
+    @Override
+    public String getMessage(T propertyHolder, String messagePath) {
+        return getMessage(propertyHolder, messagePath, new ArrayList<>());
     }
 
     @Override
@@ -60,7 +73,7 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
                     if (line == null) {
                         return null;
                     }
-                    return interceptManager.convert(context, line);
+                    return interceptManager.convert(context, line, new ArrayList<>());
                 }
         );
 

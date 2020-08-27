@@ -1,5 +1,8 @@
 package me.yushust.message.core;
 
+import me.yushust.message.core.localization.LanguageProvider;
+
+import java.util.Collection;
 import java.util.function.UnaryOperator;
 
 /**
@@ -7,6 +10,24 @@ import java.util.function.UnaryOperator;
  * @param <T> The type of the property holder
  */
 public interface MessageProvider<T> extends MessageRepository, MessageFormatter<T> {
+
+    /**
+     * Gets a message using the language of the
+     * property holder (using {@link LanguageProvider}),
+     * the message is located using the messagePath.
+     * If the message is not found, it returns null
+     * or the path as specified with {@link ProvideStrategy}
+     * @param propertyHolder The property holder
+     * @param messagePath The message location
+     * @param linkedPaths Internal parameter, indicates the
+     *                    paths that depend of this message,
+     *                    if messagePath is present in
+     *                    linkedPaths, the return value is
+     *                    determined by {@link MessageRepository#getMessage}
+     *                    (Without interceptions)
+     * @return The message, null or the path.
+     */
+    String getMessage(T propertyHolder, String messagePath, Collection<String> linkedPaths);
 
     /**
      * Sends a message to the specified receiver using

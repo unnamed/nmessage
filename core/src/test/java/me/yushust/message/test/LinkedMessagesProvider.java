@@ -16,10 +16,10 @@ public class LinkedMessagesProvider extends MessageProviderTestCase {
                 .build();
 
         ConsoleEntity entity = new ConsoleEntity("en");
-        Assertions.assertEquals("Heey, I love Burgers", provider.getMessage(entity, "love"));
+        Assertions.assertEquals("Heeey, I love Burgers", provider.getMessage(entity, "love"));
 
         entity = new ConsoleEntity("es");
-        Assertions.assertEquals("Heey, yo amo las Hamburguesas", provider.getMessage(entity, "love"));
+        Assertions.assertEquals("Heeey, yo amo las Hamburguesas", provider.getMessage(entity, "love"));
 
     }
     
