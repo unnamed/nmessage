@@ -8,6 +8,8 @@ import me.yushust.message.core.placeholder.PlaceholderProvider;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Collection;
+
 public class PlaceholderApiInterceptManager extends DefaultInterceptManager<Player> {
 
     private final PluginPlaceholderExpansion expansion;
@@ -28,7 +30,8 @@ public class PlaceholderApiInterceptManager extends DefaultInterceptManager<Play
     }
 
     @Override
-    public String convert(InterceptContext<Player> context, String text) {
+    public String convert(InterceptContext<Player> context, String text, Collection<String> linkedPaths) {
+        // TODO: Add linked messages to this shit
         return PlaceholderAPI.setPlaceholders(context.getEntity(), text);
     }
 
