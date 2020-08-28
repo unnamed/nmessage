@@ -156,9 +156,13 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                     linkedPaths.remove(path);
                 }
 
+                // start is appended
+                builder.append(placeholderBox.getStart());
                 // move the placeholder to the builder
                 // because the "placeholder" doesn't exist
                 builder.append(placeholderString);
+                // end is appended too
+                builder.append(placeholderBox.getEnd());
                 continue;
             }
 
@@ -169,7 +173,10 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                 // move the placeholder to the builder
                 // because the placeholder provider is
                 // returning an invalid value
-                builder.append(placeholderString);
+                builder
+                        .append(placeholderBox.getStart())
+                        .append(placeholderString)
+                        .append(placeholderBox.getEnd());
                 continue;
             }
 
