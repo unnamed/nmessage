@@ -1,4 +1,7 @@
-# JLL (Java Language Library) [![Build Status](https://travis-ci.com/yusshu/lang-lib.svg?branch=master)](https://travis-ci.com/yusshu/lang-lib)
+[releaseImg]: https://img.shields.io/github/v/release/yusshu/lang-lib.svg?label=github%20release
+[release]: https://github.com/PlaceholderAPI/PlaceholderAPI/releases/latest
+
+# JLL (Java Language Library) [![releaseImg]][release] [![Build Status](https://travis-ci.com/yusshu/lang-lib.svg?branch=master)](https://travis-ci.com/yusshu/lang-lib) 
 
 A simple and a bit abstract library to handle messages with multilanguage support.
 I have seen many things in languages ​​that I do not understand, to avoid this, I bring here a library for multilanguage and easy to obtain messages from configuration files or from any other place
