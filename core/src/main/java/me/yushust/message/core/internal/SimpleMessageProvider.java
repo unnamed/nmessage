@@ -12,6 +12,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.function.UnaryOperator;
 
 public class SimpleMessageProvider<T> implements MessageProvider<T> {
@@ -56,7 +57,7 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
 
     @Override
     public String getMessage(T propertyHolder, String messagePath) {
-        return getMessage(propertyHolder, messagePath, new ArrayList<>());
+        return getMessage(propertyHolder, messagePath, createLinkedPathsCollection());
     }
 
     @Override
@@ -74,7 +75,7 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
                     if (line == null) {
                         return null;
                     }
-                    return interceptManager.convert(context, line, new ArrayList<>());
+                    return interceptManager.convert(context, line, createLinkedPathsCollection());
                 }
         );
 
@@ -113,6 +114,11 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
     @Override
     public StringList getMessages(@Nullable String language, String messagePath) {
         return messageRepository.getMessages(language, messagePath);
+    }
+
+    private Collection<String> createLinkedPathsCollection() {
+        // order isn't important
+        return new HashSet<>();
     }
 
 }
