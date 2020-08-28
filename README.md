@@ -19,15 +19,19 @@ Assuming that `Thing` is the receiver of the messages, who also has some propert
 
 Code:
 ```java
-MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
-		.setLoadSource(
-			new LoadSource(
-				this.getClass().getClassLoader(),
-				new File("path/to/folder")
-			)
-		)
-		.setNodeFileLoader(nodeFileLoader)
-		.setFileFormat("messages_%lang%.properties")
+MessageRepository repository = MessageRepository.builder()
+        .setLoadSource(
+            new LoadSource(
+                this.getClass().getClassLoader(),
+                new File("path/to/folder")
+            )
+        )
+        .setNodeFileLoader(nodeFileLoader)
+        .setFileFormat("messages_%lang%.properties")
+        .build();
+
+MessageProvider<Thing> messageProvider = MessageProvider.<Thing>builder()
+        .setRepository(repository)
 		.setDefaultLanguage("en")
 		.build();
 ```
@@ -36,7 +40,7 @@ NodeFileLoader implementation for Properties: (Built in) [PropertiesFileLoader](
 ## Getting messages
 
 There are **two ways** to get messages: using the propertyHolder and using the language.
-Using the language doesn't call `MessageInterceptor`s nor `PlaceholderReplacer`s.
+Using the language doesn't call `MessageInterceptor`s nor `PlaceholderProvider`s.
 
 Using the property holder:
 ```java
@@ -71,34 +75,37 @@ LanguageProvider<Thing> thingLanguageProvider = Thing::getLanguage;
 Registering your `LanguageProvider`:
 ```java
 MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
-		.setLoadSource(loadSource)
-		.setNodeFileLoader(fileLoader)
+		.setRepository(repository)
 		.setLanguageProvider(new ThingLanguageProvider())
 		.build();
 ```
 ## Intercepting messages
 
-Intercepting messages is as easy as modifying a String, we just implement `MessageInterceptor` or `PlaceholderReplacer`.
-`MessageInterceptor` doesn't receive the propertyHolder.
+Intercepting messages is as easy as modifying a String, we just implement `MessageInterceptor` or `PlaceholderProvider`.
+`MessageInterceptor` receives the original text, `PlaceholderProvider` only receives the used placeholder.
 
 **Examples:**
-A name placeholder replacer
+A name placeholder provider
 ```java
-public class ThingPlaceholderReplacer implements PlaceholderReplacer<Thing> {
+public class ThingPlaceholderReplacer implements PlaceholderProvider<Thing> {
+
+    @Override
+    public String[] getPlaceholders() {
+        return new String[] {"name"};
+    }
 
 	@Override
-	public String replace(Thing thing, String text) {
-		return text.replace("{{name}}", thing.getName());
+	public String replace(InterceptContext<Thing> context, String placeholder) {
+        return context.getEntity().getName();
 	}
 	
 }
 ```
-Registering the PlaceholderReplacer:
+Registering the `PlaceholderProvider`:
 ```java
 MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
-	.setLoadSource(loadSource)
-	.setNodeFileLoader(fileLoader)
-	.addPlaceholderReplacer(new ThingPlaceholderReplacer())
+	.setRepository(repository);
+	.addReplacer(new ThingPlaceholderProvider())
 	.build();
 ```
 
@@ -125,8 +132,7 @@ MessageConsumer<Thing> messageConsumer = Thing::sendMessage;
 Registering your MessageConsumer:
 ```java
 MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
-	.setLoadSource(loadSource)
-	.setNodeFileLoader(fileLoader)
+	.setRepository(repository)
 	.setMessageConsumer(new ThingMessageConsumer())
 	.build();
 ```
