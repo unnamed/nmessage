@@ -124,6 +124,8 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
             placeholder.setLength(0);
 
             if (!closed) {
+                // append the tail
+                builder.append(placeholderBox.getEnd());
                 // move the placeholder to the builder,
                 // because the "placeholder" isn't valid
                 builder.append(placeholderString);
