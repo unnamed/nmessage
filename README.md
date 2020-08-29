@@ -108,7 +108,7 @@ Registering the `PlaceholderProvider`:
 ```java
 MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
 	.setRepository(repository);
-	.addReplacer(new ThingPlaceholderProvider())
+	.addProvider(new ThingPlaceholderProvider())
 	.build();
 ```
 
