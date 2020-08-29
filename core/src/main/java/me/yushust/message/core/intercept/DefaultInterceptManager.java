@@ -142,8 +142,6 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                             .substring(linkedMessagePrefix.length())
                             .toLowerCase();
 
-                    linkedPaths.add(path);
-
                     String message = context.getMessageProvider().getMessage(
                         context.getEntity(), path, linkedPaths
                     );

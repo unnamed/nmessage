@@ -17,7 +17,8 @@ public class LinkedMessagesFormatTest extends MessageProviderTestCase {
                 .build();
 
         ConsoleEntity entity = new ConsoleEntity("en");
-        Assertions.assertEquals("", provider.getMessage(entity, "that"));
+        Assertions.assertEquals("The message \"Heey, this is your hashcode " +
+                entity.hashCode() + "\" isn't useful", provider.getMessage(entity, "that"));
 
     }
 

@@ -45,6 +45,7 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
             return message;
         }
 
+        linkedPaths.add(messagePath);
         InterceptContext<T> context = new InterceptContext<>(this, propertyHolder);
 
         if (message == null) {
