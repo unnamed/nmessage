@@ -70,7 +70,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
      * {@inheritDoc}
      */
     @Override
-    public InterceptManager<T> addReplacer(PlaceholderProvider<T> replacer) {
+    public InterceptManager<T> add(PlaceholderProvider<T> replacer) {
 
         checkValidMessageProvider();
         requireNonNull(replacer);
@@ -132,7 +132,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                 continue;
             }
 
-            Optional<PlaceholderProvider<T>> optionalReplacer = findReplacer(placeholderString);
+            Optional<PlaceholderProvider<T>> optionalReplacer = findProvider(placeholderString);
 
             if (!optionalReplacer.isPresent()) {
 
@@ -196,7 +196,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
      * {@inheritDoc}
      */
     @Override
-    public Optional<PlaceholderProvider<T>> findReplacer(String placeholder) {
+    public Optional<PlaceholderProvider<T>> findProvider(String placeholder) {
         return Optional.ofNullable(replacers.get(placeholder.toLowerCase()));
     }
 

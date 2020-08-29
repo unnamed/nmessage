@@ -44,14 +44,14 @@ public interface InterceptManager<T> {
      * @param replacer The placeholder replacer
      * @return The intercept manager, for a fluent api
      */
-    InterceptManager<T> addReplacer(PlaceholderProvider<T> replacer);
+    InterceptManager<T> add(PlaceholderProvider<T> replacer);
 
     /**
      * Finds a placeholder replacer for the specified placeholder
      * @param placeholder The placeholder
      * @return The placeholder replacer, wrapped with Optional
      */
-    Optional<PlaceholderProvider<T>> findReplacer(String placeholder);
+    Optional<PlaceholderProvider<T>> findProvider(String placeholder);
 
     /**
      * Calls all message interceptors and placeholder

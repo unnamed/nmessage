@@ -35,7 +35,7 @@ public final class MessageProviderBuilder<T> {
         return this;
     }
 
-    public MessageProviderBuilder<T> addPlaceholderReplacer(PlaceholderProvider<T> replacer) {
+    public MessageProviderBuilder<T> addProvider(PlaceholderProvider<T> replacer) {
         requireNonNull(replacer);
         this.placeholderProviders.add(replacer);
         return this;
@@ -82,7 +82,7 @@ public final class MessageProviderBuilder<T> {
         }
 
         for (PlaceholderProvider<T> placeholderProvider : placeholderProviders) {
-            interceptManager.addReplacer(placeholderProvider);
+            interceptManager.add(placeholderProvider);
         }
 
         return provider;

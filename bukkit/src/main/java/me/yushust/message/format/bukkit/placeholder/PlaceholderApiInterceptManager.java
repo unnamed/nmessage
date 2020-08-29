@@ -20,13 +20,13 @@ public class PlaceholderApiInterceptManager extends DefaultInterceptManager<Play
     }
 
     @Override
-    public InterceptManager<Player> addReplacer(PlaceholderProvider<Player> replacer) {
+    public InterceptManager<Player> add(PlaceholderProvider<Player> replacer) {
 
         if (!expansion.isRegistered()) {
             PlaceholderAPI.registerExpansion(expansion);
         }
 
-        return super.addReplacer(replacer);
+        return super.add(replacer);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class PluginPlaceholderExpansion extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, String params) {
 
-        Optional<PlaceholderProvider<Player>> optionalPlaceholderProvider = interceptManager.findReplacer(params);
+        Optional<PlaceholderProvider<Player>> optionalPlaceholderProvider = interceptManager.findProvider(params);
 
         return optionalPlaceholderProvider.map(playerPlaceholderReplacer -> playerPlaceholderReplacer.replace(
                 new InterceptContext<>(interceptManager.getMessageProvider(), player),

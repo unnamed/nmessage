@@ -12,7 +12,7 @@ public class PlaceholderProviderTest extends MessageProviderTestCase {
         MessageProvider<ConsoleEntity> provider = MessageProvider.<ConsoleEntity>builder()
                 .setRepository(messageRepository)
                 .setLanguageProvider(ConsoleEntity::getLanguage)
-                .addPlaceholderReplacer(new HashCodePlaceholderProvider())
+                .addProvider(new HashCodePlaceholderProvider())
                 .build();
 
 
