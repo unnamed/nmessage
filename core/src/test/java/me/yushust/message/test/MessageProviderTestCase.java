@@ -27,7 +27,7 @@ public class MessageProviderTestCase {
                                 folder
                         )
                 )
-                .setNodeFileLoader(new PropertiesFileLoader(folder))
+                .setNodeFileLoader(new PropertiesFileLoader())
                 .build();
 
     }

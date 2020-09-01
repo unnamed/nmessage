@@ -22,8 +22,8 @@ public final class BukkitMessageAdapt {
         return getPluginLoadSource(plugin, null);
     }
 
-    public static NodeFileLoader getYamlFileLoader(Plugin plugin, @Nullable String languagesFolder) {
-        return new YamlFileLoader(plugin, getFolder(plugin, languagesFolder));
+    public static NodeFileLoader getYamlFileLoader(Plugin plugin) {
+        return new YamlFileLoader(plugin);
     }
 
     private static File getFolder(Plugin plugin, @Nullable String languagesFolder) {

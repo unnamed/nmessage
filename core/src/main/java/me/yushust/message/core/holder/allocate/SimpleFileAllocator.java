@@ -69,7 +69,7 @@ public class SimpleFileAllocator implements NodeFileAllocator {
                 return Optional.empty();
             }
 
-            NodeFile file = this.nodeFileLoader.loadAndCreate(resource, filename);
+            NodeFile file = this.nodeFileLoader.loadAndCreate(source, resource, filename);
             this.loadedFiles.put(filename, file);
             return Optional.of(file);
 
@@ -91,7 +91,7 @@ public class SimpleFileAllocator implements NodeFileAllocator {
         }
 
         try {
-            NodeFile nodeFile = this.nodeFileLoader.load(file);
+            NodeFile nodeFile = this.nodeFileLoader.load(source, file);
             this.loadedFiles.put(filename, nodeFile);
             return Optional.of(nodeFile);
         } catch (IOException e) {

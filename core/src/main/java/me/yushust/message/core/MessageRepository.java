@@ -21,6 +21,17 @@ public interface MessageRepository {
     String getMessage(@Nullable String language, String messagePath);
 
     /**
+     * Finds the message using the default language.
+     * If the message is not found, it calls
+     * to the previously provided {@link ProvideStrategy}
+     * @param messagePath The message locatoin
+     * @return The message
+     */
+    default String getMessage(String messagePath) {
+        return getMessage(null, messagePath);
+    }
+
+    /**
      * Finds the messages using the language and the messagePath
      * If the messages are not found, it returns a singleton
      * list containing null or the path as specified
@@ -30,6 +41,19 @@ public interface MessageRepository {
      * @return The messages, wrapped with StringList
      */
     StringList getMessages(@Nullable String language, String messagePath);
+
+    /**
+     * Finds the messages using the default language and
+     * the specified message path. If the messages are
+     * not found, it calls to the previously provided
+     * {@link ProvideStrategy} and returns a singleton
+     * {@link StringList}
+     * @param messagePath The message location
+     * @return The message
+     */
+    default StringList getMessages(String messagePath) {
+        return getMessages(null, messagePath);
+    }
 
     static MessageRepositoryBuilder builder() {
         return new MessageRepositoryBuilder();

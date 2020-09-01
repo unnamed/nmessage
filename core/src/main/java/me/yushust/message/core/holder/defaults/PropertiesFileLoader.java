@@ -9,22 +9,15 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Properties;
 
+import me.yushust.message.core.holder.LoadSource;
 import me.yushust.message.core.holder.NodeFile;
 import me.yushust.message.core.holder.NodeFileLoader;
 
-import static java.util.Objects.requireNonNull;
-
 public class PropertiesFileLoader implements NodeFileLoader {
 
-    private final File folder;
-
-    public PropertiesFileLoader(File folder) {
-        this.folder = requireNonNull(folder);
-    }
-
     @Override
-    public NodeFile load(File file) throws IOException {
-        
+    public NodeFile load(LoadSource source, File file) throws IOException {
+
         if (!file.exists()) {
             return null;
         }
@@ -37,12 +30,12 @@ public class PropertiesFileLoader implements NodeFileLoader {
     }
 
     @Override
-    public NodeFile loadAndCreate(InputStream inputStream, String fileName) throws IOException {
+    public NodeFile loadAndCreate(LoadSource source, InputStream inputStream, String fileName) throws IOException {
 
         Properties properties = new Properties();
         properties.load(inputStream);
         
-        File file = new File(folder, fileName);
+        File file = new File(source.getFolder(), fileName);
 
         if (!file.exists()) {
             if (!file.createNewFile()) {

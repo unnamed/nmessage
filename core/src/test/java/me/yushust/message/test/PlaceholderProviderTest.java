@@ -21,8 +21,7 @@ public class PlaceholderProviderTest extends MessageProviderTestCase {
                 provider.getMessage(entity, "hashcode"));
 
         entity = new ConsoleEntity("es");
-        System.out.println(provider.getMessage(entity, "hashcode"));
-        Assertions.assertEquals("Heey, aquí está tu hashcode " + entity.hashCode(),
+        Assertions.assertEquals("Heey, aqui esta tu hashcode " + entity.hashCode(),
                 provider.getMessage(entity, "hashcode"));
 
     }
