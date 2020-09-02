@@ -1,25 +1,24 @@
 package me.yushust.message.test;
 
-import me.yushust.message.core.intercept.InterceptContext;
 import me.yushust.message.core.placeholder.PlaceholderProvider;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Stupid, but it's for testing
  */
-public class HashCodePlaceholderProvider implements PlaceholderProvider<ConsoleEntity> {
+public class HashCodePlaceholderProvider extends PlaceholderProvider<ConsoleEntity> {
 
-    @Override
-    public String[] getPlaceholders() {
-        return new String[] {"hashcode"};
+    public HashCodePlaceholderProvider() {
+        super("object");
     }
 
     @Override
-    public @Nullable String replace(InterceptContext<ConsoleEntity> context, String placeholder) {
+    public @Nullable String replace(ConsoleEntity entity, String parameters) {
 
-        return String.valueOf(
-                context.getEntity().hashCode()
-        );
+        if (parameters.equals("hashcode")) {
+            return String.valueOf(entity.hashCode());
+        }
+
+        return null;
     }
-
 }

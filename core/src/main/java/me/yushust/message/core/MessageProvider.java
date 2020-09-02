@@ -1,8 +1,8 @@
 package me.yushust.message.core;
 
 import me.yushust.message.core.localization.LanguageProvider;
+import me.yushust.message.core.provide.ProvideContext;
 
-import java.util.Collection;
 import java.util.function.UnaryOperator;
 
 /**
@@ -17,17 +17,13 @@ public interface MessageProvider<T> extends MessageRepository, MessageFormatter<
      * the message is located using the messagePath.
      * If the message is not found, it returns null
      * or the path as specified with {@link ProvideStrategy}
-     * @param propertyHolder The property holder
      * @param messagePath The message location
-     * @param linkedPaths Internal parameter, indicates the
-     *                    paths that depend of this message,
-     *                    if messagePath is present in
-     *                    linkedPaths, the return value is
-     *                    determined by {@link MessageRepository#getMessage}
-     *                    (Without interceptions)
+     * @param context Internal parameter, indicates the
+     *                paths that depend of this message
+     *                and the ignored formatters.
      * @return The message, null or the path.
      */
-    String getMessage(T propertyHolder, String messagePath, Collection<String> linkedPaths);
+    String getMessage(ProvideContext<T> context, String messagePath);
 
     /**
      * Sends a message to the specified receiver using

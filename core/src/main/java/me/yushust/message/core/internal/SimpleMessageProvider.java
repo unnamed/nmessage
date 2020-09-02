@@ -2,10 +2,10 @@ package me.yushust.message.core.internal;
 
 import me.yushust.message.core.*;
 import me.yushust.message.core.handle.StringList;
-import me.yushust.message.core.intercept.InterceptContext;
 import me.yushust.message.core.intercept.InterceptManager;
 import me.yushust.message.core.localization.LanguageProvider;
 
+import me.yushust.message.core.provide.ProvideContext;
 import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
@@ -32,32 +32,30 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
     }
 
     @Override
-    public String getMessage(T propertyHolder, String messagePath, Collection<String> linkedPaths) {
+    public String getMessage(ProvideContext<T> context, String messagePath) {
 
-        requireNonNull(propertyHolder);
+        requireNonNull(context);
         requireNonNull(messagePath);
-        requireNonNull(linkedPaths);
 
-        String language = languageProvider.getLanguage(propertyHolder);
+        String language = languageProvider.getLanguage(context.getEntity());
         String message = messageRepository.getMessage(language, messagePath);
 
-        if (linkedPaths.contains(messagePath)) {
+        if (context.getLinkedPaths().contains(messagePath)) {
             return message;
         }
 
-        linkedPaths.add(messagePath);
-        InterceptContext<T> context = new InterceptContext<>(this, propertyHolder);
+        context.getLinkedPaths().add(messagePath);
 
         if (message == null) {
             return null;
         }
 
-        return interceptManager.convert(context, message, linkedPaths);
+        return interceptManager.convert(context, message);
     }
 
     @Override
-    public String getMessage(T propertyHolder, String messagePath) {
-        return getMessage(propertyHolder, messagePath, createLinkedPathsCollection());
+    public String getMessage(T entity, String messagePath) {
+        return getMessage(new ProvideContext<>(this, entity), messagePath);
     }
 
     @Override
@@ -66,7 +64,7 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
         requireNonNull(propertyHolder, messagePath);
         requireNonNull(messagePath, messagePath);
 
-        InterceptContext<T> context = new InterceptContext<>(this, propertyHolder);
+        ProvideContext<T> context = new ProvideContext<>(this, propertyHolder);
         String language = languageProvider.getLanguage(propertyHolder);
         StringList messages = messageRepository.getMessages(language, messagePath);
 
@@ -75,7 +73,7 @@ public class SimpleMessageProvider<T> implements MessageProvider<T> {
                     if (line == null) {
                         return null;
                     }
-                    return interceptManager.convert(context, line, createLinkedPathsCollection());
+                    return interceptManager.convert(context, line);
                 }
         );
 

@@ -3,6 +3,7 @@ package me.yushust.message.core.intercept;
 import me.yushust.message.core.MessageProvider;
 import me.yushust.message.core.placeholder.PlaceholderBox;
 import me.yushust.message.core.placeholder.PlaceholderProvider;
+import me.yushust.message.core.provide.ProvideContext;
 
 import java.util.*;
 
@@ -15,8 +16,9 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
     private final Map<String, PlaceholderProvider<T>> replacers = new LinkedHashMap<>();
     protected final List<MessageInterceptor<T>> interceptors = new ArrayList<>();
-    protected final PlaceholderBox placeholderBox;
-    protected final String linkedMessagePrefix;
+    private final char identifierSeparator = '_';
+    protected PlaceholderBox placeholderBox;
+    protected String linkedMessagePrefix;
     protected MessageProvider<T> messageProvider;
 
     public DefaultInterceptManager(PlaceholderBox placeholderBox, String linkedMessagePrefix) {
@@ -51,9 +53,6 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
         return messageProvider;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public InterceptManager<T> add(MessageInterceptor<T> interceptor) {
 
@@ -75,18 +74,17 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
         checkValidMessageProvider();
         requireNonNull(replacer);
 
-        for (String placeholder : replacer.getPlaceholders()) {
-            this.replacers.put(placeholder, replacer);
+        if (messageProvider != null) {
+            replacer.setMessageProvider(messageProvider);
         }
+
+        this.replacers.put(replacer.getIdentifier(), replacer);
 
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String convert(InterceptContext<T> context, String text, Collection<String> linkedPaths) {
+    public String convert(ProvideContext<T> context, String text) {
 
         checkValidMessageProvider();
         requireNonNull(context);
@@ -94,6 +92,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
 
         char[] characters = text.toCharArray();
         StringBuilder builder = new StringBuilder(characters.length);
+        StringBuilder identifier = new StringBuilder();
         StringBuilder placeholder = new StringBuilder();
 
         for (int i = 0; i < characters.length; i++) {
@@ -106,6 +105,7 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
             }
 
             boolean closed = false;
+            boolean identified = false;
 
             while (++i < characters.length) {
 
@@ -116,28 +116,52 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                     break;
                 }
 
-                placeholder.append(current);
+                if (!identified && current == identifierSeparator){
+                    identified = true;
+                    continue;
+                }
+
+                if (identified) {
+                    placeholder.append(current);
+                } else {
+                    identifier.append(current);
+                }
             }
 
+            String identifierString = identifier.toString().toLowerCase();
             String placeholderString = placeholder.toString();
+
+            identifier.setLength(0);
             placeholder.setLength(0);
 
             if (!closed) {
                 builder
                         .append(placeholderBox.getEnd())
-                        .append(placeholderString);
+                        .append(identifierString);
+
+                if (identified) {
+                    builder
+                            .append(identifierSeparator)
+                            .append(placeholderString);
+                }
                 continue;
             }
 
-            Optional<PlaceholderProvider<T>> optionalReplacer = findProvider(placeholderString);
+            Optional<PlaceholderProvider<T>> optionalReplacer = findProvider(identifierString);
 
             if (optionalReplacer.isPresent()) {
 
-                String value = optionalReplacer.get()
-                        .replace(context, placeholderString.toLowerCase());
+                PlaceholderProvider<T> provider = optionalReplacer.get();
+
+                if (context.ignores(provider)) {
+                    appendInvalidPlaceholder(builder, identified, identifierString, placeholderString);
+                    continue;
+                }
+
+                String value = provider.replace(context, placeholderString);
 
                 if (value == null) {
-                    appendInvalidPlaceholder(builder, placeholderBox, placeholderString);
+                    appendInvalidPlaceholder(builder, identified, identifierString, placeholderString);
                     continue;
                 }
 
@@ -152,8 +176,8 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                         .substring(linkedMessagePrefix.length())
                         .toLowerCase();
 
-                String message = context.getMessageProvider().getMessage(
-                    context.getEntity(), path, linkedPaths
+                String message = context.getProvider().getMessage(
+                        context, path
                 );
 
                 if (message != null) {
@@ -161,35 +185,60 @@ public class DefaultInterceptManager<T> implements InterceptManager<T> {
                     continue;
                 }
 
-                linkedPaths.remove(path);
+                context.getLinkedPaths().remove(path);
             }
 
-            appendInvalidPlaceholder(builder, placeholderBox, placeholderString);
+            appendInvalidPlaceholder(builder, identified, identifierString, placeholderString);
         }
 
-        return applyInterceptors(context, builder.toString());
+        text = builder.toString();
+
+        for (MessageInterceptor<T> interceptor : this.interceptors) {
+            if (context.ignores(interceptor)) {
+                continue;
+            }
+            text = interceptor.replace(context, text);
+        }
+
+        return text;
+    }
+
+    @Override
+    public void setPlaceholderBox(PlaceholderBox box) {
+        requireNonNull(box);
+        this.placeholderBox = box;
+    }
+
+    @Override
+    public void setLinkedMessagePrefix(String linkedMessagePrefix) {
+        requireNonNull(linkedMessagePrefix);
+        if (linkedMessagePrefix.isEmpty()) {
+            throw new IllegalArgumentException("The linkedMessagePrefix cannot be an empty string!");
+        }
+        this.linkedMessagePrefix = linkedMessagePrefix;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Optional<PlaceholderProvider<T>> findProvider(String placeholder) {
-        return Optional.ofNullable(replacers.get(placeholder.toLowerCase()));
+    public Optional<PlaceholderProvider<T>> findProvider(String identifier) {
+        return Optional.ofNullable(replacers.get(identifier.toLowerCase()));
     }
 
-    protected void appendInvalidPlaceholder(StringBuilder builder, PlaceholderBox box, String placeholder) {
+    protected void appendInvalidPlaceholder(StringBuilder builder, boolean identified, String identifier, String placeholder) {
         builder
-                .append(box.getStart())
-                .append(placeholder)
-                .append(box.getEnd());
-    }
+                .append(placeholderBox.getStart())
+                .append(identifier);
 
-    protected String applyInterceptors(InterceptContext<T> context, String text) {
-        for (MessageInterceptor<T> interceptor : this.interceptors) {
-            text = interceptor.replace(context, text);
+        if (identified) {
+            builder
+                    .append(identifierSeparator)
+                    .append(placeholder);
         }
-        return text;
+
+        builder
+                .append(placeholderBox.getEnd());
     }
 
     protected void checkValidMessageProvider() {

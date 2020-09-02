@@ -6,6 +6,7 @@ import me.yushust.message.core.intercept.MessageInterceptor;
 import me.yushust.message.core.internal.SimpleMessageProvider;
 import me.yushust.message.core.localization.LanguageProvider;
 import me.yushust.message.core.placeholder.PlaceholderProvider;
+import me.yushust.message.core.placeholder.ReferencePlaceholderProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,7 @@ public final class MessageProviderBuilder<T> {
         );
         InterceptManager<T> interceptManager = provider.getInterceptionManager();
 
+        interceptManager.add(new ReferencePlaceholderProvider<>());
         for (MessageInterceptor<T> messageInterceptor : messageInterceptors) {
             interceptManager.add(messageInterceptor);
         }

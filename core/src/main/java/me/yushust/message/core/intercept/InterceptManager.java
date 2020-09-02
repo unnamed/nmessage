@@ -1,10 +1,11 @@
 package me.yushust.message.core.intercept;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import me.yushust.message.core.MessageProvider;
+import me.yushust.message.core.placeholder.PlaceholderBox;
 import me.yushust.message.core.placeholder.PlaceholderProvider;
+import me.yushust.message.core.provide.ProvideContext;
 
 /**
  * Manages the message interception, either with simple
@@ -59,10 +60,22 @@ public interface InterceptManager<T> {
      * and the provided text.
      * @param context The replacing context
      * @param text The text that will be modified
-     * @param linkedPaths Internal parameter, indicates the
-     *                    paths that depend of this conversion
      * @return The text already converted
      */
-    String convert(InterceptContext<T> context, String text, Collection<String> linkedPaths);
+    String convert(ProvideContext<T> context, String text);
+
+    /**
+     * Sets the new placeholder box or
+     * placeholder delimiters.
+     * @param box the new placeholder box
+     */
+    void setPlaceholderBox(PlaceholderBox box);
+
+    /**
+     * Sets the new linked message prefix.
+     * @param linkedMessagePrefix The new linked message
+     *                            prefix. Not an empty string.
+     */
+    void setLinkedMessagePrefix(String linkedMessagePrefix);
 
 }
