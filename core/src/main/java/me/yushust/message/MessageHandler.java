@@ -54,6 +54,13 @@ public interface MessageHandler<T> extends MessageProvider<T> {
         sendMessage(propertyHolders, messagePath, UnaryOperator.identity());
     }
 
+    /**
+     * Creates a {@link MessageRepository} that contains a
+     * {@link ProvideContext} and uses it to get messages
+     * using the main {@link MessageHandler}
+     * @param context The context
+     * @return The contextual message repository
+     */
     ContextualMessageRepository<T> withContext(ProvideContext<T> context);
 
     static <T> MessageProviderBuilder<T> builder() {
