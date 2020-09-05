@@ -1,6 +1,6 @@
 package me.yushust.message.format.bukkit.yaml;
 
-import me.yushust.message.core.holder.NodeFile;
+import me.yushust.message.holder.NodeFile;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;

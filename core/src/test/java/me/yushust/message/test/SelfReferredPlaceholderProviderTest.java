@@ -1,7 +1,9 @@
 package me.yushust.message.test;
 
-import me.yushust.message.core.MessageProvider;
-import me.yushust.message.core.placeholder.PlaceholderProvider;
+import me.yushust.message.MessageHandler;
+import me.yushust.message.MessageRepository;
+import me.yushust.message.placeholder.PlaceholderProvider;
+import me.yushust.message.placeholder.annotation.ProviderIdentifier;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,7 @@ public class SelfReferredPlaceholderProviderTest extends MessageProviderTestCase
     @Test
     public void test() {
 
-        MessageProvider<ConsoleEntity> provider = MessageProvider.<ConsoleEntity>builder()
+        MessageHandler<ConsoleEntity> provider = MessageHandler.<ConsoleEntity>builder()
                 .setRepository(messageRepository)
                 .addProvider(new SelfReferredPlaceholderProvider())
                 .build();
@@ -22,17 +24,14 @@ public class SelfReferredPlaceholderProviderTest extends MessageProviderTestCase
                 provider.getMessage(entity, "stack_message"));
     }
 
+    @ProviderIdentifier("test")
     public static class SelfReferredPlaceholderProvider extends PlaceholderProvider<ConsoleEntity> {
 
-        public SelfReferredPlaceholderProvider() {
-            super("test");
-        }
-
         @Override
-        public @Nullable String replace(ConsoleEntity entity, String parameters) {
+        public @Nullable String replace(MessageRepository repository, ConsoleEntity entity, String parameters) {
 
             if (parameters.equals("test")) {
-                return getMessage(entity, "stack_message");
+                return repository.getMessage("stack_message");
             }
 
             return null;

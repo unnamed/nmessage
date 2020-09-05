@@ -3,14 +3,14 @@ package me.yushust.message.test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import me.yushust.message.core.MessageProvider;
+import me.yushust.message.MessageHandler;
 
 public class LinkedMessagesProvider extends MessageProviderTestCase {
    
     @Test
     public void test() {
 
-        MessageProvider<ConsoleEntity> provider = MessageProvider.<ConsoleEntity>builder()
+        MessageHandler<ConsoleEntity> provider = MessageHandler.<ConsoleEntity>builder()
                 .setRepository(messageRepository)
                 .setLanguageProvider(ConsoleEntity::getLanguage)
                 .build();

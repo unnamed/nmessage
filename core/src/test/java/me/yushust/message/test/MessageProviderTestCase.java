@@ -2,12 +2,12 @@ package me.yushust.message.test;
 
 import java.io.File;
 
-import me.yushust.message.core.MessageRepository;
+import me.yushust.message.MessageRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 
-import me.yushust.message.core.holder.LoadSource;
-import me.yushust.message.core.holder.defaults.PropertiesFileLoader;
+import me.yushust.message.holder.LoadSource;
+import me.yushust.message.holder.defaults.PropertiesFileLoader;
 
 public class MessageProviderTestCase {
 

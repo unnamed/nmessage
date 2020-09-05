@@ -1,6 +1,6 @@
 package me.yushust.message.test;
 
-import me.yushust.message.core.MessageProvider;
+import me.yushust.message.MessageHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ public class PlaceholderProviderTest extends MessageProviderTestCase {
     @Test
     public void test() {
 
-        MessageProvider<ConsoleEntity> provider = MessageProvider.<ConsoleEntity>builder()
+        MessageHandler<ConsoleEntity> provider = MessageHandler.<ConsoleEntity>builder()
                 .setRepository(messageRepository)
                 .setLanguageProvider(ConsoleEntity::getLanguage)
                 .addProvider(new HashCodePlaceholderProvider())

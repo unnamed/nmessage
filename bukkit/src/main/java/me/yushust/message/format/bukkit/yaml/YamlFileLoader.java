@@ -1,8 +1,8 @@
 package me.yushust.message.format.bukkit.yaml;
 
-import me.yushust.message.core.holder.LoadSource;
-import me.yushust.message.core.holder.NodeFile;
-import me.yushust.message.core.holder.NodeFileLoader;
+import me.yushust.message.holder.LoadSource;
+import me.yushust.message.holder.NodeFile;
+import me.yushust.message.holder.NodeFileLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
