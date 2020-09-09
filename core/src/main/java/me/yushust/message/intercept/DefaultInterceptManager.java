@@ -104,7 +104,7 @@ public class DefaultInterceptManager<T> extends DefaultFormatterRegistry<T> impl
                     continue;
                 }
 
-                String value = provider.replace(context, placeholderString);
+                String value = provider.replace(context.copy(), placeholderString);
 
                 if (value == null) {
                     appendInvalidPlaceholder(builder, identified, identifierString, placeholderString);

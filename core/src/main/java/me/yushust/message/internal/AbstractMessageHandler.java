@@ -87,14 +87,13 @@ public abstract class AbstractMessageHandler<T> implements MessageHandler<T> {
     public StringList getMessages(@Nullable String language, String messagePath) {
 
         StringList messages = repository.getMessages(language, messagePath);
-        ProvideContext<T> context = new ProvideContext<>(null);
 
         messages.getContents().replaceAll(
                 line -> {
                     if (line == null) {
                         return null;
                     }
-                    return interceptManager.convert(context, line);
+                    return interceptManager.convert(new ProvideContext<>(null), line);
                 }
         );
 

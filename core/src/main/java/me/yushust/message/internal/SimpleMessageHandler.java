@@ -47,7 +47,6 @@ public class SimpleMessageHandler<T> extends AbstractMessageHandler<T> implement
         Validate.notNull(entity, "entity");
         Validate.notNull(messagePath, "messagePath");
 
-        ProvideContext<T> context = new ProvideContext<>(entity);
         String language = languageProvider.getLanguage(entity);
         StringList messages = repository.getMessages(language, messagePath);
 
@@ -56,7 +55,7 @@ public class SimpleMessageHandler<T> extends AbstractMessageHandler<T> implement
                     if (line == null) {
                         return null;
                     }
-                    return interceptManager.convert(context, line);
+                    return interceptManager.convert(new ProvideContext<>(entity), line);
                 }
         );
 
