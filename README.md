@@ -1,5 +1,5 @@
 [releaseImg]: https://img.shields.io/github/v/release/yusshu/lang-lib.svg?label=github%20release
-[release]: https://github.com/PlaceholderAPI/PlaceholderAPI/releases/latest
+[release]: https://github.com/yusshu/lang-lib/releases/latest
 
 # JLL (Java Language Library) [![releaseImg]][release] [![Build Status](https://travis-ci.com/yusshu/lang-lib.svg?branch=master)](https://travis-ci.com/yusshu/lang-lib) 
 
