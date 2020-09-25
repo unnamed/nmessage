@@ -9,15 +9,16 @@ import org.jetbrains.annotations.Nullable;
  * Stupid, but it's for testing
  */
 @ProviderIdentifier("object")
-public class HashCodePlaceholderProvider extends PlaceholderProvider<ConsoleEntity> {
+public class HashCodePlaceholderProvider implements PlaceholderProvider<ConsoleEntity> {
 
-    @Override
-    protected @Nullable String replace(MessageRepository repository, ConsoleEntity entity, String parameters) {
+  @Override
+  @Nullable
+  public String replace(MessageRepository repository, ConsoleEntity entity, String parameters) {
 
-        if (parameters.equals("hashcode")) {
-            return String.valueOf(entity.hashCode());
-        }
-
-        return null;
+    if (parameters.equals("hashcode")) {
+      return String.valueOf(entity.hashCode());
     }
+
+    return null;
+  }
 }

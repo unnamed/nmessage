@@ -11,21 +11,23 @@ import java.util.Optional;
  */
 public interface NodeFile {
 
-    /**
-     * Finds the text present in the path
-     * @param node The path/node
-     * @return The text wrapped in Optional
-     */
-    Optional<String> getString(String node);
+  /**
+   * Finds the text present in the path
+   *
+   * @param node The path/node
+   * @return The text wrapped in Optional
+   */
+  Optional<String> getString(String node);
 
-    /**
-     * Finds a list of text present in the
-     * specified path/node
-     * @param node The path/node
-     * @return The found text list
-     * @implNote Please return a empty list
-     * instead of a null reference.
-     */
-    List<String> getStringList(String node);
+  /**
+   * Finds a list of text present in the
+   * specified path/node
+   *
+   * @param node The path/node
+   * @return The found text list
+   * @implNote Please return a empty list
+   * instead of a null reference.
+   */
+  List<String> getStringList(String node);
 
 }

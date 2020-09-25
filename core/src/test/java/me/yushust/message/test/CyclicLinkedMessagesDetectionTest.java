@@ -6,17 +6,17 @@ import org.junit.jupiter.api.Test;
 
 public class CyclicLinkedMessagesDetectionTest extends MessageProviderTestCase {
 
-    @Test
-    public void test() {
+  @Test
+  public void test() {
 
-        MessageHandler<ConsoleEntity> provider = MessageHandler.<ConsoleEntity>builder()
-                .setRepository(messageRepository)
-                .setLanguageProvider(ConsoleEntity::getLanguage)
-                .build();
+    MessageHandler<ConsoleEntity> provider = MessageHandler.builder(ConsoleEntity.class)
+        .setRepository(messageRepository)
+        .setLanguageProvider(ConsoleEntity::getLanguage)
+        .build();
 
-        ConsoleEntity entity = new ConsoleEntity("en");
-        Assertions.assertEquals("Foo bar Foo bar %path_baz% foo yes foo", provider.getMessage(entity, "bruh"));
+    ConsoleEntity entity = new ConsoleEntity("en");
+    Assertions.assertEquals("Foo bar Foo bar %path_baz% foo yes foo", provider.getMessage(entity, "bruh"));
 
-    }
+  }
 
 }

@@ -16,10 +16,10 @@ import java.lang.annotation.*;
 @Documented
 public @interface ProviderIdentifier {
 
-    /**
-     * @return The identifier of the annotated
-     * {@link PlaceholderProvider}
-     */
-    String value();
+  /**
+   * @return The identifier of the annotated
+   * {@link PlaceholderProvider}
+   */
+  String value();
 
 }

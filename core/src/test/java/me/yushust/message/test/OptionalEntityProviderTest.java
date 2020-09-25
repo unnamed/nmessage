@@ -6,18 +6,18 @@ import org.junit.jupiter.api.Test;
 
 public class OptionalEntityProviderTest extends MessageProviderTestCase {
 
-    @Test
-    public void test() {
+  @Test
+  public void test() {
 
-        MessageHandler<ConsoleEntity> handle = MessageHandler.<ConsoleEntity>builder()
-                .setRepository(messageRepository)
-                .build();
+    MessageHandler<ConsoleEntity> handle = MessageHandler.builder(ConsoleEntity.class)
+        .setRepository(messageRepository)
+        .build();
 
-        Assertions.assertEquals(
-                "yea Burgers",
-                handle.getMessage("non")
-        );
+    Assertions.assertEquals(
+        "yea Burgers",
+        handle.getMessage("non")
+    );
 
-    }
+  }
 
 }

@@ -7,23 +7,23 @@ package me.yushust.message.placeholder;
  * - "Hey {placeholder}, listen to me" -> '{' is START and '}' is END
  */
 public final class PlaceholderBox {
-    
-    public static final PlaceholderBox DEFAULT = new PlaceholderBox('%', '%');
 
-    private final char start;
-    private final char end;
+  public static final PlaceholderBox DEFAULT = new PlaceholderBox('%', '%');
 
-    public PlaceholderBox(char start, char end) {
-        this.start = start;
-        this.end = end;
-    }
+  private final char start;
+  private final char end;
 
-    public char getStart() {
-        return start;
-    }
+  public PlaceholderBox(char start, char end) {
+    this.start = start;
+    this.end = end;
+  }
 
-    public char getEnd() {
-        return end;
-    }
+  public char getStart() {
+    return start;
+  }
+
+  public char getEnd() {
+    return end;
+  }
 
 }

@@ -2,6 +2,7 @@ package me.yushust.message.generic;
 
 import me.yushust.message.EntityResolver;
 import me.yushust.message.util.Validate;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,8 @@ public class EntityResolverRegistry<E> {
    * @param resolvableType The resolvable type
    * @return The entity resolver
    */
-  public <T> Optional<EntityResolver<E, T>> findResolver(Class<T> resolvableType) {
+  @Nullable
+  public <T> EntityResolver<E, T> findResolver(Class<T> resolvableType) {
 
     Validate.notNull(resolvableType, "resolvableType");
     EntityResolver<E, ?> resolver = resolvers.get(resolvableType);
@@ -33,7 +35,7 @@ public class EntityResolverRegistry<E> {
     // adds the resolver using a generic method
     @SuppressWarnings("unchecked")
     EntityResolver<E, T> castedResolver = (EntityResolver<E, T>) resolver;
-    return Optional.of(castedResolver);
+    return castedResolver;
   }
 
   /**

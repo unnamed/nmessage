@@ -12,65 +12,65 @@ import me.yushust.message.util.Validate;
  */
 public final class MessageRepositoryBuilder {
 
-    /**
-     * Where the message files will be loaded from.
-     * (It's required to set a {@link LoadSource} using
-     * {@link MessageRepositoryBuilder#setLoadSource})
-     */
-    private LoadSource loadSource;
+  /**
+   * Where the message files will be loaded from.
+   * (It's required to set a {@link LoadSource} using
+   * {@link MessageRepositoryBuilder#setLoadSource})
+   */
+  private LoadSource loadSource;
 
-    /**
-     * How the message files will be loaded.
-     * (it's required to set a {@link NodeFileLoader}
-     * using {@link MessageRepositoryBuilder#setNodeFileLoader})
-     */
-    private NodeFileLoader nodeFileLoader;
+  /**
+   * How the message files will be loaded.
+   * (it's required to set a {@link NodeFileLoader}
+   * using {@link MessageRepositoryBuilder#setNodeFileLoader})
+   */
+  private NodeFileLoader nodeFileLoader;
 
-    private ProvideStrategy provideStrategy = ProvideStrategy.RETURN_PATH;
-    private String fileFormat = "lang_%lang%.properties";
-    private String defaultLanguage = "en";
+  private ProvideStrategy provideStrategy = ProvideStrategy.RETURN_PATH;
+  private String fileFormat = "lang_%lang%.properties";
+  private String defaultLanguage = "en";
 
-    MessageRepositoryBuilder() {
-    }
+  MessageRepositoryBuilder() {
+  }
 
-    public MessageRepositoryBuilder setLoadSource(LoadSource loadSource) {
-        this.loadSource = Validate.notNull(loadSource);
-        return this;
-    }
+  public MessageRepositoryBuilder setLoadSource(LoadSource loadSource) {
+    this.loadSource = Validate.notNull(loadSource);
+    return this;
+  }
 
-    public MessageRepositoryBuilder setNodeFileLoader(NodeFileLoader nodeFileLoader) {
-        this.nodeFileLoader = Validate.notNull(nodeFileLoader);
-        return this;
-    }
+  public MessageRepositoryBuilder setNodeFileLoader(NodeFileLoader nodeFileLoader) {
+    this.nodeFileLoader = Validate.notNull(nodeFileLoader);
+    return this;
+  }
 
-    public MessageRepositoryBuilder setProvideStrategy(ProvideStrategy provideStrategy) {
-        this.provideStrategy = Validate.notNull(provideStrategy);
-        return this;
-    }
+  public MessageRepositoryBuilder setProvideStrategy(ProvideStrategy provideStrategy) {
+    this.provideStrategy = Validate.notNull(provideStrategy);
+    return this;
+  }
 
-    public MessageRepositoryBuilder setFileFormat(String fileFormat) {
-        this.fileFormat = Validate.notEmpty(fileFormat);
-        return this;
-    }
+  public MessageRepositoryBuilder setFileFormat(String fileFormat) {
+    this.fileFormat = Validate.notEmpty(fileFormat);
+    return this;
+  }
 
-    public MessageRepositoryBuilder setDefaultLanguage(String defaultLanguage) {
-        this.defaultLanguage = Validate.notEmpty(defaultLanguage);
-        return this;
-    }
+  public MessageRepositoryBuilder setDefaultLanguage(String defaultLanguage) {
+    this.defaultLanguage = Validate.notEmpty(defaultLanguage);
+    return this;
+  }
 
-    public MessageRepository build() {
+  public MessageRepository build() {
 
-        Validate.state(
-                nodeFileLoader != null && loadSource != null,
-                "The nodeFileLoader and the loadSource must be setted!"
-        );
+    Validate.state(
+        nodeFileLoader != null && loadSource != null,
+        "The nodeFileLoader and the loadSource must be setted!"
+    );
 
-        return new SimpleMessageRepository(
-                new SimpleFileAllocator(nodeFileLoader, loadSource),
-                provideStrategy,
-                fileFormat,
-                defaultLanguage
-        );
-    }
+    return new SimpleMessageRepository(
+        new SimpleFileAllocator(nodeFileLoader, loadSource),
+        provideStrategy,
+        fileFormat,
+        defaultLanguage
+    );
+  }
 
 }

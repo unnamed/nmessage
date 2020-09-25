@@ -9,36 +9,36 @@ import org.jetbrains.annotations.Nullable;
 
 @OptionalEntity
 @ProviderIdentifier("path")
-public class ReferencePlaceholderProvider<T> extends PlaceholderProvider<T> {
+public class ReferencePlaceholderProvider<T> implements PlaceholderProvider<T> {
 
-    private final String prefix;
+  private final String prefix;
 
-    public ReferencePlaceholderProvider(String prefix) {
-        this.prefix = Validate.notEmpty(prefix);
-    }
+  public ReferencePlaceholderProvider(String prefix) {
+    this.prefix = Validate.notEmpty(prefix);
+  }
 
-    public ReferencePlaceholderProvider() {
-        this.prefix = "path";
-    }
+  public ReferencePlaceholderProvider() {
+    this.prefix = "path";
+  }
 
-    @Override
-    @Nullable
-    public String getIdentifier() {
-        return prefix;
-    }
+  @Override
+  @Nullable
+  public String getIdentifier() {
+    return prefix;
+  }
 
-    @Override
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public String replace(MessageRepository repository, T entity, String parameters) {
+  @Override
+  @Nullable
+  @SuppressWarnings("unchecked")
+  public String replace(MessageRepository repository, T entity, String parameters) {
 
-        Validate.argument(repository instanceof ContextualMessageRepository,
-                "The provided repository isn't an instance of ContextualMessageRepository!");
+    Validate.argument(repository instanceof ContextualMessageRepository,
+        "The provided repository isn't an instance of ContextualMessageRepository!");
 
-        ((ContextualMessageRepository<T>) repository).getContext()
-            .stopIgnoring(this);
+    ((ContextualMessageRepository<T>) repository).getContext()
+        .stopIgnoring(this);
 
-        return repository.getMessage(parameters);
-    }
+    return repository.getMessage(parameters);
+  }
 
 }

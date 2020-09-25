@@ -1,66 +1,68 @@
 package me.yushust.message.intercept;
 
-import me.yushust.message.MessageHandler;
+import me.yushust.message.generic.ResolvedPlaceholderProvider;
 import me.yushust.message.placeholder.PlaceholderProvider;
-import me.yushust.message.placeholder.annotation.OptionalEntity;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Represents a registry of formatters like
  * {@link PlaceholderProvider} and {@link MessageInterceptor}
  */
-public interface FormatterRegistry<T> {
+public interface FormatterRegistry<E> {
 
-    /**
-     * Sets the message handler, if the message handler
-     * was already provided, throws a {@link IllegalStateException}
-     * This method marks the end of the stage of
-     * {@link MessageHandler}'s construction, and the
-     * start of a functional {@link MessageHandler}
-     * @param handle The new message handler
-     */
-    void setHandle(MessageHandler<T> handle);
+  /**
+   * @return The entity type
+   */
+  Class<E> getEntityType();
 
-    /**
-     * Registers a message interceptor in
-     * this {@link FormatterRegistry}. If the
-     * interceptor is null, it throws a
-     * {@link NullPointerException}
-     * @param interceptor The interceptor
-     * @return The formatter registry, for a fluent api
-     */
-    FormatterRegistry<T> registerInterceptor(MessageInterceptor interceptor);
+  /**
+   * Registers a message interceptor in
+   * this {@link FormatterRegistry}. If the
+   * interceptor is null, it throws a
+   * {@link NullPointerException}
+   *
+   * @param interceptor The interceptor
+   * @return The formatter registry, for a fluent api
+   */
+  FormatterRegistry<E> registerInterceptor(MessageInterceptor interceptor);
 
-    /**
-     * Registers a placeholder provider in this
-     * {@link FormatterRegistry}. If the provider
-     * is null, it throws a {@link NullPointerException}
-     * @param provider The provider
-     * @return The formatter registry, for a fluent api
-     */
-    FormatterRegistry<T> registerProvider(PlaceholderProvider<T> provider);
+  /**
+   * Registers a placeholder provider in this
+   * {@link FormatterRegistry} using the specified
+   * entity type. Used for Just-In-Time entities
+   *
+   * @param provider The provider
+   * @return The formatter registry, for a fluent api
+   */
+  <O> FormatterRegistry<E> registerProvider(Class<O> entityType, PlaceholderProvider<O> provider);
 
-    /**
-     * Finds a provider using its identifier
-     * @param identifier The provider identifier
-     * @return The placeholder provider
-     */
-    Optional<PlaceholderProvider<T>> getProvider(String identifier);
+  /**
+   * Registers a placeholder provider in the
+   * {@linkplain FormatterRegistry} using the entity
+   * type. {@link FormatterRegistry#getEntityType()}
+   *
+   * @param provider The provider
+   * @return The formatter registry, for a fluent api
+   */
+  default FormatterRegistry<E> registerProvider(PlaceholderProvider<E> provider) {
+    return registerProvider(getEntityType(), provider);
+  }
 
-    /**
-     * Finds a provider annotated with {@link OptionalEntity}
-     * and using the provided identifier
-     * @param identifier The identifier
-     * @return The placeholder provider
-     */
-    Optional<PlaceholderProvider<T>> getOptionalEntityProvider(String identifier);
+  /**
+   * Finds a provider using its identifier
+   *
+   * @param identifier The provider identifier
+   * @return The placeholder provider
+   */
+  @Nullable
+  ResolvedPlaceholderProvider<?> getProvider(String identifier);
 
-    /**
-     * @return An unmodifiable list containing the
-     * registered interceptors.
-     */
-    List<MessageInterceptor> getInterceptors();
+  /**
+   * @return An unmodifiable list containing the
+   * registered interceptors.
+   */
+  List<MessageInterceptor> getInterceptors();
 
 }

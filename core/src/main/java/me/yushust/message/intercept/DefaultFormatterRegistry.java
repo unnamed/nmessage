@@ -1,77 +1,55 @@
 package me.yushust.message.intercept;
 
-import me.yushust.message.MessageHandler;
+import me.yushust.message.generic.ResolvedPlaceholderProvider;
 import me.yushust.message.placeholder.PlaceholderProvider;
-import me.yushust.message.util.Providers;
 import me.yushust.message.util.Validate;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultFormatterRegistry<T> implements FormatterRegistry<T> {
+public class DefaultFormatterRegistry<E> implements FormatterRegistry<E> {
 
-    private final Map<String, PlaceholderProvider<T>> providers = new ConcurrentHashMap<>();
-    private final Map<String, PlaceholderProvider<T>> optionalEntityProviders = new ConcurrentHashMap<>();
-    private final List<MessageInterceptor> interceptors = new LinkedList<>();
+  private final Map<String, ResolvedPlaceholderProvider<?>> providers = new ConcurrentHashMap<>();
+  private final List<MessageInterceptor> interceptors = new LinkedList<>();
+  private final Class<E> entityType;
 
-    private MessageHandler<T> handle;
+  public DefaultFormatterRegistry(Class<E> entityType) {
+    this.entityType = Validate.notNull(entityType, "entityType");
+  }
 
-    @Override
-    public void setHandle(MessageHandler<T> handle) {
-        Validate.notNull(handle, "handle");
-        Validate.state(this.handle == null, "The message handler is already defined!");
-        this.handle = handle;
-    }
+  @Override
+  public Class<E> getEntityType() {
+    return entityType;
+  }
 
-    @Override
-    public FormatterRegistry<T> registerInterceptor(MessageInterceptor interceptor) {
+  @Override
+  public FormatterRegistry<E> registerInterceptor(MessageInterceptor interceptor) {
+    Validate.notNull(interceptor, "interceptor");
+    interceptors.add(interceptor);
+    return this;
+  }
 
-        Validate.notNull(interceptor, "interceptor");
-        checkValidHandle();
+  @Override
+  public <O> FormatterRegistry<E> registerProvider(Class<O> providerEntityType, PlaceholderProvider<O> provider) {
 
-        interceptors.add(interceptor);
-        return this;
-    }
+    ResolvedPlaceholderProvider<?> resolvedProvider =
+        new ResolvedPlaceholderProvider<>(providerEntityType, provider);
 
-    @Override
-    public FormatterRegistry<T> registerProvider(PlaceholderProvider<T> provider) {
+    providers.put(resolvedProvider.getIdentifier(), resolvedProvider);
+    return this;
+  }
 
-        Validate.notNull(provider, "provider");
-        checkValidHandle();
+  @Override
+  @Nullable
+  public ResolvedPlaceholderProvider<?> getProvider(String identifier) {
+    Validate.notEmpty(identifier);
+    return providers.get(identifier.toLowerCase());
+  }
 
-        provider.setHandle(handle);
-        String identifier = Providers.getIdentifier(provider);
-        providers.put(identifier, provider);
-
-        if (!Providers.requiresEntity(provider)) {
-            optionalEntityProviders.put(identifier, provider);
-        }
-        return this;
-    }
-
-    @Override
-    public Optional<PlaceholderProvider<T>> getProvider(String identifier) {
-        Validate.notEmpty(identifier);
-        return Optional.ofNullable(
-                providers.get(identifier.toLowerCase())
-        );
-    }
-
-    @Override
-    public Optional<PlaceholderProvider<T>> getOptionalEntityProvider(String identifier) {
-        Validate.notEmpty(identifier);
-        return Optional.ofNullable(
-                optionalEntityProviders.get(identifier.toLowerCase())
-        );
-    }
-
-    @Override
-    public List<MessageInterceptor> getInterceptors() {
-        return Collections.unmodifiableList(interceptors);
-    }
-
-    protected void checkValidHandle() {
-        Validate.state(this.handle != null, "The message handler isn't defined yet!");
-    }
+  @Override
+  public List<MessageInterceptor> getInterceptors() {
+    return interceptors;
+  }
 
 }
