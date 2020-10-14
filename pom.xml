@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.yushust.message</groupId>
-    <artifactId>lang-api</artifactId>
+    <artifactId>nmessage-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.0</version>
+    <version>3.0.0</version>
 
     <distributionManagement>
         <repository>

@@ -1,9 +1,9 @@
-package me.yushust.message;
+package me.yushust.message.internal;
 
+import me.yushust.message.MessageRepository;
+import me.yushust.message.ProvideStrategy;
 import me.yushust.message.holder.LoadSource;
 import me.yushust.message.holder.NodeFileLoader;
-import me.yushust.message.holder.allocate.SimpleFileAllocator;
-import me.yushust.message.internal.SimpleMessageRepository;
 import me.yushust.message.util.Validate;
 
 /**
@@ -17,21 +17,18 @@ public final class MessageRepositoryBuilder {
    * (It's required to set a {@link LoadSource} using
    * {@link MessageRepositoryBuilder#setLoadSource})
    */
-  private LoadSource loadSource;
+  LoadSource loadSource;
 
   /**
    * How the message files will be loaded.
    * (it's required to set a {@link NodeFileLoader}
    * using {@link MessageRepositoryBuilder#setNodeFileLoader})
    */
-  private NodeFileLoader nodeFileLoader;
+  NodeFileLoader nodeFileLoader;
 
-  private ProvideStrategy provideStrategy = ProvideStrategy.RETURN_PATH;
-  private String fileFormat = "lang_%lang%.properties";
-  private String defaultLanguage = "en";
-
-  MessageRepositoryBuilder() {
-  }
+  ProvideStrategy provideStrategy = ProvideStrategy.RETURN_PATH;
+  String fileFormat = "lang_%lang%.properties";
+  String defaultLanguage = "en";
 
   public MessageRepositoryBuilder setLoadSource(LoadSource loadSource) {
     this.loadSource = Validate.notNull(loadSource);
@@ -65,12 +62,7 @@ public final class MessageRepositoryBuilder {
         "The nodeFileLoader and the loadSource must be setted!"
     );
 
-    return new SimpleMessageRepository(
-        new SimpleFileAllocator(nodeFileLoader, loadSource),
-        provideStrategy,
-        fileFormat,
-        defaultLanguage
-    );
+    return new MessageRepositoryImpl(this);
   }
 
 }

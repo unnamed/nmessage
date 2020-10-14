@@ -1,6 +1,4 @@
-package me.yushust.message.placeholder.annotation;
-
-import me.yushust.message.placeholder.PlaceholderProvider;
+package me.yushust.message;
 
 import java.lang.annotation.*;
 

@@ -1,7 +1,7 @@
-package me.yushust.message.generic;
+package me.yushust.message.internal;
 
 import me.yushust.message.MessageRepository;
-import me.yushust.message.placeholder.PlaceholderProvider;
+import me.yushust.message.PlaceholderProvider;
 import me.yushust.message.util.Providers;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +21,7 @@ public class ResolvedPlaceholderProvider<T> implements PlaceholderProvider<T> {
     this.requiresEntity = Providers.requiresEntity(delegate);
   }
 
-  @Override
-  public String getIdentifier() {
+  String getIdentifier() {
     return identifier;
   }
 
@@ -33,7 +32,7 @@ public class ResolvedPlaceholderProvider<T> implements PlaceholderProvider<T> {
   }
 
   @Nullable
-  public String replaceCasting(MessageRepository repository, Object entity, String parameters) {
+  String replaceCasting(MessageRepository repository, Object entity, String parameters) {
 
     Validate.argument(accepts(entity), "The provided entity isn't acceptable by this provider");
 
@@ -45,12 +44,8 @@ public class ResolvedPlaceholderProvider<T> implements PlaceholderProvider<T> {
     return replace(repository, castedEntity, parameters);
   }
 
-  public boolean accepts(Object entity) {
+  boolean accepts(Object entity) {
     return (entity == null && !requiresEntity) || entityType.isInstance(entity);
-  }
-
-  public boolean requiresEntity() {
-    return requiresEntity;
   }
 
 }

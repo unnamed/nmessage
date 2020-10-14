@@ -1,8 +1,8 @@
 package me.yushust.message.util;
 
-import me.yushust.message.placeholder.PlaceholderProvider;
-import me.yushust.message.placeholder.annotation.OptionalEntity;
-import me.yushust.message.placeholder.annotation.ProviderIdentifier;
+import me.yushust.message.PlaceholderProvider;
+import me.yushust.message.OptionalEntity;
+import me.yushust.message.ProviderIdentifier;
 
 /**
  * Collection of util methods for {@link PlaceholderProvider}s
@@ -14,8 +14,7 @@ public final class Providers {
   }
 
   /**
-   * Executes the {@link PlaceholderProvider#getIdentifier} method
-   * in the specified provider, if it returns null, checks for
+   * Checks for ProviderIdentifier annotation
    *
    * @param provider The provider that will be identified.
    * @return The real identifier.
@@ -23,12 +22,6 @@ public final class Providers {
   public static String getIdentifier(PlaceholderProvider<?> provider) {
 
     Validate.notNull(provider, "provider");
-
-    String identifier = provider.getIdentifier();
-
-    if (identifier != null) {
-      return Validate.notEmpty(identifier).toLowerCase();
-    }
 
     ProviderIdentifier idAnnotation = provider.getClass().getAnnotation(ProviderIdentifier.class);
 

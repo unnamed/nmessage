@@ -2,9 +2,10 @@ package me.yushust.message.internal;
 
 import me.yushust.message.MessageRepository;
 import me.yushust.message.ProvideStrategy;
-import me.yushust.message.handle.StringList;
+import me.yushust.message.StringList;
 import me.yushust.message.holder.NodeFile;
 import me.yushust.message.holder.allocate.NodeFileAllocator;
+import me.yushust.message.holder.allocate.SimpleFileAllocator;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -12,21 +13,20 @@ import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 
-public class SimpleMessageRepository implements MessageRepository {
+final class MessageRepositoryImpl implements MessageRepository {
 
-  private final Logger logger = Logger.getLogger(MessageRepository.class.getSimpleName());
+  private static final Logger LOGGER = Logger.getLogger(MessageRepository.class.getSimpleName());
   private final NodeFileAllocator fileAllocator;
 
   private final ProvideStrategy provideStrategy;
   private final String fileFormat;
   private final String defaultLanguageFilename;
 
-  public SimpleMessageRepository(NodeFileAllocator fileAllocator, ProvideStrategy provideStrategy,
-                                 String fileFormat, String defaultLanguage) {
-    this.fileAllocator = fileAllocator;
-    this.provideStrategy = provideStrategy;
-    this.fileFormat = fileFormat;
-    this.defaultLanguageFilename = getFilename(defaultLanguage);
+  MessageRepositoryImpl(MessageRepositoryBuilder builder) {
+    this.fileAllocator = new SimpleFileAllocator(builder.nodeFileLoader, builder.loadSource);
+    this.provideStrategy = builder.provideStrategy;
+    this.fileFormat = builder.fileFormat;
+    this.defaultLanguageFilename = getFilename(builder.defaultLanguage);
   }
 
   @Override
@@ -73,7 +73,7 @@ public class SimpleMessageRepository implements MessageRepository {
     if (language == null || !nodeFile.isPresent()) {
       nodeFile = fileAllocator.find(defaultLanguageFilename);
       if (!nodeFile.isPresent()) {
-        logger.warning("There's no a file with the default language!");
+        LOGGER.warning("There's no a file with the default language!");
       }
     }
     return nodeFile;

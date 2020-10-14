@@ -1,13 +1,6 @@
 package me.yushust.message;
 
-import me.yushust.message.generic.EntityResolverRegistry;
-import me.yushust.message.handle.StringList;
-import me.yushust.message.intercept.InterceptManager;
-import me.yushust.message.intercept.MessageInterceptor;
-import me.yushust.message.localization.LanguageProvider;
-import me.yushust.message.placeholder.PlaceholderProvider;
-import me.yushust.message.provide.ContextualMessageRepository;
-import me.yushust.message.provide.ProvideContext;
+import me.yushust.message.internal.MessageHandlerBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -16,21 +9,6 @@ import org.jetbrains.annotations.Nullable;
  * @param <E> The entity type
  */
 public interface MessageHandler<E> extends MessageRepository {
-
-  /**
-   * Gets a message using the language of the
-   * property holder (using {@link LanguageProvider}),
-   * the message is located using the messagePath.
-   * If the message is not found, it returns null
-   * or the path as specified with {@link ProvideStrategy}
-   *
-   * @param messagePath The message location
-   * @param context     Internal parameter, indicates the
-   *                    paths that depend of this message
-   *                    and the ignored formatters.
-   * @return The message, null or the path.
-   */
-  String getMessage(ProvideContext<E> context, String messagePath);
 
   /**
    * Gets a message using the language of the
@@ -71,6 +49,7 @@ public interface MessageHandler<E> extends MessageRepository {
    */
   StringList getMessages(Object entity, String messagePath, Object... jitEntities);
 
+  // Helper methods start
   void sendMessage(Object entity, String messagePath, Object... jitEntities);
 
   void sendMessage(Iterable<?> entities, String messagePath, Object... jitEntities);
@@ -78,9 +57,10 @@ public interface MessageHandler<E> extends MessageRepository {
   void sendMessages(Object entity, String messagePath, Object... jitEntities);
 
   void sendMessages(Iterable<?> entities, String messagePath, Object... jitEntities);
+  // Helper methods end
 
   /**
-   * Checks for a {@link EntityResolver} in {@link EntityResolverRegistry}.
+   * Checks for a {@link EntityResolver}.
    * If present, calls it and returns the entity that the EntityResolver returned,
    * If not present, the method results in a {@link IllegalArgumentException}
    * being thrown
@@ -99,27 +79,7 @@ public interface MessageHandler<E> extends MessageRepository {
    */
   LanguageProvider<E> getLanguageProvider();
 
-  /**
-   * @return Returns the interception manager, using this
-   * you can add simple {@link MessageInterceptor} or
-   * {@link PlaceholderProvider}
-   */
-  InterceptManager<E> getInterceptionManager();
-
-  /**
-   * @return The current entity resolver registry, mutable
-   */
-  EntityResolverRegistry<E> getEntityResolverRegistry();
-
-  /**
-   * Creates a {@link MessageRepository} that contains a
-   * {@link ProvideContext} and uses it to get messages
-   * using the main {@link MessageHandler}
-   *
-   * @param context The context
-   * @return The contextual message repository
-   */
-  ContextualMessageRepository<E> withContext(ProvideContext<E> context);
+  FailureListener getFailureListener();
 
   static <T> MessageHandlerBuilder<T> builder(Class<T> entityType) {
     return new MessageHandlerBuilder<>(entityType);

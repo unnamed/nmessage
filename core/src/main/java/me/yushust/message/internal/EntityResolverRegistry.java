@@ -1,4 +1,4 @@
-package me.yushust.message.generic;
+package me.yushust.message.internal;
 
 import me.yushust.message.EntityResolver;
 import me.yushust.message.util.Validate;
@@ -12,7 +12,7 @@ import java.util.Optional;
  * Represents a registry of entity resolvers
  * @param <E> The entity type
  */
-public class EntityResolverRegistry<E> {
+final class EntityResolverRegistry<E> {
 
   private final Map<Class<?>, EntityResolver<E, ?>> resolvers
       = new HashMap<>();

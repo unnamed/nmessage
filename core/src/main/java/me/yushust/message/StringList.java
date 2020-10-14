@@ -1,4 +1,4 @@
-package me.yushust.message.handle;
+package me.yushust.message;
 
 import java.util.AbstractList;
 import java.util.Collections;

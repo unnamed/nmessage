@@ -1,14 +1,14 @@
-package me.yushust.message.localization;
+package me.yushust.message;
 
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A class that provides information about
- * the language of the provided T object.
+ * the language of the provided E object.
  *
- * @param <T> The property holder type
+ * @param <E> The entity type
  */
-public interface LanguageProvider<T> {
+public interface LanguageProvider<E> {
 
   LanguageProvider<?> DUMMY = languageHolder -> null;
 
@@ -16,12 +16,12 @@ public interface LanguageProvider<T> {
    * Gets the language of the specified
    * property holder.
    *
-   * @param languageHolder Property holder
+   * @param entity The entity, language holder
    * @return The language of that holder.
    * Returning null = use default language
    */
   @Nullable
-  String getLanguage(T languageHolder);
+  String getLanguage(E entity);
 
   /**
    * The dummy language provider instance

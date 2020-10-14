@@ -1,8 +1,8 @@
 package me.yushust.message.test;
 
 import me.yushust.message.MessageRepository;
-import me.yushust.message.placeholder.PlaceholderProvider;
-import me.yushust.message.placeholder.annotation.ProviderIdentifier;
+import me.yushust.message.PlaceholderProvider;
+import me.yushust.message.ProviderIdentifier;
 import org.jetbrains.annotations.Nullable;
 
 /**

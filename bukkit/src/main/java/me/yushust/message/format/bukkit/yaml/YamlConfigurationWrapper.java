@@ -8,21 +8,21 @@ import java.util.Optional;
 
 public class YamlConfigurationWrapper implements NodeFile {
 
-    private final YamlConfiguration config;
+  private final YamlConfiguration config;
 
-    public YamlConfigurationWrapper(YamlConfiguration config) {
-        this.config = config;
-    }
+  public YamlConfigurationWrapper(YamlConfiguration config) {
+    this.config = config;
+  }
 
-    @Override
-    public Optional<String> getString(String node) {
-        return Optional.ofNullable(
-                config.getString(node)
-        );
-    }
+  @Override
+  public Optional<String> getString(String node) {
+    return Optional.ofNullable(
+        config.getString(node)
+    );
+  }
 
-    @Override
-    public List<String> getStringList(String node) {
-        return config.getStringList(node);
-    }
+  @Override
+  public List<String> getStringList(String node) {
+    return config.getStringList(node);
+  }
 }

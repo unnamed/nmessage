@@ -1,6 +1,6 @@
 package me.yushust.message;
 
-import me.yushust.message.handle.StringList;
+import me.yushust.message.internal.MessageRepositoryBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**

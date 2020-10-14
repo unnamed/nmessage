@@ -1,4 +1,4 @@
-package me.yushust.message.placeholder;
+package me.yushust.message;
 
 /**
  * Represents a box, a placeholder container, for example:

@@ -16,6 +16,7 @@ public class CyclicLinkedMessagesDetectionTest extends MessageProviderTestCase {
 
     ConsoleEntity entity = new ConsoleEntity("en");
     Assertions.assertEquals("Foo bar Foo bar %path_baz% foo yes foo", provider.getMessage(entity, "bruh"));
+    Assertions.assertEquals("Fuah bruh Bro bro bro Burgers yea", provider.getMessage(entity, "fooo"));
 
   }
 

@@ -1,6 +1,5 @@
-package me.yushust.message.intercept;
+package me.yushust.message;
 
-import me.yushust.message.placeholder.PlaceholderProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
