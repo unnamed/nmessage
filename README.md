@@ -1,14 +1,14 @@
-[releaseImg]: https://img.shields.io/github/v/release/yusshu/lang-lib.svg?label=github%20release
-[release]: https://github.com/yusshu/lang-lib/releases/latest
+[releaseImg]: https://img.shields.io/github/v/release/yusshu/nmessge.svg?label=github%20release
+[release]: https://github.com/yusshu/nmessage/releases/latest
 
-# JLL (Java Language Library) [![releaseImg]][release] [![Build Status](https://travis-ci.com/yusshu/lang-lib.svg?branch=master)](https://travis-ci.com/yusshu/lang-lib) 
+# NMessage [![releaseImg]][release] [![Build Status](https://travis-ci.com/yusshu/nmessage.svg?branch=master)](https://travis-ci.com/yusshu/nmessage) 
 
 A simple and a bit abstract library to handle messages with multilanguage support.
 I have seen many things in languages ​​that I do not understand, to avoid this, I bring here a library for multilanguage and easy to obtain messages from configuration files or from any other place
 
 ## Usage
 
-First, build a `MessageProvider` with a pretty builder.
+First, build a `MessageHandler` with a pretty builder.
 Assuming that `Thing` is the receiver of the messages, who also has some properties and its language
 |                           | Specification                                                                      | Implementation                                                                                                                   |
 |---------------------------|-----------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -31,21 +31,21 @@ MessageRepository repository = MessageRepository.builder()
         )
         .setNodeFileLoader(nodeFileLoader)
         .setFileFormat("messages_%lang%.properties")
+	.setDefaultLanguage("en")
         .build();
 
-MessageProvider<Thing> messageProvider = MessageProvider.<Thing>builder()
+MessageHandler<Thing> messageProvider = MessageHandler.builder(Thing.class)
         .setRepository(repository)
-		.setDefaultLanguage("en")
-		.build();
+	.build();
 ```
 NodeFileLoader implementation: (for Bukkit) [YamlFileLoader](https://github.com/yusshu/lang-lib/blob/master/bukkit/src/main/java/me/yushust/message/format/bukkit/yaml/YamlFileLoader.java), and NodeFileWrapper: [YamlConfigurationWrapper](https://github.com/yusshu/lang-lib/blob/master/bukkit/src/main/java/me/yushust/message/format/bukkit/yaml/YamlConfigurationWrapper.java)
 NodeFileLoader implementation for Properties: (Built in) [PropertiesFileLoader](https://github.com/yusshu/lang-lib/blob/master/core/src/main/java/me/yushust/message/core/holder/defaults/PropertiesFileLoader.java), and NodeFileWrapper: [PropertiesNodeFile](https://github.com/yusshu/lang-lib/blob/master/core/src/main/java/me/yushust/message/core/holder/defaults/PropertiesNodeFile.java)
 ## Getting messages
 
-There are **two ways** to get messages: using the propertyHolder and using the language.
+There are **two ways** to get messages: using the entity and using the language.
 Using the language doesn't call `MessageInterceptor`s nor `PlaceholderProvider`s.
 
-Using the property holder:
+Using the entity:
 ```java
 Thing thing = ...;
 String message = messageProvider.getMessage(thing, "message.path");
@@ -63,12 +63,11 @@ Implementing `LanguageProvider` is **very simple**, you just have to implement a
 ```java
 public class ThingLanguageProvider implements LanguageProvider<Thing> {
 
-	@Override
-	@Nullable
-	public String getLanguage(Thing thing) {
-		return thing.getLanguage();
-	}
-
+  @Override
+  @Nullable
+  public String getLanguage(Thing thing) {
+    return thing.getLanguage();
+  }
 }
 ```
 Using lambda method references (Java 8+):
@@ -77,10 +76,10 @@ LanguageProvider<Thing> thingLanguageProvider = Thing::getLanguage;
 ```
 Registering your `LanguageProvider`:
 ```java
-MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
-		.setRepository(repository)
-		.setLanguageProvider(new ThingLanguageProvider())
-		.build();
+MessageHandler<Thing> messageProvider = MessageHandler.builder()
+	.setRepository(repository)
+	.setLanguageProvider(new ThingLanguageProvider())
+	.build();
 ```
 ## Intercepting messages
 
@@ -90,42 +89,34 @@ Intercepting messages is as easy as modifying a String, we just implement `Messa
 **Examples:**
 A name placeholder provider
 ```java
+@ProviderIdentifier("thing")
 public class ThingPlaceholderReplacer implements PlaceholderProvider<Thing> {
-
-    @Override
-    public String[] getPlaceholders() {
-        return new String[] {"name"};
-    }
-
-	@Override
-	public String replace(InterceptContext<Thing> context, String placeholder) {
-        return context.getEntity().getName();
-	}
-	
+  @Override
+  public String replace(MessageRepository repository, Thing entity, String placeholder) {
+    return entity.getName();
+  }
 }
 ```
 Registering the `PlaceholderProvider`:
 ```java
-MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
-	.setRepository(repository);
-	.addProvider(new ThingPlaceholderProvider())
-	.build();
+MessageRepository<Thing> messageProvider = MessageRepository.builder()
+    .setRepository(repository);
+    .addProvider(new ThingPlaceholderProvider())
+    .build();
 ```
 
 ## Sending messages with MessageConsumer
 
-You can use `MessageProvider` to **send messages**, but this only works if you have previously specified a `MessageConsumer`
+You can use `MessageHandler` to **send messages**, but this only works if you have previously specified a `MessageConsumer`
 
 **Implementing MessageConsumer:**
 It simply takes care of sending the already formatted message.
 ```java
 public class ThingMessageConsumer implements MessageConsumer<Thing> {
-    
-    @Override
-    public void sendMessage(Thing receiver, String message) {
-		receiver.sendMessage(message);
-	}
-	
+  @Override
+  public void sendMessage(Thing receiver, String message) {
+    receiver.sendMessage(message);
+  }	
 }
 ```
 Or using lambda method references (Java 8+)
@@ -134,10 +125,10 @@ MessageConsumer<Thing> messageConsumer = Thing::sendMessage;
 ```
 Registering your MessageConsumer:
 ```java
-MessageProvider<Thing> messageProvider = MessageProviderBuilder.create()
-	.setRepository(repository)
-	.setMessageConsumer(new ThingMessageConsumer())
-	.build();
+MessageHandler<Thing> messageProvider = MessageHandler.builder()
+    .setRepository(repository)
+    .setMessageConsumer(new ThingMessageConsumer())
+    .build();
 ```
 
 **Sending the message**
@@ -151,13 +142,6 @@ Or
 List<Thing> things = ...; // it can be any iterable (Collection, etc)
 messageProvider.sendMessage(things, "message.path");
 ```
-And using a just-in-time interceptor:
-```java
-List<Thing> things = ...;
-messageProvider.sendMessage(things, "message.path", message -> {
-	return message.replace("{{things}}", String.valueOf(things.size()));
-});
-```
 ## Implementing a NodeFile
 A `NodeFile` will be a file already loaded from where the messages will be obtained.
 ...
@@ -165,16 +149,16 @@ A `NodeFile` will be a file already loaded from where the messages will be obtai
 Maven repository
 ```xml
 <repository>
-	<id>unnamed-releases</id>
-	<url>https://repo.unnamed.team/repository/unnamed-releases</url>
+  <id>unnamed-releases</id>
+  <url>https://repo.unnamed.team/repository/unnamed-releases</url>
 </repository>
 ```
 Maven dependency
 ```xml
 <dependency>
-	<groupId>me.yushust.message</groupId>
-	<artifactId>core</artifactId>
-	<version>VERSION</version>
+  <groupId>me.yushust.message</groupId>
+  <artifactId>message-dispatch-core</artifactId>
+  <version>VERSION</version>
 </dependency>
 ```
 
@@ -182,9 +166,9 @@ Bukkit adapters maven dependency
 (Adds support for YML using Bukkit's `YamlConfiguration`)
 ```xml
 <dependency>
-	<groupId>me.yushust.message</groupId>
-	<artifactId>bukkit-formatters</artifactId>
-	<version>VERSION</version>
+  <groupId>me.yushust.message</groupId>
+  <artifactId>bukkit-message-dispatch</artifactId>
+  <version>VERSION</version>
 </dependency>
 ```
 > "Yes."
