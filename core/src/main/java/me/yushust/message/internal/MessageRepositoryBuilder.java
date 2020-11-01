@@ -50,6 +50,11 @@ public final class MessageRepositoryBuilder {
     return this;
   }
 
+  public MessageRepositoryBuilder setStrategy(Strategy strategy) {
+    this.strategy = Validate.notNull(strategy, "strategy");
+    return this;
+  }
+
   public MessageRepository build() {
 
     Validate.state(

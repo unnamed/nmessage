@@ -1,6 +1,7 @@
 package me.yushust.message.internal;
 
 import me.yushust.message.MessageHandler;
+import me.yushust.message.MessageRepository;
 import me.yushust.message.ProviderSettings;
 import me.yushust.message.specific.PlaceholderProvider;
 import me.yushust.message.util.Validate;
@@ -25,7 +26,7 @@ final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProvider<E>
   }
 
   @Override
-  public @Nullable Object replace(MessageHandler<E> handler, E entity, String parameters) {
+  public @Nullable Object replace(MessageRepository handler, E entity, String parameters) {
     return delegate.replace(handler, entity, parameters);
   }
 

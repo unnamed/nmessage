@@ -1,6 +1,7 @@
 package me.yushust.message.specific;
 
 import me.yushust.message.MessageHandler;
+import me.yushust.message.MessageRepository;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -20,6 +21,6 @@ public interface PlaceholderProvider<E> {
    * the specified entity.
    */
   @Nullable
-  Object replace(MessageHandler<E> handle, E entity, String parameters);
+  Object replace(MessageRepository repository, E entity, String parameters);
 
 }
