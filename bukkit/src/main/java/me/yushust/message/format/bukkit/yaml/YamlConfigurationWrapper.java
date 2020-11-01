@@ -1,10 +1,9 @@
 package me.yushust.message.format.bukkit.yaml;
 
-import me.yushust.message.holder.NodeFile;
+import me.yushust.message.file.NodeFile;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;
-import java.util.Optional;
 
 public class YamlConfigurationWrapper implements NodeFile {
 
@@ -15,10 +14,8 @@ public class YamlConfigurationWrapper implements NodeFile {
   }
 
   @Override
-  public Optional<String> getString(String node) {
-    return Optional.ofNullable(
-        config.getString(node)
-    );
+  public String getString(String node) {
+    return config.getString(node);
   }
 
   @Override

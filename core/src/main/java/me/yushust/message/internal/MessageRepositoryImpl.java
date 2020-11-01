@@ -1,82 +1,105 @@
 package me.yushust.message.internal;
 
 import me.yushust.message.MessageRepository;
-import me.yushust.message.ProvideStrategy;
+import me.yushust.message.strategy.Strategy;
 import me.yushust.message.StringList;
-import me.yushust.message.holder.NodeFile;
-import me.yushust.message.holder.allocate.NodeFileAllocator;
-import me.yushust.message.holder.allocate.SimpleFileAllocator;
+import me.yushust.message.file.NodeFile;
+import me.yushust.message.allocate.NodeFilePool;
+import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.logging.Logger;
 
-import static java.util.Objects.requireNonNull;
-
+/**
+ * Default implementation of {@link MessageRepository} that
+ * prioritizes the specified language to get messages, if
+ * not found, tries with the default language file. If no
+ * messages found in any file, calls {@link Strategy#getNotFoundMessage}
+ */
 final class MessageRepositoryImpl implements MessageRepository {
 
   private static final Logger LOGGER = Logger.getLogger(MessageRepository.class.getSimpleName());
-  private final NodeFileAllocator fileAllocator;
+  private final NodeFilePool filePool;
 
-  private final ProvideStrategy provideStrategy;
+  private final Strategy strategy;
   private final String fileFormat;
+  private final String defaultLanguage;
   private final String defaultLanguageFilename;
 
   MessageRepositoryImpl(MessageRepositoryBuilder builder) {
-    this.fileAllocator = new SimpleFileAllocator(builder.nodeFileLoader, builder.loadSource);
-    this.provideStrategy = builder.provideStrategy;
+    this.filePool = NodeFilePool.createDefault(builder.nodeFileLoader, builder.loadSource);
+    this.strategy = builder.strategy;
     this.fileFormat = builder.fileFormat;
-    this.defaultLanguageFilename = getFilename(builder.defaultLanguage);
+    this.defaultLanguage = builder.defaultLanguage;
+    this.defaultLanguageFilename = getFilename(defaultLanguage);
   }
 
   @Override
-  public String getMessage(@Nullable String language, String messagePath) {
+  public String getMessage(@Nullable String language, String path) {
 
-    requireNonNull(messagePath);
+    Validate.notNull(path, "path");
+    NodeFile nodeFile = in(language);
 
-    Optional<NodeFile> nodeFile = getNodeFileFor(language);
-
-    if (!nodeFile.isPresent()) {
-      return provideStrategy.getNotFoundMessage(language, messagePath);
-    }
-
-    Optional<String> optionalMessage = nodeFile.get().getString(messagePath);
-
-    if (!optionalMessage.isPresent()) {
-      Optional<NodeFile> defaultLanguage = fileAllocator.find(defaultLanguageFilename);
-      if (defaultLanguage.isPresent()) {
-        optionalMessage = defaultLanguage.get().getString(messagePath);
+    if (nodeFile != null) {
+      String message = nodeFile.getString(path);
+      if (message == null) {
+        nodeFile = filePool.find(defaultLanguageFilename);
+        if (nodeFile != null) {
+          message = nodeFile.getString(path);
+        }
+      }
+      if (message != null) {
+        return message;
       }
     }
 
-    return optionalMessage.orElseGet(
-        () -> provideStrategy.getNotFoundMessage(language, messagePath)
-    );
+    return strategy.getNotFoundMessage(language, path);
   }
 
   @Override
-  public StringList getMessages(@Nullable String language, String messagePath) {
+  public StringList getMessages(@Nullable String language, String path) {
 
-    Optional<NodeFile> nodeFile = getNodeFileFor(language);
+    Validate.notNull(path, "path");
+    NodeFile nodeFile = in(language);
 
-    return nodeFile.map(file -> new StringList(file.getStringList(messagePath)))
-        .orElseGet(
-            () -> StringList.singleton(provideStrategy.getNotFoundMessage(language, messagePath))
-        );
+    if (nodeFile != null) {
+      List<String> messages = nodeFile.getStringList(path);
+      if (messages == null) {
+        nodeFile = filePool.find(defaultLanguageFilename);
+        if (nodeFile != null) {
+          messages = nodeFile.getStringList(path);
+        }
+      }
+      if (messages != null) {
+        return new StringList(messages);
+      }
+    }
+    return StringList.singleton(strategy.getNotFoundMessage(language, path));
   }
 
-  private Optional<NodeFile> getNodeFileFor(@Nullable String language) {
-    Optional<NodeFile> nodeFile = Optional.empty();
+  /**
+   * Checks for the nodeFile with the specified {@code language},
+   * if not present, tries to get the nodeFile with the default
+   * language. If not found, logs a warning and returns null.
+   */
+  private NodeFile in(@Nullable String language) {
+    NodeFile nodeFile = null;
     if (language != null) {
-      nodeFile = fileAllocator.find(getFilename(language));
+      nodeFile = filePool.find(getFilename(language));
     }
-    if (language == null || !nodeFile.isPresent()) {
-      nodeFile = fileAllocator.find(defaultLanguageFilename);
-      if (!nodeFile.isPresent()) {
+    if (language == null || nodeFile == null) {
+      nodeFile = filePool.find(defaultLanguageFilename);
+      if (nodeFile == null) {
         LOGGER.warning("There's no a file with the default language!");
       }
     }
     return nodeFile;
+  }
+
+  @Override
+  public String getDefaultLanguage() {
+    return defaultLanguage;
   }
 
   private String getFilename(String language) {

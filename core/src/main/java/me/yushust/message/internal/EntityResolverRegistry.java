@@ -1,6 +1,6 @@
 package me.yushust.message.internal;
 
-import me.yushust.message.EntityResolver;
+import me.yushust.message.specific.EntityResolver;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 

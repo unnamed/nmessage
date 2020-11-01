@@ -3,14 +3,17 @@ package me.yushust.message.internal;
 import me.yushust.message.*;
 import me.yushust.message.StringList;
 
+import me.yushust.message.specific.EntityResolver;
+import me.yushust.message.specific.LanguageProvider;
+import me.yushust.message.specific.Messenger;
+import me.yushust.message.strategy.Notify;
+import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 final class MessageHandlerImpl<E> implements MessageHandler<E> {
 
-  private final ThreadLocal<InternalContext<E>> contextThreadLocal =
+  private final ThreadLocal<FormattingContext<E>> contextThreadLocal =
       new ThreadLocal<>();
 
   private final EntityResolverRegistry<E> resolverRegistry;
@@ -19,8 +22,8 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
   private final FormatterRegistry<E> formatterRegistry;
   private final LanguageProvider<E> languageProvider;
   private final MessageRepository repository;
-  private final FailureListener failureListener;
-  private final MessageConsumer<E> messageConsumer;
+  private final Strategy strategy;
+  private final Messenger<E> messenger;
 
   MessageHandlerImpl(MessageHandlerBuilder<E> builder) {
     this.resolverRegistry = builder.resolverRegistry;
@@ -28,46 +31,118 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
     this.formatterRegistry = builder.formatterRegistry;
     this.languageProvider = builder.languageProvider;
     this.repository = builder.messageRepository;
-    this.failureListener = builder.failureListener;
-    this.messageConsumer = builder.messageConsumer;
-    this.replacer = new PlaceholderReplacer(this, builder.delimiters);
-    formatterRegistry.registerProvider(new ReferencePlaceholderProvider<>());
+    this.strategy = builder.strategy;
+    this.messenger = builder.messenger;
+    this.replacer = new PlaceholderReplacer(this, builder.startDelimiter, builder.endDelimiter);
+    formatterRegistry.registerProvider("path", (ctx, entity, param) -> ctx.getMessage(param));
   }
 
   @Override
-  public String getMessage(Object resolvableEntity, String path, Object... entities) {
-
+  public String format(
+      Object resolvableEntity,
+      String path,
+      ReplacePack replacements,
+      Object[] jitEntities,
+      Object... orderedArgs
+  ) {
     Validate.notNull(path, "path");
-    boolean hasContext = hasContext();
     E entity = asEntity(resolvableEntity);
-    InternalContext<E> context = enterContext(entity);
-
     String language = languageOf(entity);
-    String message = repository.getMessage(language, path);
+    FormattingContext<E> context = context();
+    boolean initialStateWasNull = context == null;
 
-    if (message == null) {
-      return null;
+    if (context == null) {
+      // Context not present = first non-nested call
+      context = new FormattingContext<>(entity, language);
     }
 
-    if (context.has(path)) {
-      // Cycle linked messagaes
-      failureListener.warn(Notify.Warning.CYCLIC_LINKED_MESSAGES, context.export());
-      return message;
+    String message = repository.getMessage(language, path);
+    if (message != null) {
+      for (ReplacePack.Entry entry : replacements.getEntries()) {
+        message = message.replace(entry.getOldValue(), entry.getNewValue());
+      }
+
+      if (context.has(path)) {
+        // Cycle linked messages
+        strategy.warn(Notify.Warning.CYCLIC_LINKED_MESSAGES, context.export());
+        return message;
+      }
+
+      context.push(path);
+      message = replacer.replace(entity, message, jitEntities);
+
+      /*
+       * The String.format method is called after
+       * placeholder replacement because the placeholder
+       * delimiters can cause an exception by being
+       * "special characters"
+       */
+      if (orderedArgs.length > 0) {
+        message = String.format(message, orderedArgs);
+      }
+
+      popAndCheckSame(context, path);
+
+      if (initialStateWasNull) {
+        contextThreadLocal.remove();
+      }
+    }
+
+    return message;
+  }
+
+  @Override
+  public StringList formatMany(
+      Object resolvableEntity,
+      String path,
+      ReplacePack replacements,
+      Object[] jitEntities,
+      Object... orderedArgs
+  ) {
+    Validate.notNull(path, "path");
+    E entity = asEntity(resolvableEntity);
+    String language = languageOf(entity);
+    FormattingContext<E> context = context();
+    boolean initialStateWasNull = context == null;
+
+    if (context == null) {
+      context = new FormattingContext<>(entity, language);
+    }
+
+    StringList messages = repository.getMessages(language, path);
+
+    for (ReplacePack.Entry entry : replacements.getEntries()) {
+      messages.replace(entry.getOldValue(), entry.getNewValue());
     }
 
     context.push(path);
-    String formattedMessage = replacer.replace(entity, message, entities);
+
+    messages.replaceAll(
+        line -> {
+          if (line == null) {
+            return null;
+          }
+          line = replacer.replace(entity, line, jitEntities);
+          if (orderedArgs.length > 0) {
+            line = String.format(line, orderedArgs);
+          }
+          return line;
+        }
+    );
     popAndCheckSame(context, path);
 
-    if (!hasContext) {
-      clearContext();
+    if (initialStateWasNull) {
+      contextThreadLocal.remove();
     }
+    return messages;
+  }
 
-    return formattedMessage;
+  @Override
+  public FormattingContext<E> context() {
+    return contextThreadLocal.get();
   }
 
   @Nullable
-  @Override
   @SuppressWarnings({"unchecked", "rawtypes"})
   public E asEntity(Object resolvableEntity) {
     if (entityType.isInstance(resolvableEntity)) {
@@ -79,91 +154,11 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
   }
 
   @Override
-  public LanguageProvider<E> getLanguageProvider() {
-    return languageProvider;
-  }
-
-  @Override
-  public FailureListener getFailureListener() {
-    return failureListener;
-  }
-
-  @Override
-  public StringList getMessages(Object resolvableEntity, String path, Object... jitEntities) {
-
-    Validate.notNull(path, "path");
-    boolean hasContext = hasContext();
-    E entity = asEntity(resolvableEntity);
-    InternalContext<E> context = enterContext(entity);
-
-    String language = languageOf(entity);
-    StringList messages = repository.getMessages(language, path);
-    context.push(path);
-
-    messages.replaceAll(
-        line -> {
-          if (line == null) {
-            return null;
-          }
-          return replacer.replace(entity, line, jitEntities);
-        }
-    );
-    popAndCheckSame(context, path);
-    if (!hasContext) {
-      clearContext();
-    }
-    return messages;
-  }
-
-  // Helper methods start
-  @Override
-  public void sendMessage(Object resolvableEntity, String messagePath, Object... jitEntities) {
-    E entity = asEntity(resolvableEntity);
-    if (entity != null) {
-      messageConsumer.sendMessage(
-          entity,
-          getMessage(
-              entity,
-              messagePath,
-              jitEntities
-          )
-      );
-    }
-  }
-
-  @Override
-  public void sendMessage(Iterable<?> entities, String messagePath, Object... jitEntities) {
-    for (Object resolvableEntity : entities) {
-      sendMessage(resolvableEntity, messagePath, jitEntities);
-    }
-  }
-
-  @Override
-  public void sendMessages(Object resolvableEntity, String messagePath, Object... jitEntities) {
-    E entity = asEntity(resolvableEntity);
-    if (entity == null) {
-      return;
-    }
-    StringList messages = getMessages(entity, messagePath, jitEntities);
-    for (String message : messages) {
-      messageConsumer.sendMessage(entity, message);
-    }
-  }
-
-  @Override
-  public void sendMessages(Iterable<?> entities, String messagePath, Object... jitEntities) {
-    for (Object resolvableEntity : entities) {
-      sendMessages(resolvableEntity, messagePath, jitEntities);
-    }
-  }
-  // Helper methods end
-
-  @Override
   public String getMessage(@Nullable String language, String messagePath) {
     if (language == null) {
-      InternalContext<E> context = contextThreadLocal.get();
+      FormattingContext<E> context = contextThreadLocal.get();
       if (context != null) {
-        return getMessage(context.getEntity(), messagePath);
+        return get(context.getEntity(), messagePath);
       }
     }
     String message = repository.getMessage(language, messagePath);
@@ -176,19 +171,24 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
   @Override
   public StringList getMessages(@Nullable String language, String messagePath) {
     if (language == null) {
-      InternalContext<E> context = contextThreadLocal.get();
+      FormattingContext<E> context = contextThreadLocal.get();
       if (context != null) {
-        return getMessages(context.getEntity(), messagePath);
+        return getMany(context.getEntity(), messagePath);
       }
     }
     return repository.getMessages(language, messagePath);
   }
 
-  private String languageOf(E entity) {
-    return entity == null ? null : languageProvider.getLanguage(entity);
+  @Override
+  public String getDefaultLanguage() {
+    return repository.getDefaultLanguage();
   }
 
-  private void popAndCheckSame(InternalContext<E> context, String path) {
+  private String languageOf(E entity) {
+    return entity == null ? getDefaultLanguage() : languageProvider.getLanguage(entity);
+  }
+
+  private void popAndCheckSame(FormattingContext<E> context, String path) {
     // Illegal state, the path stack is now invalid!
     String obtained = context.pop();
     if (!path.equals(obtained)) {
@@ -198,39 +198,42 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
     }
   }
 
+  Strategy getStrategy() {
+    return strategy;
+  }
+
   FormatterRegistry<E> getFormatterRegistry() {
     return formatterRegistry;
   }
 
-  /** Determines if the context has been started for this thread */
-  boolean hasContext() {
-    return contextThreadLocal.get() != null;
+  @Override
+  public LanguageProvider<E> getLanguageProvider() {
+    return languageProvider;
   }
 
-  /**
-   * Returns the existent context or creates a
-   * new one with the specified entity.
-   */
-  private InternalContext<E> enterContext(E entity) {
-    InternalContext<E> context = contextThreadLocal.get();
-    if (context == null) {
-      /*
-      * "the start", the creation of the context
-      * indicates the first call to getMessage(...)
-      */
-      context = new InternalContext<>(entity);
-      contextThreadLocal.set(context);
+  @Override
+  public void dispatch(
+      Object resolvableEntity,
+      String path,
+      ReplacePack replacements,
+      Object[] jitEntities,
+      Object[] orderedArgs
+  ) {
+    E entity = asEntity(resolvableEntity);
+    String message = format(entity, path, replacements, jitEntities, orderedArgs);
+    messenger.send(entity, message);
+  }
+
+  @Override
+  public void dispatch(
+      Iterable<?> entities,
+      String path,
+      ReplacePack replacements,
+      Object[] jitEntities,
+      Object[] orderedArgs
+  ) {
+    for (Object resolvableEntity : entities) {
+      dispatch(resolvableEntity, path, replacements, jitEntities, orderedArgs);
     }
-    Validate.state(
-        Objects.equals(context.getEntity(), entity),
-        "Tried to enter context with a different entity! '"
-            + entity + "' isn't '" + context.getEntity() + "'"
-    );
-    return context;
   }
-
-  private void clearContext() {
-    contextThreadLocal.remove();
-  }
-
 }

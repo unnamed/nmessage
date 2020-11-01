@@ -1,10 +1,12 @@
 package me.yushust.message.internal;
 
 import me.yushust.message.MessageRepository;
-import me.yushust.message.ProvideStrategy;
-import me.yushust.message.holder.LoadSource;
-import me.yushust.message.holder.NodeFileLoader;
+import me.yushust.message.strategy.Strategy;
+import me.yushust.message.file.LoadSource;
+import me.yushust.message.file.NodeFileLoader;
 import me.yushust.message.util.Validate;
+
+import java.util.function.UnaryOperator;
 
 /**
  * A fluent {@link MessageRepository} builder,
@@ -26,7 +28,7 @@ public final class MessageRepositoryBuilder {
    */
   NodeFileLoader nodeFileLoader;
 
-  ProvideStrategy provideStrategy = ProvideStrategy.RETURN_PATH;
+  Strategy strategy = new Strategy();
   String fileFormat = "lang_%lang%.properties";
   String defaultLanguage = "en";
 
@@ -40,8 +42,10 @@ public final class MessageRepositoryBuilder {
     return this;
   }
 
-  public MessageRepositoryBuilder setProvideStrategy(ProvideStrategy provideStrategy) {
-    this.provideStrategy = Validate.notNull(provideStrategy);
+  public MessageRepositoryBuilder applyToStrategy(UnaryOperator<Strategy> strategyInterceptor) {
+    this.strategy = Validate.notNull(
+        strategyInterceptor.apply(strategy)
+    );
     return this;
   }
 

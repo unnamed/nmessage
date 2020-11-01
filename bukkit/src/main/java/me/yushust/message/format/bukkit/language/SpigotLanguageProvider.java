@@ -1,6 +1,6 @@
 package me.yushust.message.format.bukkit.language;
 
-import me.yushust.message.LanguageProvider;
+import me.yushust.message.specific.LanguageProvider;
 import org.bukkit.entity.Player;
 
 public class SpigotLanguageProvider implements LanguageProvider<Player> {

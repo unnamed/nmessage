@@ -121,7 +121,7 @@ public class ThingMessageConsumer implements MessageConsumer<Thing> {
 ```
 Or using lambda method references (Java 8+)
 ```java
-MessageConsumer<Thing> messageConsumer = Thing::sendMessage;
+MessageConsumer<Thing> messenger = Thing::sendMessage;
 ```
 Registering your MessageConsumer:
 ```java

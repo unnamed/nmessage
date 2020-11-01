@@ -1,6 +1,11 @@
 package me.yushust.message.internal;
 
 import me.yushust.message.*;
+import me.yushust.message.specific.EntityResolver;
+import me.yushust.message.specific.LanguageProvider;
+import me.yushust.message.specific.Messenger;
+import me.yushust.message.specific.PlaceholderProvider;
+import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.Validate;
 
 /**
@@ -13,11 +18,12 @@ public final class MessageHandlerBuilder<E> {
 
   // optional values
   Class<E> entityType;
-  PlaceholderBox delimiters = PlaceholderBox.DEFAULT;
+  char startDelimiter = '%';
+  char endDelimiter = '%';
   FormatterRegistry<E> formatterRegistry;
   LanguageProvider<E> languageProvider = LanguageProvider.dummy();
-  MessageConsumer<E> messageConsumer = MessageConsumer.dummy();
-  FailureListener failureListener = FailureListener.DUMMY;
+  Messenger<E> messenger = Messenger.dummy();
+  Strategy strategy = new Strategy();
   EntityResolverRegistry<E> resolverRegistry = new EntityResolverRegistry<>();
 
   // required value
@@ -38,13 +44,17 @@ public final class MessageHandlerBuilder<E> {
     return this;
   }
 
-  public MessageHandlerBuilder<E> addProvider(PlaceholderProvider<E> provider) {
-    formatterRegistry.registerProvider(provider);
+  public MessageHandlerBuilder<E> addProvider(String identifier, PlaceholderProvider<E> provider) {
+    formatterRegistry.registerProvider(identifier, provider);
     return this;
   }
 
-  public <O> MessageHandlerBuilder<E> addExternalProvider(Class<O> entityType, PlaceholderProvider<O> provider) {
-    formatterRegistry.registerProvider(entityType, provider);
+  public <O> MessageHandlerBuilder<E> addExternalProvider(
+      String identifier,
+      Class<O> entityType,
+      PlaceholderProvider<O> provider
+  ) {
+    formatterRegistry.registerProvider(identifier, entityType, provider);
     return this;
   }
 
@@ -58,18 +68,19 @@ public final class MessageHandlerBuilder<E> {
     return this;
   }
 
-  public MessageHandlerBuilder<E> setMessageConsumer(MessageConsumer<E> messageConsumer) {
-    this.messageConsumer = Validate.notNull(messageConsumer);
+  public MessageHandlerBuilder<E> setMessageConsumer(Messenger<E> messenger) {
+    this.messenger = Validate.notNull(messenger);
     return this;
   }
 
   public MessageHandlerBuilder<E> setDelimiters(char start, char end) {
-    this.delimiters = new PlaceholderBox(start, end);
+    this.startDelimiter = start;
+    this.endDelimiter = end;
     return this;
   }
 
-  public MessageHandlerBuilder<E> setFailureListener(FailureListener failureListener) {
-    this.failureListener = Validate.notNull(failureListener);
+  public MessageHandlerBuilder<E> setStrategy(Strategy strategy) {
+    this.strategy = strategy;
     return this;
   }
 

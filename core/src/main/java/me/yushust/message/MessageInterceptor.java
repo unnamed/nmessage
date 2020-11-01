@@ -1,5 +1,6 @@
 package me.yushust.message;
 
+import me.yushust.message.specific.PlaceholderProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**

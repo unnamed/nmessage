@@ -48,14 +48,33 @@ public final class ReplacePack implements Cloneable {
     return Objects.hash(entries);
   }
 
-  public static ReplacePack make(String... replacements) {
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder("Replace(");
+    builder.append(entries.size());
+    builder.append(") {");
+    Iterator<Entry> entryIterator = entries.iterator();
+    while (entryIterator.hasNext()) {
+      builder.append(entryIterator.next());
+      if (entryIterator.hasNext()) {
+        builder.append(", ");
+      }
+    }
+    builder.append('}');
+    return builder.toString();
+  }
+
+  public static ReplacePack make(Object... replacements) {
     Validate.argument(replacements.length % 2 == 0, "The replacement count must be pair! It's " +
-        "a tuple of (String, String)");
+        "a tuple of (String, Object)");
     ReplacePack replacePack = new ReplacePack();
     for (int i = 0; i < replacements.length; i += 2) {
-      String key = replacements[i];
-      String value = replacements[i + 1];
-      replacePack.add(key, value);
+      Object key = replacements[i];
+      Validate.argument(key instanceof String, "Replaced keys (arguments in 0, " +
+          "2, 4, etc) must be strings. But it's '" + key + "' in index: " + i);
+      Object value = replacements[i + 1];
+      Validate.notNull(value, "value cannot be null. Index: " + (i + 1));
+      replacePack.add(key.toString(), value.toString());
     }
     return replacePack;
   }
