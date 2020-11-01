@@ -6,8 +6,6 @@ import me.yushust.message.internal.MessageHandlerBuilder;
 
 public interface MessageHandler<E> extends MessageDispatcher, MessageRepository {
 
-  String LIBRARY_NAME = "NMessage";
-
   String format(
       Object entity,
       String path,
@@ -46,6 +44,20 @@ public interface MessageHandler<E> extends MessageDispatcher, MessageRepository 
 
   default StringList formattingMany(Object entity, String path, Object... args) {
     return formatMany(entity, path, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY, args);
+  }
+
+  @Deprecated
+  default String getMessage(Object entity, String path, Object... jitEntities) {
+    // compatibility method, this method isn't used
+    // because "get" is more short xD
+    return get(entity, path, jitEntities);
+  }
+
+  @Deprecated
+  default StringList getMessages(Object entity, String messagePath, Object... jitEntities) {
+    // compatibility method, this method isn't used
+    // because "getMany" is more short xD
+    return getMany(entity, messagePath, jitEntities);
   }
 
   FormattingContext<E> context();

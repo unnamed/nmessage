@@ -1,35 +1,44 @@
 package me.yushust.message;
 
+import me.yushust.message.mode.Mode;
+
 public interface MessageDispatcher {
 
   Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-  void dispatch(Object entity, String path, ReplacePack replacements, Object[] jitEntities, Object[] orderedArgs);
+  Mode defaultMode();
 
-  void dispatch(Iterable<?> entities, String path, ReplacePack replacements, Object[] jitEntities, Object[] orderedArgs);
+  void dispatch(
+      Object entityOrEntities, // Can be a single entity or an Iterable<?>
+      String path,
+      Mode mode,
+      ReplacePack replacements,
+      Object[] jitEntities,
+      Object[] orderedArgs
+  );
 
-  default void send(Object entity, String path, Object... jitEntities) {
-    dispatch(entity, path, ReplacePack.EMPTY, jitEntities, EMPTY_OBJECT_ARRAY);
+  default void send(Object entityOrEntities, Mode mode, String path, Object... jitEntities) {
+    dispatch(entityOrEntities, path, mode, ReplacePack.EMPTY, jitEntities, EMPTY_OBJECT_ARRAY);
   }
 
-  default void send(Iterable<?> entities, String path, Object... jitEntities) {
-    dispatch(entities, path, ReplacePack.EMPTY, jitEntities, EMPTY_OBJECT_ARRAY);
+  default void send(Object entityOrEntities, String path, Object... jitEntities) {
+    send(entityOrEntities, defaultMode(), path, jitEntities);
   }
 
-  default void sendReplacing(Object entity, String path, Object... replacements) {
-    dispatch(entity, path, ReplacePack.make(replacements), EMPTY_OBJECT_ARRAY, EMPTY_OBJECT_ARRAY);
+  default void sendReplacing(Object entityOrEntities, Mode mode, String path, Object... replacements) {
+    dispatch(entityOrEntities, path, mode, ReplacePack.make(replacements), EMPTY_OBJECT_ARRAY, EMPTY_OBJECT_ARRAY);
   }
 
-  default void sendReplacing(Iterable<?> entities, String path, Object... replacements) {
-    dispatch(entities, path, ReplacePack.make(replacements), EMPTY_OBJECT_ARRAY, EMPTY_OBJECT_ARRAY);
+  default void sendReplacing(Object entityOrEntities, String path, Object... replacements) {
+    sendReplacing(entityOrEntities, defaultMode(), path, replacements);
   }
 
-  default void sendFormatting(Object entity, String path, Object... args) {
-    dispatch(entity, path, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY, args);
+  default void sendFormatting(Object entityOrEntities, Mode mode, String path, Object... args) {
+    dispatch(entityOrEntities, path, mode, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY, args);
   }
 
-  default void sendFormatting(Iterable<?> entities, String path, Object... args) {
-    dispatch(entities, path, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY, args);
+  default void sendFormatting(Object entityOrEntities, String path, Object... args) {
+    sendFormatting(entityOrEntities, defaultMode(), path, args);
   }
 
 }

@@ -25,7 +25,7 @@ final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProvider<E>
   }
 
   @Override
-  public @Nullable String replace(MessageHandler<E> handler, E entity, String parameters) {
+  public @Nullable Object replace(MessageHandler<E> handler, E entity, String parameters) {
     return delegate.replace(handler, entity, parameters);
   }
 
@@ -35,7 +35,8 @@ final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProvider<E>
     E castedEntity = (E) entity;
     @SuppressWarnings("unchecked")
     MessageHandler<E> castedHandler = (MessageHandler<E>) handler;
-    return delegate.replace(castedHandler, castedEntity, parameters);
+    Object value = delegate.replace(castedHandler, castedEntity, parameters);
+    return value == null ? null : value.toString();
   }
 
   /**

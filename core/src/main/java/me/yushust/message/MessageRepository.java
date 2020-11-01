@@ -60,6 +60,9 @@ public interface MessageRepository {
     return getMessages(null, messagePath);
   }
 
+  /** The strategy used for this repository */
+  Strategy getStrategy();
+
   /** Returns the default language specified for this repository */
   String getDefaultLanguage();
 

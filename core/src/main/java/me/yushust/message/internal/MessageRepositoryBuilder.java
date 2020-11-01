@@ -6,8 +6,6 @@ import me.yushust.message.file.LoadSource;
 import me.yushust.message.file.NodeFileLoader;
 import me.yushust.message.util.Validate;
 
-import java.util.function.UnaryOperator;
-
 /**
  * A fluent {@link MessageRepository} builder,
  * create a builder using {@link MessageRepository#builder}
@@ -39,13 +37,6 @@ public final class MessageRepositoryBuilder {
 
   public MessageRepositoryBuilder setNodeFileLoader(NodeFileLoader nodeFileLoader) {
     this.nodeFileLoader = Validate.notNull(nodeFileLoader);
-    return this;
-  }
-
-  public MessageRepositoryBuilder applyToStrategy(UnaryOperator<Strategy> strategyInterceptor) {
-    this.strategy = Validate.notNull(
-        strategyInterceptor.apply(strategy)
-    );
     return this;
   }
 

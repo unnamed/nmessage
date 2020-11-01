@@ -1,6 +1,7 @@
 package me.yushust.message.internal;
 
 import me.yushust.message.*;
+import me.yushust.message.mode.Mode;
 import me.yushust.message.specific.EntityResolver;
 import me.yushust.message.specific.LanguageProvider;
 import me.yushust.message.specific.Messenger;
@@ -23,8 +24,9 @@ public final class MessageHandlerBuilder<E> {
   FormatterRegistry<E> formatterRegistry;
   LanguageProvider<E> languageProvider = LanguageProvider.dummy();
   Messenger<E> messenger = Messenger.dummy();
-  Strategy strategy = new Strategy();
   EntityResolverRegistry<E> resolverRegistry = new EntityResolverRegistry<>();
+  Class<?> modeType;
+  Mode defaultMode;
 
   // required value
   MessageRepository messageRepository;
@@ -49,6 +51,19 @@ public final class MessageHandlerBuilder<E> {
     return this;
   }
 
+  public final <M extends Mode> MessageHandlerBuilder<E> setModes(Class<M> modeType, M[] modes) {
+    Validate.notNull(modes, "modes");
+    Validate.argument(modes.length > 0, "An empty array was provided!");
+    this.modeType = Validate.notNull(modeType, "modeType");
+    for (M mode : modes) {
+      if (mode.isDefault()) {
+        this.defaultMode = mode;
+        return this;
+      }
+    }
+    throw new IllegalArgumentException("Array of modes doesn't contain the default mode!");
+  }
+
   public <O> MessageHandlerBuilder<E> addExternalProvider(
       String identifier,
       Class<O> entityType,
@@ -68,7 +83,7 @@ public final class MessageHandlerBuilder<E> {
     return this;
   }
 
-  public MessageHandlerBuilder<E> setMessageConsumer(Messenger<E> messenger) {
+  public MessageHandlerBuilder<E> setMessenger(Messenger<E> messenger) {
     this.messenger = Validate.notNull(messenger);
     return this;
   }
@@ -76,11 +91,6 @@ public final class MessageHandlerBuilder<E> {
   public MessageHandlerBuilder<E> setDelimiters(char start, char end) {
     this.startDelimiter = start;
     this.endDelimiter = end;
-    return this;
-  }
-
-  public MessageHandlerBuilder<E> setStrategy(Strategy strategy) {
-    this.strategy = strategy;
     return this;
   }
 

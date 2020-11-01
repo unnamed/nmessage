@@ -8,8 +8,10 @@ import me.yushust.message.allocate.NodeFilePool;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Default implementation of {@link MessageRepository} that
@@ -42,11 +44,11 @@ final class MessageRepositoryImpl implements MessageRepository {
     NodeFile nodeFile = in(language);
 
     if (nodeFile != null) {
-      String message = nodeFile.getString(path);
+      String message = getString(nodeFile, path);
       if (message == null) {
         nodeFile = filePool.find(defaultLanguageFilename);
         if (nodeFile != null) {
-          message = nodeFile.getString(path);
+          message = getString(nodeFile, path);
         }
       }
       if (message != null) {
@@ -64,11 +66,11 @@ final class MessageRepositoryImpl implements MessageRepository {
     NodeFile nodeFile = in(language);
 
     if (nodeFile != null) {
-      List<String> messages = nodeFile.getStringList(path);
+      List<String> messages = getStringList(nodeFile, path);
       if (messages == null) {
         nodeFile = filePool.find(defaultLanguageFilename);
         if (nodeFile != null) {
-          messages = nodeFile.getStringList(path);
+          messages = getStringList(nodeFile, path);
         }
       }
       if (messages != null) {
@@ -76,6 +78,37 @@ final class MessageRepositoryImpl implements MessageRepository {
       }
     }
     return StringList.singleton(strategy.getNotFoundMessage(language, path));
+  }
+
+  private List<String> getStringList(NodeFile nodeFile, String node) {
+    Object value = nodeFile.get(node);
+    if (value instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<String> messages = (List<String>) value;
+      return messages;
+    } else if (value != null) {
+      return Arrays.asList(value.toString().split(Pattern.quote("\n")));
+    } else {
+      return null;
+    }
+  }
+
+  private String getString(NodeFile nodeFile, String node) {
+    Object value = nodeFile.get(node);
+    if (value instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<String> messages = (List<String>) value;
+      return String.join("\n", messages);
+    } else if (value != null) {
+      return value.toString();
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public Strategy getStrategy() {
+    return strategy;
   }
 
   /**

@@ -1,8 +1,5 @@
 package me.yushust.message.file;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
  * Represents a loaded path/node-based file
  * (configurations that used paths like
@@ -11,11 +8,8 @@ import java.util.Optional;
  */
 public interface NodeFile {
 
-  /** Returns the string at the specified node */
-  String getString(String node);
-
-  /** Returns the string list at the specified node */
-  List<String> getStringList(String node);
+  /** Must return a string or a string list, otherwise the object is converted to string.*/
+  Object get(String node);
 
   /**
    * {@inheritDoc}

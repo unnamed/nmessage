@@ -45,12 +45,17 @@ public final class FormattingContext<E> {
     return language;
   }
 
+  public boolean isEmpty() {
+    return pathSet.isEmpty();
+  }
+
   public boolean has(String path) {
     return pathSet.contains(path);
   }
 
   void push(String path) {
     pathDeque.addFirst(path);
+    pathSet.add(path);
   }
 
   String pop() {

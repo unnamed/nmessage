@@ -20,6 +20,6 @@ public interface PlaceholderProvider<E> {
    * the specified entity.
    */
   @Nullable
-  String replace(MessageHandler<E> handle, E entity, String parameters);
+  Object replace(MessageHandler<E> handle, E entity, String parameters);
 
 }

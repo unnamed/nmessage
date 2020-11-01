@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.List;
 import java.util.Properties;
 
 import static java.util.Objects.requireNonNull;
@@ -60,13 +59,8 @@ enum PropertiesFileLoader implements NodeFileLoader {
     }
 
     @Override
-    public String getString(String node) {
+    public String get(String node) {
       return properties.getProperty(node, null);
-    }
-
-    @Override
-    public List<String> getStringList(String node) {
-      return null;
     }
 
     @Override

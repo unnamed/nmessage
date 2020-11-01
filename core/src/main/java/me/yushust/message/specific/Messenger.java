@@ -1,5 +1,7 @@
 package me.yushust.message.specific;
 
+import me.yushust.message.mode.Mode;
+
 /**
  * A functional interface that represents a method
  * for sending messages to the specified T object
@@ -8,7 +10,7 @@ package me.yushust.message.specific;
  */
 public interface Messenger<E> {
 
-  Messenger<?> DUMMY = (receiver, message) -> {
+  Messenger<?> DUMMY = (receiver, mode, message) -> {
   };
 
   /**
@@ -17,7 +19,7 @@ public interface Messenger<E> {
    * @param receiver The property holder
    * @param message  The message
    */
-  void send(E receiver, String message);
+  void send(E receiver, Mode mode, String message);
 
   /**
    * Returns the casted dummy message consumer
