@@ -1,6 +1,5 @@
 package me.yushust.message;
 
-import me.yushust.message.internal.FormattingContext;
 import me.yushust.message.specific.LanguageProvider;
 import me.yushust.message.internal.MessageHandlerBuilder;
 
@@ -60,10 +59,8 @@ public interface MessageHandler<E> extends MessageDispatcher, MessageRepository 
     return getMany(entity, messagePath, jitEntities);
   }
 
-  FormattingContext<E> context();
-
   /**
-   * Returns the {@link LanguageProvider +} for the specified entity class,
+   * Returns the {@link LanguageProvider} for the specified entity,
    * If a {@link LanguageProvider} was not given, returns a dummy {@link LanguageProvider}
    * @see LanguageProvider#dummy()
    */

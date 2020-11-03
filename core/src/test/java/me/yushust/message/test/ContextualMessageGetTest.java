@@ -6,7 +6,7 @@ import me.yushust.message.test.base.HandlerTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class PlaceholderReplacementTest extends HandlerTestCase {
+public class ContextualMessageGetTest extends HandlerTestCase {
 
   @Test
   public void test() {
@@ -17,9 +17,10 @@ public class PlaceholderReplacementTest extends HandlerTestCase {
         .build();
 
     Entity entity = new Entity();
-    Assertions.assertEquals("Your object hashcode is 0 and as string it's i'manentity",
-        handler.get(entity, "replace-this"));
-
+    Assertions.assertEquals(
+        "Check my github https://github.com/yusshu 'i'manentity'",
+        handler.get(entity, "ctx-message")
+    );
   }
 
 }

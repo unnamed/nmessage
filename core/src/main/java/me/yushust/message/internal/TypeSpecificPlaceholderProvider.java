@@ -1,7 +1,6 @@
 package me.yushust.message.internal;
 
-import me.yushust.message.MessageHandler;
-import me.yushust.message.MessageRepository;
+import me.yushust.message.ContextRepository;
 import me.yushust.message.ProviderSettings;
 import me.yushust.message.specific.PlaceholderProvider;
 import me.yushust.message.util.Validate;
@@ -26,17 +25,15 @@ final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProvider<E>
   }
 
   @Override
-  public @Nullable Object replace(MessageRepository handler, E entity, String parameters) {
+  public @Nullable Object replace(ContextRepository<?> handler, E entity, String parameters) {
     return delegate.replace(handler, entity, parameters);
   }
 
   /** Unchecked method for replacement */
-  String replaceUnchecked(MessageHandler<?> handler, Object entity, String parameters) {
+  String replaceUnchecked(ContextRepository<?> handler, Object entity, String parameters) {
     @SuppressWarnings("unchecked")
     E castedEntity = (E) entity;
-    @SuppressWarnings("unchecked")
-    MessageHandler<E> castedHandler = (MessageHandler<E>) handler;
-    Object value = delegate.replace(castedHandler, castedEntity, parameters);
+    Object value = delegate.replace(handler, castedEntity, parameters);
     return value == null ? null : value.toString();
   }
 

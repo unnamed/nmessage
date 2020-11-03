@@ -95,6 +95,7 @@ public final class MessageHandlerBuilder<E> {
   }
 
   public MessageHandler<E> build() {
+    Validate.state(messageRepository != null, "Repository is required!");
     return new MessageHandlerImpl<>(this);
   }
 

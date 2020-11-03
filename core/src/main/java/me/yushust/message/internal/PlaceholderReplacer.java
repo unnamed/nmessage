@@ -11,21 +11,20 @@ final class PlaceholderReplacer {
 
   private final char startDelimiter;
   private final char endDelimiter;
-  private final MessageHandlerImpl<?> handle;
   private final FormatterRegistry<?> registry;
   private final Strategy strategy;
 
   PlaceholderReplacer(MessageHandlerImpl<?> handle, char startDelimiter, char endDelimiter) {
-    this.handle = handle;
     this.startDelimiter = startDelimiter;
     this.endDelimiter = endDelimiter;
     this.registry = handle.getFormatterRegistry();
     this.strategy = handle.getStrategy();
   }
 
-  String replace(Object entity, String text, Object... jitEntities) {
+  String replace(InternalContext<?> context, String text, Object... jitEntities) {
 
     Validate.notNull(text);
+    Object entity = context.getEntity();
 
     // The minimum length to replace placeholders is 3,
     // because "%a_b%" is a valid placeholder
@@ -114,7 +113,7 @@ final class PlaceholderReplacer {
         }
       }
 
-      String value = provider.replaceUnchecked(handle, entity, placeholderString);
+      String value = provider.replaceUnchecked(context.getContextRepository(), entity, placeholderString);
 
       if (value == null) {
         strategy.onFail(Notify.Failure.INVALID_RETURN_VALUE, text);

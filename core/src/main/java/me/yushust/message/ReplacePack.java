@@ -27,6 +27,16 @@ public final class ReplacePack implements Cloneable {
     return entries;
   }
 
+  public String replace(String string) {
+    for (Entry entry : entries) {
+      string = string.replace(
+          entry.getOldValue(),
+          entry.getNewValue()
+      );
+    }
+    return string;
+  }
+
   @Override
   public ReplacePack clone() {
     if (this == EMPTY) {

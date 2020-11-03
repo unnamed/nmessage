@@ -1,5 +1,7 @@
 package me.yushust.message.internal;
 
+import me.yushust.message.ContextRepository;
+
 import java.util.*;
 
 /**
@@ -12,8 +14,7 @@ import java.util.*;
  *
  * @param <E> Represents the entity
  */
-// Implements MessageHandler to ease its use in the providers
-public final class FormattingContext<E> {
+public final class InternalContext<E> {
 
   /** The entity used to obtain messages and replace variables*/
   private final E entity;
@@ -21,19 +22,44 @@ public final class FormattingContext<E> {
   private final String language;
 
   /** This is the real path stack, used to detect cyclic linked messages */
-  private final LinkedList<String> pathDeque =
-      new LinkedList<>();
+  private final LinkedList<String> pathDeque;
+
+  private final MessageHandlerImpl<E> handle;
+  private final ContextRepository<E> contextRepository;
 
   /**
    * The path stack (not really a stack) used to
    * execute contains(...) method in constant time
    */
-  private final Set<String> pathSet =
-      new HashSet<>();
+  private final Set<String> pathSet;
 
-  FormattingContext(E entity, String language) {
+  private InternalContext(
+      E entity,
+      String language,
+      LinkedList<String> pathDeque,
+      Set<String> pathSet,
+      MessageHandlerImpl<E> handle
+  ) {
     this.entity = entity;
     this.language = language;
+    this.pathDeque = pathDeque;
+    this.pathSet = pathSet;
+    this.handle = handle;
+    this.contextRepository = new ContextRepository<>(this, handle);
+  }
+
+  InternalContext(E entity, String language, MessageHandlerImpl<E> handle) {
+    this(
+        entity,
+        language,
+        new LinkedList<>(),
+        new HashSet<>(),
+        handle
+    );
+  }
+
+  ContextRepository<E> getContextRepository() {
+    return contextRepository;
   }
 
   public E getEntity() {
@@ -45,11 +71,7 @@ public final class FormattingContext<E> {
     return language;
   }
 
-  public boolean isEmpty() {
-    return pathSet.isEmpty();
-  }
-
-  public boolean has(String path) {
+  boolean has(String path) {
     return pathSet.contains(path);
   }
 
@@ -62,6 +84,19 @@ public final class FormattingContext<E> {
     String popped = pathDeque.removeFirst();
     pathSet.remove(popped);
     return popped;
+  }
+
+  public InternalContext<E> with(String language) {
+    return new InternalContext<>(
+        null,
+        language,
+        // use the same path stack and set
+        //because they back to its original
+        //state when getMessage execution ends
+        pathDeque,
+        pathSet,
+        handle
+    );
   }
 
   public List<String> export() {

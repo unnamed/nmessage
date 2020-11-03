@@ -12,10 +12,7 @@ import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 
-final class MessageHandlerImpl<E> implements MessageHandler<E> {
-
-  private final ThreadLocal<FormattingContext<E>> contextThreadLocal =
-      new ThreadLocal<>();
+public final class MessageHandlerImpl<E> implements MessageHandler<E> {
 
   private final EntityResolverRegistry<E> resolverRegistry;
   private final Class<E> entityType;
@@ -42,6 +39,45 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
     formatterRegistry.registerProvider("path", new ReferencePlaceholderProvider<>());
   }
 
+  public String format(
+      InternalContext<E> context,
+      String path,
+      ReplacePack replacements,
+      Object[] jitEntities,
+      Object... orderedArgs
+  ) {
+
+    String language = context.getLanguage();
+    String message = repository.getMessage(language, path);
+
+    if (message == null) {
+      return null;
+    }
+    message = replacements.replace(message);
+
+    if (context.has(path)) {
+      // Cycle linked messages
+      strategy.warn(Notify.Warning.CYCLIC_LINKED_MESSAGES, context.export());
+      return message;
+    }
+
+    context.push(path);
+    message = replacer.replace(context, message, jitEntities);
+
+    /*
+     * The String.format method is called after
+     * placeholder replacement because the placeholder
+     * delimiters can cause an exception by being
+     * "special characters"
+     */
+    if (orderedArgs.length > 0) {
+      message = String.format(message, orderedArgs);
+    }
+
+    popAndCheckSame(context, path);
+    return message;
+  }
+
   @Override
   public String format(
       Object resolvableEntity,
@@ -53,52 +89,18 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
     Validate.notNull(path, "path");
     E entity = asEntity(resolvableEntity);
     String language = languageOf(entity);
-    FormattingContext<E> context = enterContext(entity, language);
-
-    String message = repository.getMessage(language, path);
-    if (message != null) {
-      for (ReplacePack.Entry entry : replacements.getEntries()) {
-        message = message.replace(entry.getOldValue(), entry.getNewValue());
-      }
-
-      if (context.has(path)) {
-        // Cycle linked messages
-        strategy.warn(Notify.Warning.CYCLIC_LINKED_MESSAGES, context.export());
-        return message;
-      }
-
-      context.push(path);
-      message = replacer.replace(entity, message, jitEntities);
-
-      /*
-       * The String.format method is called after
-       * placeholder replacement because the placeholder
-       * delimiters can cause an exception by being
-       * "special characters"
-       */
-      if (orderedArgs.length > 0) {
-        message = String.format(message, orderedArgs);
-      }
-
-      popAndCheckSame(context, path);
-    }
-
-    return message;
+    InternalContext<E> context = new InternalContext<>(entity, language, this);
+    return format(context, path, replacements, jitEntities, orderedArgs);
   }
 
-  @Override
   public StringList formatMany(
-      Object resolvableEntity,
+      InternalContext<E> context,
       String path,
       ReplacePack replacements,
       Object[] jitEntities,
       Object... orderedArgs
   ) {
-    Validate.notNull(path, "path");
-    E entity = asEntity(resolvableEntity);
-    String language = languageOf(entity);
-    FormattingContext<E> context = enterContext(entity, language);
-
+    String language = context.getLanguage();
     StringList messages = repository.getMessages(language, path);
 
     for (ReplacePack.Entry entry : replacements.getEntries()) {
@@ -112,7 +114,7 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
           if (line == null) {
             return null;
           }
-          line = replacer.replace(entity, line, jitEntities);
+          line = replacer.replace(context, line, jitEntities);
           if (orderedArgs.length > 0) {
             line = String.format(line, orderedArgs);
           }
@@ -124,8 +126,18 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
   }
 
   @Override
-  public FormattingContext<E> context() {
-    return contextThreadLocal.get();
+  public StringList formatMany(
+      Object resolvableEntity,
+      String path,
+      ReplacePack replacements,
+      Object[] jitEntities,
+      Object... orderedArgs
+  ) {
+    Validate.notNull(path, "path");
+    E entity = asEntity(resolvableEntity);
+    String language = languageOf(entity);
+    InternalContext<E> context = new InternalContext<>(entity, language, this);
+    return formatMany(context, path, replacements, jitEntities, orderedArgs);
   }
 
   @Nullable
@@ -144,17 +156,11 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
   @Override
   public String getMessage(@Nullable String language, String messagePath) {
     language = orDefault(language);
-    FormattingContext<E> context = enterContext(null, language);
-    if (context.getEntity() != null) {
-      return get(context.getEntity(), messagePath);
-    }
-    if (context.has(messagePath)) {
-      return messagePath;
-    }
+    InternalContext<E> context = new InternalContext<>(null, language, this);
     context.push(messagePath);
     String message = repository.getMessage(language, messagePath);
     if (message != null) {
-      message = replacer.replace(null, message);
+      message = replacer.replace(context, message);
     }
     popAndCheckSame(context, messagePath);
     return message;
@@ -163,17 +169,11 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
   @Override
   public StringList getMessages(@Nullable String language, String messagePath) {
     language = orDefault(language);
-    FormattingContext<E> context = enterContext(null, language);
-    if (context.getEntity() != null) {
-      return getMany(context.getEntity(), messagePath);
-    }
-    if (context.has(messagePath)) {
-      return StringList.singleton(messagePath);
-    }
+    InternalContext<E> context = new InternalContext<>(null, language, this);
     context.push(messagePath);
     StringList messages = repository.getMessages(language, messagePath);
     if (messages != null) {
-      messages.replaceAll(message -> replacer.replace(null, message));
+      messages.replaceAll(message -> replacer.replace(context, message));
     }
     popAndCheckSame(context, messagePath);
     return messages;
@@ -197,27 +197,14 @@ final class MessageHandlerImpl<E> implements MessageHandler<E> {
     return entity == null ? getDefaultLanguage() : languageProvider.getLanguage(entity);
   }
 
-  private void popAndCheckSame(FormattingContext<E> context, String path) {
+  private void popAndCheckSame(InternalContext<E> context, String path) {
     // Illegal state, the path stack is now invalid!
     String obtained = context.pop();
-    if (context.isEmpty()) {
-      contextThreadLocal.remove();
-    }
     if (!path.equals(obtained)) {
       throw new IllegalStateException("Invalid path stack, the obtained path isn't "
           + "equals to the previously pushed path!\n    Expected: " + path
           + "\n    Obtained: " + obtained);
     }
-  }
-
-  private FormattingContext<E> enterContext(E entity, String language) {
-    FormattingContext<E> context = context();
-    if (context == null) {
-      // Context not present = first non-nested call
-      context = new FormattingContext<>(entity, language);
-      contextThreadLocal.set(context);
-    }
-    return context;
   }
 
   FormatterRegistry<E> getFormatterRegistry() {
