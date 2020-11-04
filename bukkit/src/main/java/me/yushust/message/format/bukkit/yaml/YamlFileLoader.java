@@ -21,9 +21,8 @@ public class YamlFileLoader implements NodeFileLoader {
 
   @Override
   public NodeFile load(LoadSource source, File file) {
-    return new YamlConfigurationWrapper(
-        YamlConfiguration.loadConfiguration(file)
-    );
+    YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
+    return new YamlNodeFile(data);
   }
 
   @Override
@@ -33,6 +32,25 @@ public class YamlFileLoader implements NodeFileLoader {
       plugin.saveResource(fileName, false);
     }
     return load(source, file);
+  }
+
+  private static class YamlNodeFile implements NodeFile {
+
+    private final YamlConfiguration data;
+
+    private YamlNodeFile(YamlConfiguration data) {
+      this.data = data;
+    }
+
+    @Override
+    public Object get(String node) {
+      return data.get(node);
+    }
+
+    @Override
+    public String toString() {
+      return "YamlNodeFile (*.yml)";
+    }
   }
 
 }
