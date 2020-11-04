@@ -24,10 +24,6 @@ public class ContextRepository<E> implements MessageRepository {
     this.handle = handle;
   }
 
-  private String getMessage(InternalContext<E> ctx, String path) {
-    return handle.format(ctx, path, ReplacePack.EMPTY, MessageHandler.EMPTY_OBJECT_ARRAY);
-  }
-
   @Override
   public String getMessage(@Nullable String language, String messagePath) {
     return handle.format(

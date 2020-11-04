@@ -1,6 +1,7 @@
 package me.yushust.message;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public final class StringList extends AbstractList<String> {
   private final List<String> stringList;
 
   public StringList(List<String> stringList) {
-    this.stringList = stringList;
+    this.stringList = new ArrayList<>(stringList);
   }
 
   /**
