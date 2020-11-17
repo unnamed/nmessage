@@ -79,6 +79,14 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
   }
 
   @Override
+  public String format(E entity, String text) {
+    return replacer.replace(
+        new InternalContext<>(entity, languageOf(entity), this),
+        text
+    );
+  }
+
+  @Override
   public String format(
       Object resolvableEntity,
       String path,

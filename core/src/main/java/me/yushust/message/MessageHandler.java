@@ -5,6 +5,8 @@ import me.yushust.message.internal.MessageHandlerBuilder;
 
 public interface MessageHandler<E> extends MessageDispatcher, MessageRepository {
 
+  String format(E entity, String text);
+  
   String format(
       Object entity,
       String path,
