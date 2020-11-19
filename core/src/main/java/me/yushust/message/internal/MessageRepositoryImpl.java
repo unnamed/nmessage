@@ -116,7 +116,8 @@ final class MessageRepositoryImpl implements MessageRepository {
    * if not present, tries to get the nodeFile with the default
    * language. If not found, logs a warning and returns null.
    */
-  private NodeFile in(@Nullable String language) {
+  @Override
+  public NodeFile in(@Nullable String language) {
     NodeFile nodeFile = null;
     if (language != null) {
       nodeFile = filePool.find(getFilename(language));

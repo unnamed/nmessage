@@ -1,5 +1,6 @@
 package me.yushust.message;
 
+import me.yushust.message.file.NodeFile;
 import me.yushust.message.internal.InternalContext;
 import me.yushust.message.internal.MessageHandlerImpl;
 import me.yushust.message.strategy.Strategy;
@@ -48,6 +49,11 @@ public class ContextRepository<E> implements MessageRepository {
             : context,
         messagePath
     );
+  }
+
+  @Override
+  public NodeFile in(String lang) {
+    return handle.in(lang);
   }
 
   public E getEntity() {

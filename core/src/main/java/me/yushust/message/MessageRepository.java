@@ -1,5 +1,6 @@
 package me.yushust.message;
 
+import me.yushust.message.file.NodeFile;
 import me.yushust.message.internal.MessageRepositoryBuilder;
 import me.yushust.message.strategy.Strategy;
 import org.jetbrains.annotations.Nullable;
@@ -59,6 +60,8 @@ public interface MessageRepository {
   default StringList getMessages(String messagePath) {
     return getMessages(null, messagePath);
   }
+
+  NodeFile in(String lang);
 
   /** The strategy used for this repository */
   Strategy getStrategy();

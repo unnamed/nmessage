@@ -3,6 +3,7 @@ package me.yushust.message.internal;
 import me.yushust.message.*;
 import me.yushust.message.StringList;
 
+import me.yushust.message.file.NodeFile;
 import me.yushust.message.mode.Mode;
 import me.yushust.message.specific.EntityResolver;
 import me.yushust.message.specific.LanguageProvider;
@@ -148,7 +149,12 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
     return formatMany(context, path, replacements, jitEntities, orderedArgs);
   }
 
-  @Nullable
+    @Override
+    public NodeFile in(String lang) {
+        return repository.in(lang);
+    }
+
+    @Nullable
   @SuppressWarnings({"unchecked", "rawtypes"})
   public E asEntity(Object resolvableEntity) {
     if (resolvableEntity == null) {
