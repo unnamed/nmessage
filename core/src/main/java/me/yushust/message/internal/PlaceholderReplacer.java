@@ -83,6 +83,10 @@ final class PlaceholderReplacer {
               .append(placeholderString);
         }
         continue;
+      } else if (identifierString.isEmpty()) {
+        continue;
+      } else if (placeholderString.isEmpty()) {
+        continue;
       }
 
       TypeSpecificPlaceholderProvider<?> provider = registry.getProvider(identifierString);
