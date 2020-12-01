@@ -72,20 +72,8 @@ final class PlaceholderReplacer {
       identifier.setLength(0);
       placeholder.setLength(0);
 
-      if (!closed) {
-        builder
-            .append(startDelimiter)
-            .append(identifierString);
-
-        if (identified) {
-          builder
-              .append(IDENTIFIER_SEPARATOR)
-              .append(placeholderString);
-        }
-        continue;
-      } else if (identifierString.isEmpty()) {
-        continue;
-      } else if (placeholderString.isEmpty()) {
+      if (!closed || (identifierString.isEmpty() || placeholderString.isEmpty())) {
+        appendInvalidPlaceholder(builder, identified, identifierString, placeholderString, closed);
         continue;
       }
 
@@ -143,13 +131,25 @@ final class PlaceholderReplacer {
   }
 
   private void appendInvalidPlaceholder(StringBuilder builder, boolean identified, String identifier, String placeholder) {
+    appendInvalidPlaceholder(builder, identified, identifier, placeholder, true);
+  }
+
+  private void appendInvalidPlaceholder(
+      StringBuilder builder,
+      boolean identified,
+      String identifier,
+      String placeholder,
+      boolean closed
+  ) {
     builder.append(startDelimiter);
     builder.append(identifier);
     if (identified) {
       builder.append(IDENTIFIER_SEPARATOR);
       builder.append(placeholder);
     }
-    builder.append(endDelimiter);
+    if (closed) {
+      builder.append(endDelimiter);
+    }
   }
 
 }
