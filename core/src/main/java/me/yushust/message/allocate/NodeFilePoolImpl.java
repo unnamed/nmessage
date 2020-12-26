@@ -81,10 +81,9 @@ final class NodeFilePoolImpl implements NodeFilePool {
         Logger.getGlobal().log(Level.SEVERE, "NMessage can't load and create" +
             " file from resource '" + filename + "'", e);
       }
-
-      loadedFiles.put(filename, nodeFile == null ? ABSENT : nodeFile);
     }
 
+    loadedFiles.put(filename, nodeFile == null ? ABSENT : nodeFile);
     return nodeFile;
   }
 
