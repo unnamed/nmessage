@@ -21,6 +21,6 @@ public interface PlaceholderProvider<E> {
    * the specified entity.
    */
   @Nullable
-  Object replace(ContextRepository<?> repository, E entity, String parameters);
+  Object replace(ContextRepository repository, E entity, String parameters);
 
 }

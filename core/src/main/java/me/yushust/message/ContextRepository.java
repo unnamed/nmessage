@@ -12,14 +12,14 @@ import org.jetbrains.annotations.Nullable;
  * cyclic linked messages detection that used a ThreadLocal
  * to retain the contexts by thread in the {@link MessageHandler} instance
  */
-public class ContextRepository<E> implements MessageRepository {
+public class ContextRepository implements MessageRepository {
 
-  private final InternalContext<E> context;
-  private final MessageHandlerImpl<E> handle;
+  private final InternalContext context;
+  private final MessageHandlerImpl handle;
 
   public ContextRepository(
-      InternalContext<E> context,
-      MessageHandlerImpl<E> handle
+      InternalContext context,
+      MessageHandlerImpl handle
   ) {
     this.context = context;
     this.handle = handle;
@@ -37,7 +37,7 @@ public class ContextRepository<E> implements MessageRepository {
     );
   }
 
-  private StringList getMessages(InternalContext<E> ctx, String path) {
+  private StringList getMessages(InternalContext ctx, String path) {
     return handle.formatMany(ctx, path, ReplacePack.EMPTY, MessageHandler.EMPTY_OBJECT_ARRAY);
   }
 
@@ -56,7 +56,7 @@ public class ContextRepository<E> implements MessageRepository {
     return handle.in(lang);
   }
 
-  public E getEntity() {
+  public Object getEntity() {
     return context.getEntity();
   }
 

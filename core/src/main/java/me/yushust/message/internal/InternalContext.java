@@ -4,28 +4,19 @@ import me.yushust.message.ContextRepository;
 
 import java.util.*;
 
-/**
- * Context to detect cyclic-linked messages,
- * etc. The relation of contexts with the message
- * handler is "A Context per Thread per MessageHandler"
- *
- * <p>The message handler normally contains a
- * ThreadLocal for the contexts</p>
- *
- * @param <E> Represents the entity
- */
-public final class InternalContext<E> {
+/** Context to detect cyclic-linked messages */
+public final class InternalContext {
 
   /** The entity used to obtain messages and replace variables*/
-  private final E entity;
+  private final Object entity;
   /** The language used to obtain the messages */
   private final String language;
 
   /** This is the real path stack, used to detect cyclic linked messages */
   private final LinkedList<String> pathDeque;
 
-  private final MessageHandlerImpl<E> handle;
-  private final ContextRepository<E> contextRepository;
+  private final MessageHandlerImpl handle;
+  private final ContextRepository contextRepository;
 
   /**
    * The path stack (not really a stack) used to
@@ -34,21 +25,21 @@ public final class InternalContext<E> {
   private final Set<String> pathSet;
 
   private InternalContext(
-      E entity,
+      Object entity,
       String language,
       LinkedList<String> pathDeque,
       Set<String> pathSet,
-      MessageHandlerImpl<E> handle
+      MessageHandlerImpl handle
   ) {
     this.entity = entity;
     this.language = language;
     this.pathDeque = pathDeque;
     this.pathSet = pathSet;
     this.handle = handle;
-    this.contextRepository = new ContextRepository<>(this, handle);
+    this.contextRepository = new ContextRepository(this, handle);
   }
 
-  InternalContext(E entity, String language, MessageHandlerImpl<E> handle) {
+  InternalContext(Object entity, String language, MessageHandlerImpl handle) {
     this(
         entity,
         language,
@@ -58,11 +49,11 @@ public final class InternalContext<E> {
     );
   }
 
-  ContextRepository<E> getContextRepository() {
+  ContextRepository getContextRepository() {
     return contextRepository;
   }
 
-  public E getEntity() {
+  public Object getEntity() {
     return entity;
   }
 
@@ -86,8 +77,8 @@ public final class InternalContext<E> {
     return popped;
   }
 
-  public InternalContext<E> with(String language) {
-    return new InternalContext<>(
+  public InternalContext with(String language) {
+    return new InternalContext(
         null,
         language,
         // use the same path stack and set

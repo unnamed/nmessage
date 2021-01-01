@@ -1,6 +1,7 @@
 package me.yushust.message.internal;
 
 import me.yushust.message.MessageInterceptor;
+import me.yushust.message.config.WiringContainer;
 import me.yushust.message.strategy.Notify;
 import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.Validate;
@@ -11,17 +12,17 @@ final class PlaceholderReplacer {
 
   private final char startDelimiter;
   private final char endDelimiter;
-  private final FormatterRegistry<?> registry;
+  private final WiringContainer registry;
   private final Strategy strategy;
 
-  PlaceholderReplacer(MessageHandlerImpl<?> handle, char startDelimiter, char endDelimiter) {
+  PlaceholderReplacer(MessageHandlerImpl handle, char startDelimiter, char endDelimiter) {
     this.startDelimiter = startDelimiter;
     this.endDelimiter = endDelimiter;
-    this.registry = handle.getFormatterRegistry();
+    this.registry = handle.getWiringContainer();
     this.strategy = handle.getStrategy();
   }
 
-  String replace(InternalContext<?> context, String text, Object... jitEntities) {
+  String replace(InternalContext context, String text, Object... jitEntities) {
 
     Validate.notNull(text);
     Object entity = context.getEntity();

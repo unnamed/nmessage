@@ -11,10 +11,12 @@ public class PlaceholderReplacementTest extends HandlerTestCase {
   @Test
   public void test() {
 
-    MessageHandler<Entity> handler = MessageHandler.builder(Entity.class)
-        .setRepository(repository)
-        .addProvider("obj", testProvider())
-        .build();
+    MessageHandler handler = MessageHandler.create(
+        repository,
+        wiring -> wiring
+            .specify(Entity.class)
+            .addProvider("obj", testProvider())
+    );
 
     Entity entity = new Entity();
     Assertions.assertEquals("Your object hashcode is 0 and as string it's i'manentity",

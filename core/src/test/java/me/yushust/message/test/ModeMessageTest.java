@@ -12,17 +12,19 @@ public class ModeMessageTest extends HandlerTestCase {
   @Test
   public void test() {
 
-    MessageHandler<Entity> handler = MessageHandler.builder(Entity.class)
-        .setRepository(repository)
-        .setModes(Modes.class, Modes.values())
-        .setMessenger((entity, mode, message) -> {
-          Assertions.assertEquals(Modes.INFO, mode);
-          Assertions.assertEquals("I don't know", message);
-        })
-        .build();
+    MessageHandler handler = MessageHandler.create(
+        repository,
+        wiring -> wiring
+            .withModes(Modes.class)
+            .specify(Entity.class)
+            .setMessenger((entity, mode, message) -> {
+              Assertions.assertEquals(Modes.INFO, mode);
+              Assertions.assertEquals("I don't know", message);
+            })
+    );
 
     handler.send(null, Modes.INFO, "message-get-test");
-    handler.send(null,"message-get-test");
+    handler.send(null, "message-get-test");
 
   }
 
@@ -33,8 +35,7 @@ public class ModeMessageTest extends HandlerTestCase {
       public boolean isDefault() {
         return true;
       }
-    } // green
-    ;
+    }; // green
 
     @Override
     public boolean isDefault() {

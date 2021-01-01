@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 final class ReferencePlaceholderProvider<E> implements PlaceholderProvider<E> {
 
   @Override
-  public @Nullable String replace(ContextRepository<?> handle, E entity, String parameters) {
+  public @Nullable String replace(ContextRepository handle, E entity, String parameters) {
     return handle.getMessage(parameters);
   }
 

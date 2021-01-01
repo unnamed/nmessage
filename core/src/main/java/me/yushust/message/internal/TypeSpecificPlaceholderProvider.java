@@ -12,25 +12,25 @@ import org.jetbrains.annotations.Nullable;
  * type and its {@link ProviderSettings}
  * @param <E> The entity type
  */
-final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProvider<E> {
+public final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProvider<E> {
 
   private final Class<E> type;
   private final PlaceholderProvider<E> delegate;
   private final ProviderSettings settings;
 
-  TypeSpecificPlaceholderProvider(Class<E> type, PlaceholderProvider<E> delegate) {
+  public TypeSpecificPlaceholderProvider(Class<E> type, PlaceholderProvider<E> delegate) {
     this.type = Validate.notNull(type, "type");
     this.delegate = Validate.notNull(delegate, "delegate");
     this.settings = computeSettings();
   }
 
   @Override
-  public @Nullable Object replace(ContextRepository<?> handler, E entity, String parameters) {
+  public @Nullable Object replace(ContextRepository handler, E entity, String parameters) {
     return delegate.replace(handler, entity, parameters);
   }
 
   /** Unchecked method for replacement */
-  String replaceUnchecked(ContextRepository<?> handler, Object entity, String parameters) {
+  String replaceUnchecked(ContextRepository handler, Object entity, String parameters) {
     @SuppressWarnings("unchecked")
     E castedEntity = (E) entity;
     Object value = delegate.replace(handler, castedEntity, parameters);

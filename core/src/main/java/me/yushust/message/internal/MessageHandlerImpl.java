@@ -3,6 +3,8 @@ package me.yushust.message.internal;
 import me.yushust.message.*;
 import me.yushust.message.StringList;
 
+import me.yushust.message.config.Specifier;
+import me.yushust.message.config.WiringContainer;
 import me.yushust.message.file.NodeFile;
 import me.yushust.message.mode.Mode;
 import me.yushust.message.specific.EntityResolver;
@@ -13,35 +15,32 @@ import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 
-public final class MessageHandlerImpl<E> implements MessageHandler<E> {
+public final class MessageHandlerImpl implements MessageHandler {
 
-  private final EntityResolverRegistry<E> resolverRegistry;
-  private final Class<E> entityType;
+  private final WiringContainer wiringContainer;
+
   private final PlaceholderReplacer replacer;
-  private final FormatterRegistry<E> formatterRegistry;
-  private final LanguageProvider<E> languageProvider;
   private final MessageRepository repository;
   private final Strategy strategy;
-  private final Messenger<E> messenger;
   private final Class<?> modeType;
   private final Mode defaultMode;
 
-  MessageHandlerImpl(MessageHandlerBuilder<E> builder) {
-    this.resolverRegistry = builder.resolverRegistry;
-    this.entityType = builder.entityType;
-    this.formatterRegistry = builder.formatterRegistry;
-    this.languageProvider = builder.languageProvider;
-    this.repository = builder.messageRepository;
+  public MessageHandlerImpl(MessageRepository repository, Specifier... specifiers) {
+    WireHandleImpl wireHandle = new WireHandleImpl();
+    for (Specifier specifier : specifiers) {
+      specifier.configure(wireHandle);
+    }
+    this.wiringContainer = wireHandle.getWiringContainer();
+    this.repository = repository;
     this.strategy = repository.getStrategy();
-    this.messenger = builder.messenger;
-    this.replacer = new PlaceholderReplacer(this, builder.startDelimiter, builder.endDelimiter);
-    this.modeType = builder.modeType;
-    this.defaultMode = builder.defaultMode;
-    formatterRegistry.registerProvider("path", new ReferencePlaceholderProvider<>());
+    this.replacer = new PlaceholderReplacer(this, wireHandle.getStartDelimiter(), wireHandle.getEndDelimiter());
+    this.modeType = wireHandle.getModesType();
+    this.defaultMode = wireHandle.getDefaultMode();
+    wiringContainer.registerProvider("path", Object.class, new ReferencePlaceholderProvider<>());
   }
 
   public String format(
-      InternalContext<E> context,
+      InternalContext context,
       String path,
       ReplacePack replacements,
       Object[] jitEntities,
@@ -80,9 +79,9 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
   }
 
   @Override
-  public String format(E entity, String text) {
+  public String format(Object entity, String text) {
     return replacer.replace(
-        new InternalContext<>(entity, languageOf(entity), this),
+        new InternalContext(entity, languageOf(entity), this),
         text
     );
   }
@@ -96,14 +95,14 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
       Object... orderedArgs
   ) {
     Validate.notNull(path, "path");
-    E entity = asEntity(resolvableEntity);
+    Object entity = asEntity(resolvableEntity);
     String language = languageOf(entity);
-    InternalContext<E> context = new InternalContext<>(entity, language, this);
+    InternalContext context = new InternalContext(entity, language, this);
     return format(context, path, replacements, jitEntities, orderedArgs);
   }
 
   public StringList formatMany(
-      InternalContext<E> context,
+      InternalContext context,
       String path,
       ReplacePack replacements,
       Object[] jitEntities,
@@ -143,34 +142,47 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
       Object... orderedArgs
   ) {
     Validate.notNull(path, "path");
-    E entity = asEntity(resolvableEntity);
+    Object entity = asEntity(resolvableEntity);
     String language = languageOf(entity);
-    InternalContext<E> context = new InternalContext<>(entity, language, this);
+    InternalContext context = new InternalContext(entity, language, this);
     return formatMany(context, path, replacements, jitEntities, orderedArgs);
   }
 
-    @Override
-    public NodeFile in(String lang) {
-        return repository.in(lang);
+  @Override
+  public <T> LanguageProvider<T> getLanguageProvider(Class<T> entityType) {
+    EntityHandlerPack<?> handlerPack =
+        wiringContainer.getHandlers().get(entityType);
+
+    if (handlerPack == null) {
+      return LanguageProvider.dummy();
     }
 
-    @Nullable
+    @SuppressWarnings("unchecked")
+    LanguageProvider<T> languageProvider =
+        (LanguageProvider<T>) handlerPack.getLanguageProvider();
+    return languageProvider;
+  }
+
+  @Override
+  public NodeFile in(String lang) {
+    return repository.in(lang);
+  }
+
+  @Nullable
   @SuppressWarnings({"unchecked", "rawtypes"})
-  public E asEntity(Object resolvableEntity) {
+  public Object asEntity(Object resolvableEntity) {
     if (resolvableEntity == null) {
       return null;
-    } else if (entityType.isInstance(resolvableEntity)) {
-      return entityType.cast(resolvableEntity);
     }
     Class<?> clazz = resolvableEntity.getClass();
-    EntityResolver resolver = resolverRegistry.findResolver(clazz);
-    return resolver == null ? null : entityType.cast(resolver.resolve(resolvableEntity));
+    EntityResolver resolver = wiringContainer.getResolver(clazz);
+    return resolver == null ? resolvableEntity : resolver.resolve(resolvableEntity);
   }
 
   @Override
   public String getMessage(@Nullable String language, String messagePath) {
     language = orDefault(language);
-    InternalContext<E> context = new InternalContext<>(null, language, this);
+    InternalContext context = new InternalContext(null, language, this);
     context.push(messagePath);
     String message = repository.getMessage(language, messagePath);
     if (message != null) {
@@ -183,7 +195,7 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
   @Override
   public StringList getMessages(@Nullable String language, String messagePath) {
     language = orDefault(language);
-    InternalContext<E> context = new InternalContext<>(null, language, this);
+    InternalContext context = new InternalContext(null, language, this);
     context.push(messagePath);
     StringList messages = repository.getMessages(language, messagePath);
     if (messages != null) {
@@ -207,11 +219,28 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
     return repository.getDefaultLanguage();
   }
 
-  private String languageOf(E entity) {
-    return entity == null ? getDefaultLanguage() : languageProvider.getLanguage(entity);
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  private String languageOf(Object entity) {
+    if (entity == null) {
+      return getDefaultLanguage();
+    } else {
+      LanguageProvider languageProvider =
+          getLanguageProvider(entity.getClass());
+
+      if (languageProvider == null) {
+        return getDefaultLanguage();
+      } else {
+        String language = languageProvider.getLanguage(entity);
+        if (language == null) {
+          return getDefaultLanguage();
+        } else {
+          return language;
+        }
+      }
+    }
   }
 
-  private void popAndCheckSame(InternalContext<E> context, String path) {
+  private void popAndCheckSame(InternalContext context, String path) {
     // Illegal state, the path stack is now invalid!
     String obtained = context.pop();
     if (!path.equals(obtained)) {
@@ -221,13 +250,8 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
     }
   }
 
-  FormatterRegistry<E> getFormatterRegistry() {
-    return formatterRegistry;
-  }
-
-  @Override
-  public LanguageProvider<E> getLanguageProvider() {
-    return languageProvider;
+  WiringContainer getWiringContainer() {
+    return wiringContainer;
   }
 
   @Override
@@ -236,6 +260,7 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
   }
 
   @Override
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public void dispatch(
       Object entityOrEntities,
       String path,
@@ -255,8 +280,19 @@ public final class MessageHandlerImpl<E> implements MessageHandler<E> {
         dispatch(resolvableEntity, path, mode, replacements, jitEntities, orderedArgs);
       }
     } else {
-      E entity = asEntity(entityOrEntities);
+      Object entity = asEntity(entityOrEntities);
+      if (entity == null) {
+        return;
+      }
+      EntityHandlerPack<?> handlerPack = wiringContainer.getHandlers().get(entity.getClass());
+      if (handlerPack == null) {
+        throw new IllegalArgumentException("No handlers registered for " + entity.getClass());
+      }
       String message = format(entity, path, replacements, jitEntities, orderedArgs);
+      Messenger messenger = handlerPack.getMessenger();
+      if (messenger == null) {
+        throw new IllegalArgumentException("No messenger specified for " + entity.getClass());
+      }
       messenger.send(entity, mode, message);
     }
   }

@@ -1,12 +1,13 @@
 package me.yushust.message;
 
+import me.yushust.message.config.Specifier;
+import me.yushust.message.internal.MessageHandlerImpl;
 import me.yushust.message.specific.LanguageProvider;
-import me.yushust.message.internal.MessageHandlerBuilder;
 
-public interface MessageHandler<E> extends MessageDispatcher, MessageRepository {
+public interface MessageHandler extends MessageDispatcher, MessageRepository {
 
-  String format(E entity, String text);
-  
+  String format(Object entity, String text);
+
   String format(
       Object entity,
       String path,
@@ -66,10 +67,13 @@ public interface MessageHandler<E> extends MessageDispatcher, MessageRepository 
    * If a {@link LanguageProvider} was not given, returns a dummy {@link LanguageProvider}
    * @see LanguageProvider#dummy()
    */
-  LanguageProvider<E> getLanguageProvider();
+  <T> LanguageProvider<T> getLanguageProvider(Class<T> entityType);
 
-  static <T> MessageHandlerBuilder<T> builder(Class<T> entityType) {
-    return new MessageHandlerBuilder<>(entityType);
+  static MessageHandler create(
+      MessageRepository repository,
+      Specifier... specifiers
+  ) {
+    return new MessageHandlerImpl(repository, specifiers);
   }
 
 }

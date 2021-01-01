@@ -17,12 +17,14 @@ public class ClassTreeMap<T> {
 
   private Node<T> root;
 
-  private Node<T> inspect(Node<T> node, Class<?> clazz) {
-    if (node.clazz == clazz) {
+  private Node<T> inspect(Node<T> node, Class<?> clazz, boolean exact) {
+    if (node == null) {
+      return null;
+    } else if (node.clazz == clazz) {
       return node;
-    } else if (node.clazz.isAssignableFrom(clazz)) {
+    } else if (!exact && node.clazz.isAssignableFrom(clazz)) {
       for (Node<T> child : node.childs.values()) {
-        Node<T> found = inspect(child, clazz);
+        Node<T> found = inspect(child, clazz, exact);
         if (found != null) {
           return found;
         }
@@ -33,8 +35,17 @@ public class ClassTreeMap<T> {
     }
   }
 
+  public T getExact(Class<?> clazz) {
+    Node<T> node = inspect(root, clazz, true);
+    if (node == null) {
+      return null;
+    } else {
+      return node.value;
+    }
+  }
+
   public T get(Class<?> clazz) {
-    Node<T> node = inspect(root, clazz);
+    Node<T> node = inspect(root, clazz, false);
     if (node == null) {
       return null;
     } else {
