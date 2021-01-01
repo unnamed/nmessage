@@ -2,7 +2,7 @@ package me.yushust.message;
 
 import me.yushust.message.config.Specifier;
 import me.yushust.message.internal.MessageHandlerImpl;
-import me.yushust.message.specific.LanguageProvider;
+import me.yushust.message.specific.Linguist;
 
 public interface MessageHandler extends MessageDispatcher, MessageRepository {
 
@@ -63,11 +63,11 @@ public interface MessageHandler extends MessageDispatcher, MessageRepository {
   }
 
   /**
-   * Returns the {@link LanguageProvider} for the specified entity,
-   * If a {@link LanguageProvider} was not given, returns a dummy {@link LanguageProvider}
-   * @see LanguageProvider#dummy()
+   * Returns the {@link Linguist} for the specified entity,
+   * If a {@link Linguist} was not given, returns a dummy {@link Linguist}
+   * @see Linguist#dummy()
    */
-  <T> LanguageProvider<T> getLanguageProvider(Class<T> entityType);
+  <T> Linguist<T> getLanguageProvider(Class<T> entityType);
 
   static MessageHandler create(
       MessageRepository repository,

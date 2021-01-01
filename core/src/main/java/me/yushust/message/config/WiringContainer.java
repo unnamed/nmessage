@@ -4,7 +4,7 @@ import me.yushust.message.MessageInterceptor;
 import me.yushust.message.internal.EntityHandlerPack;
 import me.yushust.message.internal.TypeSpecificPlaceholderProvider;
 import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.LanguageProvider;
+import me.yushust.message.specific.Linguist;
 import me.yushust.message.specific.Messenger;
 import me.yushust.message.specific.PlaceholderProvider;
 import me.yushust.message.util.ClassTreeMap;
@@ -84,7 +84,7 @@ public class WiringContainer {
     getHandlersOrCreate(resolvedType).setResolver(resolver);
   }
 
-  public <E> void setLinguist(Class<E> entityType, LanguageProvider<E> linguist) {
+  public <E> void setLinguist(Class<E> entityType, Linguist<E> linguist) {
     getHandlersOrCreate(entityType).setLanguageProvider(linguist);
   }
 

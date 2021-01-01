@@ -8,7 +8,7 @@ import me.yushust.message.config.WiringContainer;
 import me.yushust.message.file.NodeFile;
 import me.yushust.message.mode.Mode;
 import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.LanguageProvider;
+import me.yushust.message.specific.Linguist;
 import me.yushust.message.specific.Messenger;
 import me.yushust.message.strategy.Notify;
 import me.yushust.message.strategy.Strategy;
@@ -149,17 +149,17 @@ public final class MessageHandlerImpl implements MessageHandler {
   }
 
   @Override
-  public <T> LanguageProvider<T> getLanguageProvider(Class<T> entityType) {
+  public <T> Linguist<T> getLanguageProvider(Class<T> entityType) {
     EntityHandlerPack<?> handlerPack =
         wiringContainer.getHandlers().get(entityType);
 
     if (handlerPack == null) {
-      return LanguageProvider.dummy();
+      return Linguist.dummy();
     }
 
     @SuppressWarnings("unchecked")
-    LanguageProvider<T> languageProvider =
-        (LanguageProvider<T>) handlerPack.getLanguageProvider();
+    Linguist<T> languageProvider =
+        (Linguist<T>) handlerPack.getLanguageProvider();
     return languageProvider;
   }
 
@@ -224,7 +224,7 @@ public final class MessageHandlerImpl implements MessageHandler {
     if (entity == null) {
       return getDefaultLanguage();
     } else {
-      LanguageProvider languageProvider =
+      Linguist languageProvider =
           getLanguageProvider(entity.getClass());
 
       if (languageProvider == null) {

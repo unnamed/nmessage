@@ -1,7 +1,7 @@
 package me.yushust.message.config;
 
 import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.LanguageProvider;
+import me.yushust.message.specific.Linguist;
 import me.yushust.message.specific.Messenger;
 import me.yushust.message.specific.PlaceholderProvider;
 import me.yushust.message.util.Validate;
@@ -30,7 +30,7 @@ public class SpecificWireHandle<E> {
   }
 
   public SpecificWireHandle<E> setLinguist(
-      LanguageProvider<E> linguist
+      Linguist<E> linguist
   ) {
     Validate.notNull(linguist, "linguist");
     wiringContainer.setLinguist(entityType, linguist);

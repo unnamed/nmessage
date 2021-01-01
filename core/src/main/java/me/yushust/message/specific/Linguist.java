@@ -8,9 +8,9 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <E> The entity type
  */
-public interface LanguageProvider<E> {
+public interface Linguist<E> {
 
-  LanguageProvider<?> DUMMY = languageHolder -> null;
+  Linguist<?> DUMMY = languageHolder -> null;
 
   /**
    * Gets the language of the specified
@@ -31,8 +31,8 @@ public interface LanguageProvider<E> {
    * @return The language provider casted to "T"
    */
   @SuppressWarnings("unchecked")
-  static <T> LanguageProvider<T> dummy() {
-    return (LanguageProvider<T>) DUMMY;
+  static <T> Linguist<T> dummy() {
+    return (Linguist<T>) DUMMY;
   }
 
 }
