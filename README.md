@@ -1,4 +1,4 @@
-[releaseImg]: https://img.shields.io/github/v/release/yusshu/nmessge.svg?label=github%20release
+[releaseImg]: https://img.shields.io/github/v/release/yusshu/nmessage.svg?label=github%20release
 [release]: https://github.com/yusshu/nmessage/releases/latest
 
 # NMessage [![releaseImg]][release] [![Build Status](https://travis-ci.com/yusshu/nmessage.svg?branch=master)](https://travis-ci.com/yusshu/nmessage) 
