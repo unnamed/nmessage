@@ -7,9 +7,8 @@ A simple and a bit abstract library to handle messages with multilanguage suppor
 I have seen many things in languages ​​that I do not understand, to avoid this, I bring here a library for multilanguage and easy to obtain messages from configuration files or from any other place
 
 ## Wiki
-Read the wiki [here](wiki)
+Read the wiki [here](https://github.com/yusshu/nmessage/wiki)
 
-...
 ## Installation
 Maven repository
 ```xml
