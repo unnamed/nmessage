@@ -18,4 +18,13 @@ public @interface ProviderSettings {
    */
   boolean requiresEntity() default true;
 
+  /*
+   * Specifies the identifiers when an entity
+   * is provided as a external provider. So we can use
+   * the principal entity type and the same type for an
+   * external type.
+   * TODO: Add this!
+   */
+  // String[] identifiersWhenExternal() default {};
+
 }

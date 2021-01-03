@@ -2,10 +2,13 @@ package me.yushust.message.internal;
 
 import me.yushust.message.ContextRepository;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.*;
 
 /** Context to detect cyclic-linked messages */
-public final class InternalContext {
+public final class InternalContext
+    implements Closeable {
 
   /** The entity used to obtain messages and replace variables*/
   private final Object entity;
@@ -49,7 +52,7 @@ public final class InternalContext {
     );
   }
 
-  ContextRepository getContextRepository() {
+  public ContextRepository getContextRepository() {
     return contextRepository;
   }
 
@@ -69,6 +72,16 @@ public final class InternalContext {
   void push(String path) {
     pathDeque.addFirst(path);
     pathSet.add(path);
+  }
+
+  void popAndCheckSame(String expected) {
+    // Illegal state, the path stack is now invalid!
+    String obtained = pop();
+    if (!expected.equals(obtained)) {
+      throw new IllegalStateException("Invalid path stack, the obtained path isn't "
+          + "equals to the previously pushed path!\n    Expected: " + expected
+          + "\n    Obtained: " + obtained);
+    }
   }
 
   String pop() {
@@ -111,6 +124,11 @@ public final class InternalContext {
     }
     builder.append('}');
     return builder.toString();
+  }
+
+  @Override
+  public void close() {
+
   }
 
 }

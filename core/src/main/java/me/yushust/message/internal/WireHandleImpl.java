@@ -12,8 +12,8 @@ public class WireHandleImpl implements WireHandle {
   private final WiringContainer wiringContainer = new WiringContainer();
   private Class<? extends Mode> modesType;
   private Mode defaultMode;
-  private char startDelimiter = '%';
-  private char endDelimiter = '%';
+  private String startDelimiter = "%";
+  private String endDelimiter = "%";
 
   @Override
   public <M extends Enum<M> & Mode> WireHandle withModes(Class<M> modesClass) {
@@ -35,7 +35,7 @@ public class WireHandleImpl implements WireHandle {
   }
 
   @Override
-  public WireHandle delimiting(char start, char end) {
+  public WireHandle delimiting(String start, String end) {
     this.startDelimiter = start;
     this.endDelimiter = end;
     return this;
@@ -61,6 +61,11 @@ public class WireHandleImpl implements WireHandle {
     return wiringContainer;
   }
 
+  @Override
+  public Class<? extends Enum<?>> getModesClass() {
+    return null;
+  }
+
   public Class<? extends Mode> getModesType() {
     return modesType;
   }
@@ -69,11 +74,11 @@ public class WireHandleImpl implements WireHandle {
     return defaultMode;
   }
 
-  public char getStartDelimiter() {
+  public String getStartDelimiter() {
     return startDelimiter;
   }
 
-  public char getEndDelimiter() {
+  public String getEndDelimiter() {
     return endDelimiter;
   }
 

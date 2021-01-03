@@ -2,6 +2,7 @@ package me.yushust.message.config;
 
 import me.yushust.message.MessageInterceptor;
 import me.yushust.message.internal.EntityHandlerPack;
+import me.yushust.message.internal.InternalContext;
 import me.yushust.message.internal.TypeSpecificPlaceholderProvider;
 import me.yushust.message.specific.EntityResolver;
 import me.yushust.message.specific.Linguist;
@@ -26,6 +27,37 @@ public class WiringContainer {
 
   private final List<MessageInterceptor> interceptors
       = new LinkedList<>();
+
+  public String getValue(InternalContext context, String identifier, String placeholder, Object[] jitEntities) {
+
+    Object entity = context.getEntity();
+    TypeSpecificPlaceholderProvider<?> provider = providers.get(identifier);
+
+    if (provider == null) {
+      return null;
+    }
+
+    if (!provider.isCompatible(entity)) {
+      boolean found = false;
+      if (jitEntities != null) {
+        for (Object jitEntity : jitEntities) {
+          if (provider.isCompatible(jitEntity)) {
+            entity = jitEntity;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (!found) {
+        return null;
+      }
+    }
+
+    return provider.replaceUnchecked(
+        context.getContextRepository(),
+        entity, placeholder
+    );
+  }
 
   public ClassTreeMap<EntityHandlerPack<?>> getHandlers() {
     return handlers;

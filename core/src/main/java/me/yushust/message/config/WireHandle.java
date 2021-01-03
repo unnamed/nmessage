@@ -5,9 +5,17 @@ import me.yushust.message.mode.Mode;
 
 public interface WireHandle {
 
+  WiringContainer getWiringContainer();
+
+  Class<? extends Enum<?>> getModesClass();
+
   <M extends Enum<M> & Mode> WireHandle withModes(Class<M> modesClass);
 
-  WireHandle delimiting(char start, char end);
+  String getStartDelimiter();
+
+  String getEndDelimiter();
+
+  WireHandle delimiting(String start, String end);
 
   WireHandle intercept(MessageInterceptor interceptor);
 

@@ -30,7 +30,7 @@ public final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProv
   }
 
   /** Unchecked method for replacement */
-  String replaceUnchecked(ContextRepository handler, Object entity, String parameters) {
+  public String replaceUnchecked(ContextRepository handler, Object entity, String parameters) {
     @SuppressWarnings("unchecked")
     E castedEntity = (E) entity;
     Object value = delegate.replace(handler, castedEntity, parameters);
@@ -41,7 +41,7 @@ public final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProv
    * Checks if the given object is compatible as entity
    * for this placeholder provider
    */
-  boolean isCompatible(Object object) {
+  public boolean isCompatible(Object object) {
     return (object == null && !settings.requiresEntity())
         || type.isInstance(object);
   }

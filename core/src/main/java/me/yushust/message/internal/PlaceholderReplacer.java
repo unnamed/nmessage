@@ -2,155 +2,139 @@ package me.yushust.message.internal;
 
 import me.yushust.message.MessageInterceptor;
 import me.yushust.message.config.WiringContainer;
-import me.yushust.message.strategy.Notify;
-import me.yushust.message.strategy.Strategy;
-import me.yushust.message.util.Validate;
 
-final class PlaceholderReplacer {
+public final class PlaceholderReplacer {
 
-  private static final char IDENTIFIER_SEPARATOR = '_';
+  private final WiringContainer wiringContainer;
+  private final String startDelimiter;
+  private final String endDelimiter;
 
-  private final char startDelimiter;
-  private final char endDelimiter;
-  private final WiringContainer registry;
-  private final Strategy strategy;
-
-  PlaceholderReplacer(MessageHandlerImpl handle, char startDelimiter, char endDelimiter) {
+  public PlaceholderReplacer(
+      WiringContainer wiringContainer,
+      String startDelimiter,
+      String endDelimiter
+  ) {
+    this.wiringContainer = wiringContainer;
     this.startDelimiter = startDelimiter;
     this.endDelimiter = endDelimiter;
-    this.registry = handle.getWiringContainer();
-    this.strategy = handle.getStrategy();
   }
 
-  String replace(InternalContext context, String text, Object... jitEntities) {
-
-    Validate.notNull(text);
-    Object entity = context.getEntity();
-
-    // The minimum length to replace placeholders is 3,
-    // because "%a_b%" is a valid placeholder
-    if (text.length() < 6) {
-      return intercept(text);
-    }
-
-    // I don't use text.toCharArray() because it copies
-    // the entire internal array
-    StringBuilder builder = new StringBuilder(text.length());
-    StringBuilder identifier = new StringBuilder();
-    StringBuilder placeholder = new StringBuilder();
-
-    for (int i = 0; i < text.length(); i++) {
-
-      char character = text.charAt(i);
-
-      if (character != startDelimiter || i + 1 >= text.length()) {
-        builder.append(character);
-        continue;
-      }
-
-      boolean closed = false;
-      boolean identified = false;
-
-      while (++i < text.length()) {
-
-        char current = text.charAt(i);
-
-        if (current == endDelimiter) {
-          closed = true;
-          break;
-        } else if (!identified && current == IDENTIFIER_SEPARATOR) {
-          identified = true;
-        } else if (identified) {
-          placeholder.append(current);
-        } else {
-          identifier.append(current);
-        }
-      }
-
-      String identifierString = identifier.toString().toLowerCase();
-      String placeholderString = placeholder.toString();
-
-      identifier.setLength(0);
-      placeholder.setLength(0);
-
-      if (!closed || (identifierString.isEmpty() || placeholderString.isEmpty())) {
-        appendInvalidPlaceholder(builder, identified, identifierString, placeholderString, closed);
-        continue;
-      }
-
-      TypeSpecificPlaceholderProvider<?> provider = registry.getProvider(identifierString);
-
-      if (provider == null) {
-        appendInvalidPlaceholder(builder, identified, identifierString, placeholderString);
-        if (identified) {
-          strategy.onFail(Notify.Failure.PROVIDER_NOT_FOUND, text);
-        }
-        continue;
-      }
-
-      if (!provider.isCompatible(entity)) {
-        boolean found = false;
-        if (jitEntities != null) {
-          for (Object jitEntity : jitEntities) {
-            if (provider.isCompatible(jitEntity)) {
-              entity = jitEntity;
-              found = true;
-              break;
-            }
-          }
-        }
-        if (!found) {
-          strategy.onFail(Notify.Failure.PROVIDER_NOT_APPLICABLE, text);
-          appendInvalidPlaceholder(builder, identified, identifierString, placeholderString);
-          continue;
-        }
-      }
-
-      String value = provider.replaceUnchecked(context.getContextRepository(), entity, placeholderString);
-
-      if (value == null) {
-        strategy.onFail(Notify.Failure.INVALID_RETURN_VALUE, text);
-        appendInvalidPlaceholder(builder, identified, identifierString, placeholderString);
-        continue;
-      }
-
-      // sets the placeholder value
-      builder.append(value);
-    }
-
-    text = builder.toString();
-
-    // TODO: Execute JIT Placeholder Providers before interceptors!
-    return intercept(text);
-  }
-
-  private String intercept(String text) {
-    for (MessageInterceptor interceptor : registry.getInterceptors()) {
+  public String executeInterceptors(String text) {
+    for (MessageInterceptor interceptor : wiringContainer.getInterceptors()) {
       text = interceptor.intercept(text);
     }
     return text;
   }
 
-  private void appendInvalidPlaceholder(StringBuilder builder, boolean identified, String identifier, String placeholder) {
-    appendInvalidPlaceholder(builder, identified, identifier, placeholder, true);
+  public String format(
+      InternalContext context,
+      String text,
+      Object[] jitEntities
+  ) {
+    text = setPlaceholders(context, text, jitEntities);
+    text = executeInterceptors(text);
+    return text;
   }
 
-  private void appendInvalidPlaceholder(
-      StringBuilder builder,
-      boolean identified,
-      String identifier,
-      String placeholder,
-      boolean closed
+  public String setPlaceholders(
+      InternalContext context,
+      String text,
+      Object[] jitEntities
   ) {
-    builder.append(startDelimiter);
-    builder.append(identifier);
-    if (identified) {
-      builder.append(IDENTIFIER_SEPARATOR);
-      builder.append(placeholder);
+    if (
+        startDelimiter.isEmpty()
+        || endDelimiter.isEmpty()
+        || text.length() <
+            3 + startDelimiter.length()
+            + endDelimiter.length()
+    ) {
+      return text;
     }
-    if (closed) {
-      builder.append(endDelimiter);
+
+    StringBuilder result = new StringBuilder();
+    StringBuilder identifier = new StringBuilder();
+    StringBuilder placeholder = new StringBuilder();
+
+    int cursor = 0;
+    boolean readingPlaceholder = false;
+    boolean identified = false;
+    String delimiter = startDelimiter;
+
+    for (int i = 0; i < text.length(); i++) {
+      char current = text.charAt(i);
+
+      char expectedDelimiter = delimiter.charAt(cursor);
+      if (current == expectedDelimiter) {
+        cursor++;
+      } else {
+        if (readingPlaceholder) {
+          if (identified) {
+            placeholder.append(current);
+          } else {
+            if (current == '_') {
+              identified = true;
+            } else {
+              identifier.append(current);
+            }
+          }
+        } else {
+          result.append(current);
+        }
+        cursor = 0;
+      }
+
+      if (cursor >= delimiter.length()) {
+        if (readingPlaceholder) {
+
+          String identifierStr = identifier.toString();
+          String placeholderStr = placeholder.toString();
+          String value;
+
+          if (
+              identifierStr.isEmpty()
+                  || placeholderStr.isEmpty()
+                  || (value = wiringContainer.getValue(
+                      context,
+                      identifierStr,
+                      placeholderStr,
+                      jitEntities
+                  )) == null
+          ) {
+            result.append(startDelimiter);
+            if (identified) {
+              result.append("_");
+            }
+          } else {
+            result.append(value);
+          }
+
+          placeholder.setLength(0);
+          identifier.setLength(0);
+
+          identified = false;
+          readingPlaceholder = false;
+          delimiter = startDelimiter;
+        } else {
+          delimiter = endDelimiter;
+          readingPlaceholder = true;
+        }
+        cursor = 0;
+      }
     }
+
+    if (identifier.length() > 0) {
+      result.append(startDelimiter);
+      result.append(identifier);
+    }
+
+    if (placeholder.length() > 0) {
+      if (identified) {
+        result.append("_");
+      }
+      result.append(placeholder);
+    }
+
+    return result.toString();
   }
 
 }

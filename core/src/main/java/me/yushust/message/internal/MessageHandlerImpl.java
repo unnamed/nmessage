@@ -5,7 +5,6 @@ import me.yushust.message.StringList;
 
 import me.yushust.message.config.Specifier;
 import me.yushust.message.config.WiringContainer;
-import me.yushust.message.file.NodeFile;
 import me.yushust.message.mode.Mode;
 import me.yushust.message.specific.EntityResolver;
 import me.yushust.message.specific.Linguist;
@@ -13,19 +12,22 @@ import me.yushust.message.specific.Messenger;
 import me.yushust.message.strategy.Notify;
 import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.Validate;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-public final class MessageHandlerImpl implements MessageHandler {
+public final class MessageHandlerImpl
+    extends DelegatingMessageRepository
+    implements MessageHandler {
 
   private final WiringContainer wiringContainer;
-
-  private final PlaceholderReplacer replacer;
   private final MessageRepository repository;
   private final Strategy strategy;
   private final Class<?> modeType;
   private final Mode defaultMode;
+  private final PlaceholderReplacer replacer;
 
   public MessageHandlerImpl(MessageRepository repository, Specifier... specifiers) {
+    super(repository);
     WireHandleImpl wireHandle = new WireHandleImpl();
     for (Specifier specifier : specifiers) {
       specifier.configure(wireHandle);
@@ -33,9 +35,13 @@ public final class MessageHandlerImpl implements MessageHandler {
     this.wiringContainer = wireHandle.getWiringContainer();
     this.repository = repository;
     this.strategy = repository.getStrategy();
-    this.replacer = new PlaceholderReplacer(this, wireHandle.getStartDelimiter(), wireHandle.getEndDelimiter());
     this.modeType = wireHandle.getModesType();
     this.defaultMode = wireHandle.getDefaultMode();
+    this.replacer = new PlaceholderReplacer(
+        wiringContainer,
+        wireHandle.getStartDelimiter(),
+        wireHandle.getEndDelimiter()
+    );
     wiringContainer.registerProvider("path", Object.class, new ReferencePlaceholderProvider<>());
   }
 
@@ -62,7 +68,7 @@ public final class MessageHandlerImpl implements MessageHandler {
     }
 
     context.push(path);
-    message = replacer.replace(context, message, jitEntities);
+    message = replacer.format(context, message, jitEntities);
 
     /*
      * The String.format method is called after
@@ -74,15 +80,16 @@ public final class MessageHandlerImpl implements MessageHandler {
       message = String.format(message, orderedArgs);
     }
 
-    popAndCheckSame(context, path);
+    context.popAndCheckSame(path);
     return message;
   }
 
   @Override
   public String format(Object entity, String text) {
-    return replacer.replace(
+    return replacer.format(
         new InternalContext(entity, languageOf(entity), this),
-        text
+        text,
+        EMPTY_OBJECT_ARRAY
     );
   }
 
@@ -95,10 +102,13 @@ public final class MessageHandlerImpl implements MessageHandler {
       Object... orderedArgs
   ) {
     Validate.notNull(path, "path");
+    return format(makeContext(resolvableEntity), path, replacements, jitEntities, orderedArgs);
+  }
+
+  private InternalContext makeContext(Object resolvableEntity) {
     Object entity = asEntity(resolvableEntity);
     String language = languageOf(entity);
-    InternalContext context = new InternalContext(entity, language, this);
-    return format(context, path, replacements, jitEntities, orderedArgs);
+    return new InternalContext(entity, language, this);
   }
 
   public StringList formatMany(
@@ -119,17 +129,14 @@ public final class MessageHandlerImpl implements MessageHandler {
 
     messages.replaceAll(
         line -> {
-          if (line == null) {
-            return null;
-          }
-          line = replacer.replace(context, line, jitEntities);
+          line = replacer.format(context, line, jitEntities);
           if (orderedArgs.length > 0) {
             line = String.format(line, orderedArgs);
           }
           return line;
         }
     );
-    popAndCheckSame(context, path);
+    context.popAndCheckSame(path);
     return messages;
   }
 
@@ -142,10 +149,7 @@ public final class MessageHandlerImpl implements MessageHandler {
       Object... orderedArgs
   ) {
     Validate.notNull(path, "path");
-    Object entity = asEntity(resolvableEntity);
-    String language = languageOf(entity);
-    InternalContext context = new InternalContext(entity, language, this);
-    return formatMany(context, path, replacements, jitEntities, orderedArgs);
+    return formatMany(makeContext(resolvableEntity), path, replacements, jitEntities, orderedArgs);
   }
 
   @Override
@@ -163,20 +167,25 @@ public final class MessageHandlerImpl implements MessageHandler {
     return languageProvider;
   }
 
-  @Override
-  public NodeFile in(String lang) {
-    return repository.in(lang);
-  }
-
   @Nullable
   @SuppressWarnings({"unchecked", "rawtypes"})
+  @Contract("!null -> !null")
   public Object asEntity(Object resolvableEntity) {
     if (resolvableEntity == null) {
       return null;
     }
     Class<?> clazz = resolvableEntity.getClass();
     EntityResolver resolver = wiringContainer.getResolver(clazz);
-    return resolver == null ? resolvableEntity : resolver.resolve(resolvableEntity);
+    if (resolver == null) {
+      return resolvableEntity;
+    } else {
+      Object resolved = resolver.resolve(resolvableEntity);
+      if (resolved == null) {
+        return resolvableEntity;
+      } else {
+        return resolved;
+      }
+    }
   }
 
   @Override
@@ -186,9 +195,9 @@ public final class MessageHandlerImpl implements MessageHandler {
     context.push(messagePath);
     String message = repository.getMessage(language, messagePath);
     if (message != null) {
-      message = replacer.replace(context, message);
+      message = replacer.format(context, message, EMPTY_OBJECT_ARRAY);
     }
-    popAndCheckSame(context, messagePath);
+    context.popAndCheckSame(messagePath);
     return message;
   }
 
@@ -199,24 +208,14 @@ public final class MessageHandlerImpl implements MessageHandler {
     context.push(messagePath);
     StringList messages = repository.getMessages(language, messagePath);
     if (messages != null) {
-      messages.replaceAll(message -> replacer.replace(context, message));
+      messages.replaceAll(message -> replacer.format(context, message, EMPTY_OBJECT_ARRAY));
     }
-    popAndCheckSame(context, messagePath);
+    context.popAndCheckSame(messagePath);
     return messages;
   }
 
   private String orDefault(String language) {
     return language == null ? repository.getDefaultLanguage() : language;
-  }
-
-  @Override
-  public Strategy getStrategy() {
-    return repository.getStrategy();
-  }
-
-  @Override
-  public String getDefaultLanguage() {
-    return repository.getDefaultLanguage();
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -230,28 +229,9 @@ public final class MessageHandlerImpl implements MessageHandler {
       if (languageProvider == null) {
         return getDefaultLanguage();
       } else {
-        String language = languageProvider.getLanguage(entity);
-        if (language == null) {
-          return getDefaultLanguage();
-        } else {
-          return language;
-        }
+        return orDefault(languageProvider.getLanguage(entity));
       }
     }
-  }
-
-  private void popAndCheckSame(InternalContext context, String path) {
-    // Illegal state, the path stack is now invalid!
-    String obtained = context.pop();
-    if (!path.equals(obtained)) {
-      throw new IllegalStateException("Invalid path stack, the obtained path isn't "
-          + "equals to the previously pushed path!\n    Expected: " + path
-          + "\n    Obtained: " + obtained);
-    }
-  }
-
-  WiringContainer getWiringContainer() {
-    return wiringContainer;
   }
 
   @Override
@@ -269,6 +249,7 @@ public final class MessageHandlerImpl implements MessageHandler {
       Object[] jitEntities,
       Object[] orderedArgs
   ) {
+    Validate.notNull(entityOrEntities, "entityOrEntities");
     if (mode == null) {
       mode = defaultMode;
     } else if (modeType != null && !modeType.isInstance(mode)) {
@@ -281,18 +262,11 @@ public final class MessageHandlerImpl implements MessageHandler {
       }
     } else {
       Object entity = asEntity(entityOrEntities);
-      if (entity == null) {
-        return;
-      }
       EntityHandlerPack<?> handlerPack = wiringContainer.getHandlers().get(entity.getClass());
-      if (handlerPack == null) {
-        throw new IllegalArgumentException("No handlers registered for " + entity.getClass());
-      }
+      Validate.argument(handlerPack != null, "No handlers registered for " + entity.getClass());
       String message = format(entity, path, replacements, jitEntities, orderedArgs);
       Messenger messenger = handlerPack.getMessenger();
-      if (messenger == null) {
-        throw new IllegalArgumentException("No messenger specified for " + entity.getClass());
-      }
+      Validate.argument(messenger != null, "No messenger specified for " + entity.getClass());
       messenger.send(entity, mode, message);
     }
   }
