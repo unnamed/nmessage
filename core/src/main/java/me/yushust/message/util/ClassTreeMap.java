@@ -22,17 +22,18 @@ public class ClassTreeMap<T> {
       return null;
     } else if (node.clazz == clazz) {
       return node;
-    } else if (!exact && node.clazz.isAssignableFrom(clazz)) {
+    } else if (node.clazz.isAssignableFrom(clazz)) {
       for (Node<T> child : node.childs.values()) {
         Node<T> found = inspect(child, clazz, exact);
         if (found != null) {
           return found;
         }
       }
-      return node;
-    } else {
-      return null;
+      if (!exact) {
+        return node;
+      }
     }
+    return null;
   }
 
   public T getExact(Class<?> clazz) {

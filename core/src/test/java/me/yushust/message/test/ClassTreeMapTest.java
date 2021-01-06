@@ -26,6 +26,8 @@ public class ClassTreeMapTest {
     tree.put(List.class, "");
     tree.put(ArrayList.class, "");
 
+    Assertions.assertEquals("for map", tree.getExact(Map.class));
+
     Assertions.assertEquals("for linked hash map", tree.get(LinkedHashMap.class));
     Assertions.assertEquals("for map", tree.get(ConcurrentHashMap.class));
     Assertions.assertEquals("for char sequence", tree.get(StringBuilder.class));
