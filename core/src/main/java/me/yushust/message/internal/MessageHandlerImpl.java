@@ -179,12 +179,7 @@ public final class MessageHandlerImpl
     if (resolver == null) {
       return resolvableEntity;
     } else {
-      Object resolved = resolver.resolve(resolvableEntity);
-      if (resolved == null) {
-        return resolvableEntity;
-      } else {
-        return resolved;
-      }
+      return resolver.resolve(resolvableEntity);
     }
   }
 

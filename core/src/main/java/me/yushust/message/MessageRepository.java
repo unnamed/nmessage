@@ -1,6 +1,6 @@
 package me.yushust.message;
 
-import me.yushust.message.file.NodeFile;
+import me.yushust.message.source.NodeFile;
 import me.yushust.message.internal.MessageRepositoryBuilder;
 import me.yushust.message.strategy.Strategy;
 import org.jetbrains.annotations.Nullable;

@@ -1,7 +1,7 @@
 package me.yushust.message.format.bukkit;
 
-import me.yushust.message.file.LoadSource;
-import me.yushust.message.file.NodeFileLoader;
+import me.yushust.message.source.LoadSource;
+import me.yushust.message.source.NodeFileLoader;
 import me.yushust.message.format.bukkit.yaml.YamlFileLoader;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;

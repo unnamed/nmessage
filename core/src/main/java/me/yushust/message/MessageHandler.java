@@ -2,9 +2,10 @@ package me.yushust.message;
 
 import me.yushust.message.config.Specifier;
 import me.yushust.message.internal.MessageHandlerImpl;
-import me.yushust.message.specific.Linguist;
+import me.yushust.message.language.Linguist;
+import me.yushust.message.send.Messenger;
 
-public interface MessageHandler extends MessageDispatcher, MessageRepository {
+public interface MessageHandler extends MessageRepository {
 
   String format(Object entity, String text);
 
@@ -29,7 +30,7 @@ public interface MessageHandler extends MessageDispatcher, MessageRepository {
   }
 
   default String replacing(Object entity, String path, Object... replacements) {
-    return format(entity, path, ReplacePack.make(replacements), EMPTY_OBJECT_ARRAY);
+    return format(entity, path, ReplacePack.make(replacements), Messenger);
   }
 
   default String formatting(Object entity, String path, Object... args) {
@@ -46,20 +47,6 @@ public interface MessageHandler extends MessageDispatcher, MessageRepository {
 
   default StringList formattingMany(Object entity, String path, Object... args) {
     return formatMany(entity, path, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY, args);
-  }
-
-  @Deprecated
-  default String getMessage(Object entity, String path, Object... jitEntities) {
-    // compatibility method, this method isn't used
-    // because "get" is more short xD
-    return get(entity, path, jitEntities);
-  }
-
-  @Deprecated
-  default StringList getMessages(Object entity, String messagePath, Object... jitEntities) {
-    // compatibility method, this method isn't used
-    // because "getMany" is more short xD
-    return getMany(entity, messagePath, jitEntities);
   }
 
   /**

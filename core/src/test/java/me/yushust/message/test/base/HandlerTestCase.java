@@ -1,8 +1,8 @@
 package me.yushust.message.test.base;
 
 import me.yushust.message.MessageRepository;
-import me.yushust.message.file.LoadSource;
-import me.yushust.message.file.NodeFileLoader;
+import me.yushust.message.source.LoadSource;
+import me.yushust.message.source.NodeFileLoader;
 import me.yushust.message.specific.PlaceholderProvider;
 import org.junit.jupiter.api.BeforeEach;
 

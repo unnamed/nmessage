@@ -1,4 +1,4 @@
-package me.yushust.message.specific;
+package me.yushust.message.language;
 
 import org.jetbrains.annotations.Nullable;
 

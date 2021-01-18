@@ -1,4 +1,4 @@
-package me.yushust.message.file;
+package me.yushust.message.source;
 
 import java.io.File;
 import java.io.FileReader;

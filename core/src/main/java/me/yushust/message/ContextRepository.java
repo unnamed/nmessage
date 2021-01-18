@@ -1,6 +1,6 @@
 package me.yushust.message;
 
-import me.yushust.message.file.NodeFile;
+import me.yushust.message.source.NodeFile;
 import me.yushust.message.internal.InternalContext;
 import me.yushust.message.internal.MessageHandlerImpl;
 import me.yushust.message.strategy.Strategy;

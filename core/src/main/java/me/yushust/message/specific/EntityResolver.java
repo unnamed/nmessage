@@ -1,6 +1,6 @@
 package me.yushust.message.specific;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A functional interface that resolves an entity using
@@ -29,7 +29,7 @@ public interface EntityResolver<E, T> {
    * @param object The resolving object
    * @return The resolved entity
    */
-  @Nullable
+  @NotNull
   E resolve(T object);
 
 }

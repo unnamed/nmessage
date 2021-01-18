@@ -3,7 +3,7 @@ package me.yushust.message.internal;
 import me.yushust.message.MessageRepository;
 import me.yushust.message.strategy.Strategy;
 import me.yushust.message.StringList;
-import me.yushust.message.file.NodeFile;
+import me.yushust.message.source.NodeFile;
 import me.yushust.message.allocate.NodeFilePool;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;

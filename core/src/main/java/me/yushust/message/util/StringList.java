@@ -1,15 +1,15 @@
-package me.yushust.message;
+package me.yushust.message.util;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A wrapper for a List of Strings, adds methods for
  * facilitate handling
  */
 public final class StringList extends AbstractList<String> {
+
+  /** Random number generator used to get a random element from the list*/
+  private static final Random RANDOM = new Random();
 
   private final List<String> stringList;
 
@@ -41,6 +41,37 @@ public final class StringList extends AbstractList<String> {
    */
   public String join(String delimiter) {
     return String.join(delimiter, stringList);
+  }
+
+  /**
+   * @return Random element from the list, or
+   * {@code valueIfEmpty} if the list is empty
+   */
+  public String random(String valueIfEmpty) {
+    if (stringList.isEmpty()) {
+      return valueIfEmpty;
+    } else {
+      return getRandomElement();
+    }
+  }
+
+  /**
+   * @return Random element from the list
+   * @throws NoSuchElementException if list is empty
+   */
+  public String random() {
+    if (stringList.isEmpty()) {
+      throw new NoSuchElementException("No elements in the list");
+    } else {
+      return getRandomElement();
+    }
+  }
+
+  /** @return Random element from the list */
+  private String getRandomElement() {
+    return stringList.get(
+        RANDOM.nextInt(stringList.size())
+    );
   }
 
   /**

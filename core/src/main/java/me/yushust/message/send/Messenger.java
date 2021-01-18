@@ -1,8 +1,9 @@
-package me.yushust.message;
+package me.yushust.message.send;
 
+import me.yushust.message.ReplacePack;
 import me.yushust.message.mode.Mode;
 
-public interface MessageDispatcher {
+public interface Messenger {
 
   Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
