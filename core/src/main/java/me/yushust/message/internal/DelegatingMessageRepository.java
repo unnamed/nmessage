@@ -1,7 +1,7 @@
 package me.yushust.message.internal;
 
 import me.yushust.message.MessageRepository;
-import me.yushust.message.source.NodeMessageContainer;
+import me.yushust.message.source.MessageSource;
 import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.StringList;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ public abstract class DelegatingMessageRepository implements MessageRepository {
   }
 
   @Override
-  public NodeMessageContainer in(String lang) {
+  public MessageSource in(String lang) {
     return delegate.in(lang);
   }
 

@@ -4,7 +4,6 @@ import me.yushust.message.MessageHandler;
 import me.yushust.message.MessageRepository;
 import me.yushust.message.source.LoadSource;
 import me.yushust.message.source.NodeFile;
-import me.yushust.message.source.NodeFileLoader;
 import me.yushust.message.test.base.HandlerTestCase;
 
 import java.io.File;

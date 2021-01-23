@@ -1,16 +1,14 @@
 package me.yushust.message.internal;
 
 import me.yushust.message.*;
-import me.yushust.message.StringList;
 
 import me.yushust.message.config.Specifier;
 import me.yushust.message.config.WiringContainer;
-import me.yushust.message.mode.Mode;
+import me.yushust.message.language.Linguist;
 import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.Linguist;
-import me.yushust.message.specific.Messenger;
 import me.yushust.message.strategy.Notify;
 import me.yushust.message.strategy.Strategy;
+import me.yushust.message.util.StringList;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -22,8 +20,6 @@ public final class MessageHandlerImpl
   private final WiringContainer wiringContainer;
   private final MessageRepository repository;
   private final Strategy strategy;
-  private final Class<?> modeType;
-  private final Mode defaultMode;
   private final PlaceholderReplacer replacer;
 
   public MessageHandlerImpl(MessageRepository repository, Specifier... specifiers) {
@@ -35,8 +31,6 @@ public final class MessageHandlerImpl
     this.wiringContainer = wireHandle.getWiringContainer();
     this.repository = repository;
     this.strategy = repository.getStrategy();
-    this.modeType = wireHandle.getModesType();
-    this.defaultMode = wireHandle.getDefaultMode();
     this.replacer = new PlaceholderReplacer(
         wiringContainer,
         wireHandle.getStartDelimiter(),
@@ -101,7 +95,7 @@ public final class MessageHandlerImpl
       Object[] jitEntities,
       Object... orderedArgs
   ) {
-    Validate.notNull(path, "path");
+    Validate.isNotNull(path, "path");
     return format(makeContext(resolvableEntity), path, replacements, jitEntities, orderedArgs);
   }
 
@@ -148,7 +142,7 @@ public final class MessageHandlerImpl
       Object[] jitEntities,
       Object... orderedArgs
   ) {
-    Validate.notNull(path, "path");
+    Validate.isNotNull(path, "path");
     return formatMany(makeContext(resolvableEntity), path, replacements, jitEntities, orderedArgs);
   }
 
@@ -228,7 +222,7 @@ public final class MessageHandlerImpl
       }
     }
   }
-
+/*
   @Override
   public Mode defaultMode() {
     return defaultMode;
@@ -244,7 +238,7 @@ public final class MessageHandlerImpl
       Object[] jitEntities,
       Object[] orderedArgs
   ) {
-    Validate.notNull(entityOrEntities, "entityOrEntities");
+    Validate.isNotNull(entityOrEntities, "entityOrEntities");
     if (mode == null) {
       mode = defaultMode;
     } else if (modeType != null && !modeType.isInstance(mode)) {
@@ -258,11 +252,11 @@ public final class MessageHandlerImpl
     } else {
       Object entity = asEntity(entityOrEntities);
       EntityHandlerPack<?> handlerPack = wiringContainer.getHandlers().get(entity.getClass());
-      Validate.argument(handlerPack != null, "No handlers registered for " + entity.getClass());
+      Validate.isTrue(handlerPack != null, "No handlers registered for " + entity.getClass());
       String message = format(entity, path, replacements, jitEntities, orderedArgs);
-      Messenger messenger = handlerPack.getMessenger();
-      Validate.argument(messenger != null, "No messenger specified for " + entity.getClass());
-      messenger.send(entity, mode, message);
+      MessageSender sender = handlerPack.getMessageSender();
+      Validate.isTrue(sender != null, "No message sender specified for " + entity.getClass());
+      sender.send(entity, mode, message);
     }
-  }
+  }*/
 }

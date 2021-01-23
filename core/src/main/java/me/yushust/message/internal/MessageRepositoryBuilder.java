@@ -3,7 +3,6 @@ package me.yushust.message.internal;
 import me.yushust.message.MessageRepository;
 import me.yushust.message.strategy.Strategy;
 import me.yushust.message.source.LoadSource;
-import me.yushust.message.source.NodeFileLoader;
 import me.yushust.message.util.Validate;
 
 /**

@@ -3,9 +3,11 @@ package me.yushust.message;
 import me.yushust.message.config.Specifier;
 import me.yushust.message.internal.MessageHandlerImpl;
 import me.yushust.message.language.Linguist;
-import me.yushust.message.send.Messenger;
+import me.yushust.message.util.StringList;
 
 public interface MessageHandler extends MessageRepository {
+
+  Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
   String format(Object entity, String text);
 
@@ -30,7 +32,7 @@ public interface MessageHandler extends MessageRepository {
   }
 
   default String replacing(Object entity, String path, Object... replacements) {
-    return format(entity, path, ReplacePack.make(replacements), Messenger);
+    return format(entity, path, ReplacePack.make(replacements), EMPTY_OBJECT_ARRAY);
   }
 
   default String formatting(Object entity, String path, Object... args) {

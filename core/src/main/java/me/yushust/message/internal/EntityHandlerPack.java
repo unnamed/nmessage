@@ -1,8 +1,8 @@
 package me.yushust.message.internal;
 
+import me.yushust.message.language.Linguist;
+import me.yushust.message.send.MessageSender;
 import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.Linguist;
-import me.yushust.message.specific.Messenger;
 
 public class EntityHandlerPack<E> {
 
@@ -11,7 +11,7 @@ public class EntityHandlerPack<E> {
   private EntityResolver<?, E> resolver;
 
   private Linguist<E> languageProvider;
-  private Messenger<E> messenger;
+  private MessageSender<E> sender;
 
   private EntityHandlerPack() {
   }
@@ -24,8 +24,8 @@ public class EntityHandlerPack<E> {
     this.languageProvider = languageProvider;
   }
 
-  public EntityHandlerPack<E> setMessenger(Messenger<E> messenger) {
-    this.messenger = messenger;
+  public EntityHandlerPack<E> setMessageSender(MessageSender<E> sender) {
+    this.sender = sender;
     return this;
   }
 
@@ -37,8 +37,8 @@ public class EntityHandlerPack<E> {
     return languageProvider;
   }
 
-  public Messenger<E> getMessenger() {
-    return messenger;
+  public MessageSender<E> getMessageSender() {
+    return sender;
   }
 
   public static <E> EntityHandlerPack<E> create() {

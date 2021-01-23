@@ -1,6 +1,6 @@
 package me.yushust.message.internal;
 
-import me.yushust.message.ContextRepository;
+import me.yushust.message.track.ContextRepository;
 import me.yushust.message.ProviderSettings;
 import me.yushust.message.specific.PlaceholderProvider;
 import org.jetbrains.annotations.Nullable;
