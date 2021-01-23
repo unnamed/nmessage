@@ -1,7 +1,7 @@
 [releaseImg]: https://img.shields.io/github/v/release/yusshu/nmessage.svg?label=github%20release
 [release]: https://github.com/yusshu/nmessage/releases/latest
 
-# NMessage [![releaseImg]][release] [![Build Status](https://travis-ci.com/yusshu/nmessage.svg?branch=master)](https://travis-ci.com/yusshu/nmessage) 
+# nmessage [![releaseImg]][release] ![Build Status](https://img.shields.io/github/workflow/status/yusshu/nmessage/build/master) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](license.txt)
 
 A simple and a bit abstract library to handle messages with multilanguage support.
 I have seen many things in languages ​​that I do not understand, to avoid this, I bring here a library for multilanguage and easy to obtain messages from configuration files or from any other place
