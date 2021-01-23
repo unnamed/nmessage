@@ -4,9 +4,9 @@ import me.yushust.message.MessageInterceptor;
 import me.yushust.message.internal.EntityHandlerPack;
 import me.yushust.message.internal.InternalContext;
 import me.yushust.message.internal.TypeSpecificPlaceholderProvider;
+import me.yushust.message.language.Linguist;
+import me.yushust.message.send.MessageSender;
 import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.Linguist;
-import me.yushust.message.specific.Messenger;
 import me.yushust.message.specific.PlaceholderProvider;
 import me.yushust.message.util.ClassTreeMap;
 import me.yushust.message.util.Validate;
@@ -82,7 +82,7 @@ public class WiringContainer {
    * {@link NullPointerException}
    */
   public void registerInterceptor(MessageInterceptor interceptor) {
-    Validate.notNull(interceptor, "interceptor");
+    Validate.isNotNull(interceptor, "interceptor");
     interceptors.add(interceptor);
   }
 
@@ -100,7 +100,7 @@ public class WiringContainer {
   /** Finds a provider using its identifier */
   @Nullable
   public TypeSpecificPlaceholderProvider<?> getProvider(String identifier) {
-    Validate.notEmpty(identifier);
+    Validate.isNotEmpty(identifier);
     return providers.get(identifier.toLowerCase());
   }
 
@@ -120,8 +120,8 @@ public class WiringContainer {
     getHandlersOrCreate(entityType).setLanguageProvider(linguist);
   }
 
-  public <E> void setMessenger(Class<E> entityType, Messenger<E> messenger) {
-    getHandlersOrCreate(entityType).setMessenger(messenger);
+  public <E> void setMessageSender(Class<E> entityType, MessageSender<E> sender) {
+    getHandlersOrCreate(entityType).setMessageSender(sender);
   }
 
   private <E> EntityHandlerPack<E> getHandlersOrCreate(Class<E> entityType) {

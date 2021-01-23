@@ -1,8 +1,8 @@
 package me.yushust.message.config;
 
+import me.yushust.message.language.Linguist;
+import me.yushust.message.send.MessageSender;
 import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.Linguist;
-import me.yushust.message.specific.Messenger;
 import me.yushust.message.specific.PlaceholderProvider;
 import me.yushust.message.util.Validate;
 
@@ -23,8 +23,8 @@ public class SpecificWireHandle<E> {
       Class<R> resolvedClass,
       EntityResolver<E, R> resolver
   ) {
-    Validate.notNull(resolvedClass, "resolvedClass");
-    Validate.notNull(resolver, "resolver");
+    Validate.isNotNull(resolvedClass, "resolvedClass");
+    Validate.isNotNull(resolver, "resolver");
     wiringContainer.addResolver(resolvedClass, resolver);
     return this;
   }
@@ -32,7 +32,7 @@ public class SpecificWireHandle<E> {
   public SpecificWireHandle<E> setLinguist(
       Linguist<E> linguist
   ) {
-    Validate.notNull(linguist, "linguist");
+    Validate.isNotNull(linguist, "linguist");
     wiringContainer.setLinguist(entityType, linguist);
     return this;
   }
@@ -41,17 +41,17 @@ public class SpecificWireHandle<E> {
       String identifier,
       PlaceholderProvider<E> provider
   ) {
-    Validate.notNull(identifier, "identifier");
-    Validate.notNull(provider, "provider");
+    Validate.isNotNull(identifier, "identifier");
+    Validate.isNotNull(provider, "provider");
     wiringContainer.registerProvider(identifier, entityType, provider);
     return this;
   }
 
-  public SpecificWireHandle<E> setMessenger(
-      Messenger<E> messenger
+  public SpecificWireHandle<E> setMessageSender(
+      MessageSender<E> sender
   ) {
-    Validate.notNull(messenger, "messenger");
-    wiringContainer.setMessenger(entityType, messenger);
+    Validate.isNotNull(sender, "sender");
+    wiringContainer.setMessageSender(entityType, sender);
     return this;
   }
 

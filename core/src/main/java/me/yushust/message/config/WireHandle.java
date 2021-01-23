@@ -1,15 +1,10 @@
 package me.yushust.message.config;
 
 import me.yushust.message.MessageInterceptor;
-import me.yushust.message.mode.Mode;
 
 public interface WireHandle {
 
   WiringContainer getWiringContainer();
-
-  Class<? extends Enum<?>> getModesClass();
-
-  <M extends Enum<M> & Mode> WireHandle withModes(Class<M> modesClass);
 
   String getStartDelimiter();
 
