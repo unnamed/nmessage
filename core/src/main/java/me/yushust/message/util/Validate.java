@@ -27,7 +27,7 @@ public final class Validate {
    * @return The object, not null.
    */
   @NotNull
-  public static <T> T notNull(@Nullable T object, String name) {
+  public static <T> T isNotNull(@Nullable T object, String name) {
     if (object == null) {
       throw new NullPointerException(name);
     } else {
@@ -46,8 +46,8 @@ public final class Validate {
    * @return The object, not null.
    */
   @NotNull
-  public static <T> T notNull(@Nullable T object) {
-    return notNull(object, "null");
+  public static <T> T isNotNull(@Nullable T object) {
+    return isNotNull(object, "null");
   }
 
   /**
@@ -60,7 +60,7 @@ public final class Validate {
    * @return The same string, if not null
    * and not empty.
    */
-  public static String notEmpty(String string) {
+  public static String isNotEmpty(String string) {
     if (string == null || string.isEmpty()) {
       throw new IllegalArgumentException("Provided string is empty or null!");
     } else {
@@ -78,7 +78,7 @@ public final class Validate {
    * @param message    The message for the exception
    *                   if the expression is false.
    */
-  public static void state(boolean expression, String message) {
+  public static void isState(boolean expression, String message) {
     if (!expression) {
       throw new IllegalStateException(message);
     }
@@ -89,7 +89,7 @@ public final class Validate {
    * If it's true, does nothing. Else, the method
    * results in a {@link IllegalArgumentException}
    * being thrown.
-   * The same as {@link Validate#state}, but it
+   * The same as {@link Validate#isState}, but it
    * throws a {@link IllegalArgumentException}
    * instead of a {@link IllegalStateException}
    *
@@ -97,7 +97,7 @@ public final class Validate {
    * @param message    The message for the exception
    *                   if the expression is false.
    */
-  public static void argument(boolean expression, String message) {
+  public static void isTrue(boolean expression, String message) {
     if (!expression) {
       throw new IllegalArgumentException(message);
     }
