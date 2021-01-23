@@ -1,7 +1,10 @@
-.gradle
+# ide files
 .idea
 *.iml
-target
-.settings
-.project
-.classpath
+
+# gradle files
+.gradle
+
+# target folders
+/core/build/
+/bukkit/build/
