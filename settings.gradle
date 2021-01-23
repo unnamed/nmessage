@@ -1,0 +1,4 @@
+rootProject.name = 'nmessage'
+
+include 'core'
+include 'bukkit'
