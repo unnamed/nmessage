@@ -44,6 +44,10 @@ public class YamlMessageSource
   @Override
   public Object get(String language, String path) {
 
+    if (language == null) {
+      return null;
+    }
+
     Object value = cache.get(language);
 
     if (value == ABSENT) {

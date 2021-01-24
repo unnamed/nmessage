@@ -45,22 +45,4 @@ public abstract class AbstractYamlMessageSource
     return config;
   }
 
-  /**
-   * Gets the value linked to the specified
-   * {@code language} from the {@code cache} map.
-   *
-   * <p>Replaces the sentinel value {@code ABSENT}
-   * with NULL</p>
-   */
-  protected final YamlConfiguration getMemoizedConfig(
-    String language
-  ) {
-    Object value = cache.get(language);
-    if (value == ABSENT) {
-      return null;
-    } else {
-      return (YamlConfiguration) value;
-    }
-  }
-
 }
