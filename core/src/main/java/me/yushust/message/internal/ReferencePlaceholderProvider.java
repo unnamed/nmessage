@@ -2,7 +2,7 @@ package me.yushust.message.internal;
 
 import me.yushust.message.track.ContextRepository;
 import me.yushust.message.ProviderSettings;
-import me.yushust.message.specific.PlaceholderProvider;
+import me.yushust.message.format.PlaceholderProvider;
 import org.jetbrains.annotations.Nullable;
 
 @ProviderSettings(

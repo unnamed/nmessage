@@ -17,7 +17,7 @@ public final class InternalContext
   /** This is the real path stack, used to detect cyclic linked messages */
   private final LinkedList<String> pathDeque;
 
-  private final MessageHandlerImpl handle;
+  private final MessageProviderImpl handle;
   private final ContextRepository contextRepository;
 
   /**
@@ -31,7 +31,7 @@ public final class InternalContext
       String language,
       LinkedList<String> pathDeque,
       Set<String> pathSet,
-      MessageHandlerImpl handle
+      MessageProviderImpl handle
   ) {
     this.entity = entity;
     this.language = language;
@@ -41,7 +41,7 @@ public final class InternalContext
     this.contextRepository = new ContextRepository(this, handle);
   }
 
-  InternalContext(Object entity, String language, MessageHandlerImpl handle) {
+  InternalContext(Object entity, String language, MessageProviderImpl handle) {
     this(
         entity,
         language,

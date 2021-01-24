@@ -1,13 +1,13 @@
 package me.yushust.message.config;
 
-import me.yushust.message.MessageInterceptor;
+import me.yushust.message.internal.MessageInterceptor;
 import me.yushust.message.internal.EntityHandlerPack;
 import me.yushust.message.internal.InternalContext;
 import me.yushust.message.internal.TypeSpecificPlaceholderProvider;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.send.MessageSender;
-import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.PlaceholderProvider;
+import me.yushust.message.resolve.EntityResolver;
+import me.yushust.message.format.PlaceholderProvider;
 import me.yushust.message.util.ClassTreeMap;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;

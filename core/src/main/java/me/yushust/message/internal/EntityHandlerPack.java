@@ -2,7 +2,7 @@ package me.yushust.message.internal;
 
 import me.yushust.message.language.Linguist;
 import me.yushust.message.send.MessageSender;
-import me.yushust.message.specific.EntityResolver;
+import me.yushust.message.resolve.EntityResolver;
 
 public class EntityHandlerPack<E> {
 

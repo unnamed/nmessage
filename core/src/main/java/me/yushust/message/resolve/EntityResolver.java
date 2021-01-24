@@ -1,4 +1,4 @@
-package me.yushust.message.specific;
+package me.yushust.message.resolve;
 
 import org.jetbrains.annotations.NotNull;
 

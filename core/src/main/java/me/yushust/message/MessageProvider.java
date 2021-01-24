@@ -1,11 +1,11 @@
 package me.yushust.message;
 
 import me.yushust.message.config.Specifier;
-import me.yushust.message.internal.MessageHandlerImpl;
+import me.yushust.message.internal.MessageProviderImpl;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.util.StringList;
 
-public interface MessageHandler extends MessageProvider {
+public interface MessageProvider {
 
   Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
@@ -58,11 +58,11 @@ public interface MessageHandler extends MessageProvider {
    */
   <T> Linguist<T> getLanguageProvider(Class<T> entityType);
 
-  static MessageHandler create(
+  static MessageProvider create(
       MessageProvider repository,
       Specifier... specifiers
   ) {
-    return new MessageHandlerImpl(repository, specifiers);
+    return new MessageProviderImpl(repository, specifiers);
   }
 
 }

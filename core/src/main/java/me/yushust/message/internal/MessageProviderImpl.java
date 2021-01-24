@@ -5,7 +5,7 @@ import me.yushust.message.*;
 import me.yushust.message.config.Specifier;
 import me.yushust.message.config.WiringContainer;
 import me.yushust.message.language.Linguist;
-import me.yushust.message.specific.EntityResolver;
+import me.yushust.message.resolve.EntityResolver;
 import me.yushust.message.strategy.Notify;
 import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.StringList;
@@ -13,16 +13,16 @@ import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-public final class MessageHandlerImpl
+public final class MessageProviderImpl
     extends DelegatingMessageRepository
-    implements MessageHandler {
+    implements MessageProvider {
 
   private final WiringContainer wiringContainer;
   private final MessageProvider repository;
   private final Strategy strategy;
   private final PlaceholderReplacer replacer;
 
-  public MessageHandlerImpl(MessageProvider repository, Specifier... specifiers) {
+  public MessageProviderImpl(MessageProvider repository, Specifier... specifiers) {
     super(repository);
     WireHandleImpl wireHandle = new WireHandleImpl();
     for (Specifier specifier : specifiers) {

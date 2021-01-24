@@ -2,8 +2,8 @@ package me.yushust.message.config;
 
 import me.yushust.message.language.Linguist;
 import me.yushust.message.send.MessageSender;
-import me.yushust.message.specific.EntityResolver;
-import me.yushust.message.specific.PlaceholderProvider;
+import me.yushust.message.resolve.EntityResolver;
+import me.yushust.message.format.PlaceholderProvider;
 import me.yushust.message.util.Validate;
 
 public class SpecificWireHandle<E> {

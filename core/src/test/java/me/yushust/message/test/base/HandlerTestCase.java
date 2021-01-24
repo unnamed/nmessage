@@ -1,6 +1,6 @@
 package me.yushust.message.test.base;
 
-import me.yushust.message.specific.PlaceholderProvider;
+import me.yushust.message.format.PlaceholderProvider;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;

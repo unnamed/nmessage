@@ -1,6 +1,6 @@
 package me.yushust.message.test;
 
-import me.yushust.message.MessageHandler;
+import me.yushust.message.MessageProvider;
 import me.yushust.message.mode.Mode;
 import me.yushust.message.test.base.Entity;
 import me.yushust.message.test.base.HandlerTestCase;
@@ -12,7 +12,7 @@ public class ModeMessageTest extends HandlerTestCase {
   @Test
   public void test() {
 
-    MessageHandler handler = MessageHandler.create(
+    MessageProvider handler = MessageProvider.create(
         repository,
         wiring -> wiring
             .withModes(Modes.class)

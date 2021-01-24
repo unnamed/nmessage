@@ -1,13 +1,13 @@
-package me.yushust.message.specific;
+package me.yushust.message.format;
 
 import me.yushust.message.track.ContextRepository;
-import me.yushust.message.MessageHandler;
+import me.yushust.message.MessageProvider;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A class that provides a value for the specified
  * parameters and the provided entity.
- * If {@link MessageHandler#getMessage} is called
+ * If {@link ContextRepository#getMessage} is called
  * in {@link PlaceholderProvider#replace}, this
  * {@link PlaceholderProvider} is ignored
  *

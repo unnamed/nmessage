@@ -1,6 +1,5 @@
 package me.yushust.message.internal;
 
-import me.yushust.message.MessageInterceptor;
 import me.yushust.message.config.SpecificWireHandle;
 import me.yushust.message.config.WireHandle;
 import me.yushust.message.config.WiringContainer;
