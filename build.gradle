@@ -1,6 +1,9 @@
 subprojects {
   apply plugin: 'java'
 
+  group 'me.yushust.message'
+  version '6.0.0-SNAPSHOT'
+
   repositories {
     mavenLocal()
     mavenCentral()
