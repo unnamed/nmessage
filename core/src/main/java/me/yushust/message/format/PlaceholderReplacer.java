@@ -119,7 +119,7 @@ public class PlaceholderReplacer {
           String placeholderStr = placeholder.toString();
 
           if (invalid || (value = valueProvider.getValue(
-              context, identifierStr, placeholderStr, jitEntities
+              context, identifierStr, placeholderStr
           )) == null) {
             result.append(startDelimiter);
             result.append(identifierStr);
