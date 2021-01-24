@@ -10,6 +10,7 @@ public final class TrackingContext {
 
   /** The entity used to obtain messages and replace variables */
   private final Object entity;
+
   /** The language used to obtain the messages */
   private final String language;
 
