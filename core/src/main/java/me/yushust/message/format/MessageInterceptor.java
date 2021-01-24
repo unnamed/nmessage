@@ -1,6 +1,5 @@
 package me.yushust.message.format;
 
-import me.yushust.message.format.PlaceholderProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**

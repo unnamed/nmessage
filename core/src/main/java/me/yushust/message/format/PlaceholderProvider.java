@@ -1,7 +1,6 @@
 package me.yushust.message.format;
 
 import me.yushust.message.track.ContextRepository;
-import me.yushust.message.MessageProvider;
 import org.jetbrains.annotations.Nullable;
 
 /**
