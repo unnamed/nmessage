@@ -62,7 +62,10 @@ public final class MessageSourceDecorator {
 
     @Override
     @Nullable
-    public Object get(String language, String path) {
+    public Object get(@Nullable String language, String path) {
+      if (language == null) {
+        return delegate.get(fallback, path);
+      }
       Object value = delegate.get(language, path);
       if (value == null && !language.equals(fallback)) {
         value = delegate.get(fallback, path);

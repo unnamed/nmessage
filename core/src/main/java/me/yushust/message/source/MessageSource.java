@@ -1,5 +1,7 @@
 package me.yushust.message.source;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Represents the source of messages, used to
  * obtain all the messages using the language
@@ -15,7 +17,7 @@ public interface MessageSource {
    * @param path The path
    * @return The value in the path
    */
-  Object get(String language, String path);
+  Object get(@Nullable String language, String path);
 
   /**
    * @return The section separator characters, specially
