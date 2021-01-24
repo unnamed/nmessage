@@ -5,7 +5,7 @@ import me.yushust.message.internal.MessageHandlerImpl;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.util.StringList;
 
-public interface MessageHandler extends MessageRepository {
+public interface MessageHandler extends MessageProvider {
 
   Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
@@ -59,7 +59,7 @@ public interface MessageHandler extends MessageRepository {
   <T> Linguist<T> getLanguageProvider(Class<T> entityType);
 
   static MessageHandler create(
-      MessageRepository repository,
+      MessageProvider repository,
       Specifier... specifiers
   ) {
     return new MessageHandlerImpl(repository, specifiers);

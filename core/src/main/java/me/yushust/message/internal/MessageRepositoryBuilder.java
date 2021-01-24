@@ -1,13 +1,12 @@
 package me.yushust.message.internal;
 
-import me.yushust.message.MessageRepository;
+import me.yushust.message.language.MessageRepositoryImpl;
 import me.yushust.message.strategy.Strategy;
-import me.yushust.message.source.LoadSource;
 import me.yushust.message.util.Validate;
 
 /**
- * A fluent {@link MessageRepository} builder,
- * create a builder using {@link MessageRepository#builder}
+ * A fluent {@link MessageProvider} builder,
+ * create a builder using {@link MessageProvider#builder}
  */
 public final class MessageRepositoryBuilder {
 
@@ -54,7 +53,7 @@ public final class MessageRepositoryBuilder {
     return this;
   }
 
-  public MessageRepository build() {
+  public MessageProvider build() {
 
     Validate.state(
         nodeFileLoader != null && loadSource != null,

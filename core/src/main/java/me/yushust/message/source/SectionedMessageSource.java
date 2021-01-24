@@ -30,12 +30,12 @@ public class SectionedMessageSource
   }
 
   @Override
-  public Object get(String path) {
-    return parent.get(prefix + path);
+  public Object get(String language, String path) {
+    return parent.get(language, prefix + path);
   }
 
   @Override
-  public String getSectionSeparator() {
+  public char getSectionSeparator() {
     // maintain the same section separator across child classes
     return parent.getSectionSeparator();
   }

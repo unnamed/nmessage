@@ -1,7 +1,5 @@
 package me.yushust.message.test.base;
 
-import me.yushust.message.MessageRepository;
-import me.yushust.message.source.LoadSource;
 import me.yushust.message.specific.PlaceholderProvider;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -9,7 +7,7 @@ import java.io.File;
 
 public class HandlerTestCase {
 
-  protected MessageRepository repository;
+  protected MessageProvider repository;
 
   protected PlaceholderProvider<Entity> testProvider() {
     return (handle, entity, placeholder) -> {
@@ -26,7 +24,7 @@ public class HandlerTestCase {
 
   @BeforeEach
   public void createRepository() {
-    this.repository = MessageRepository.builder()
+    this.repository = MessageProvider.builder()
         .setDefaultLanguage("en")
         .setNodeFileLoader(NodeFileLoader.forProperties())
         .setFileFormat("messages_%lang%.properties")

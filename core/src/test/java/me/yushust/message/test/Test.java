@@ -1,8 +1,6 @@
 package me.yushust.message.test;
 
 import me.yushust.message.MessageHandler;
-import me.yushust.message.MessageRepository;
-import me.yushust.message.source.LoadSource;
 import me.yushust.message.source.NodeFile;
 import me.yushust.message.test.base.HandlerTestCase;
 
@@ -16,7 +14,7 @@ public class Test extends HandlerTestCase {
   @org.junit.jupiter.api.Test
   public void test() {
     MessageHandler messageHandler = MessageHandler.create(
-        MessageRepository.builder()
+        MessageProvider.builder()
             .setLoadSource(new LoadSource(getClass().getClassLoader(), new File("/")))
             .setNodeFileLoader(new NodeFileLoader() {
               @Override

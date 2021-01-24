@@ -1,16 +1,15 @@
 package me.yushust.message.internal;
 
-import me.yushust.message.MessageRepository;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.StringList;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class DelegatingMessageRepository implements MessageRepository {
+public abstract class DelegatingMessageRepository implements MessageProvider {
 
-  private final MessageRepository delegate;
+  private final MessageProvider delegate;
 
-  public DelegatingMessageRepository(MessageRepository delegate) {
+  public DelegatingMessageRepository(MessageProvider delegate) {
     this.delegate = delegate;
   }
 

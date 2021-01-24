@@ -18,11 +18,11 @@ public final class MessageHandlerImpl
     implements MessageHandler {
 
   private final WiringContainer wiringContainer;
-  private final MessageRepository repository;
+  private final MessageProvider repository;
   private final Strategy strategy;
   private final PlaceholderReplacer replacer;
 
-  public MessageHandlerImpl(MessageRepository repository, Specifier... specifiers) {
+  public MessageHandlerImpl(MessageProvider repository, Specifier... specifiers) {
     super(repository);
     WireHandleImpl wireHandle = new WireHandleImpl();
     for (Specifier specifier : specifiers) {

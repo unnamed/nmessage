@@ -2,7 +2,8 @@ package me.yushust.message.source;
 
 /**
  * Represents the source of messages, used to
- * obtain all the messages using a simple string
+ * obtain all the messages using the language
+ * and a simple string as message identifier
  * called 'path'
  */
 public interface MessageSource {
@@ -14,15 +15,15 @@ public interface MessageSource {
    * @param path The path
    * @return The value in the path
    */
-  Object get(String path);
+  Object get(String language, String path);
 
   /**
    * @return The section separator characters, specially
    * used for file message sources that use node files (like
    * YAML or JSON) to separate its sections in 'nodes'
    */
-  default String getSectionSeparator() {
-    return ".";
+  default char getSectionSeparator() {
+    return '.';
   }
 
   /**

@@ -1,7 +1,6 @@
 package me.yushust.message.track;
 
 import me.yushust.message.MessageHandler;
-import me.yushust.message.MessageRepository;
 import me.yushust.message.ReplacePack;
 import me.yushust.message.internal.InternalContext;
 import me.yushust.message.internal.MessageHandlerImpl;
@@ -11,12 +10,12 @@ import me.yushust.message.util.StringList;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a {@link MessageRepository} linked to
+ * Represents a {@link MessageProvider} linked to
  * a {@link InternalContext}. This replaces the old
  * cyclic linked messages detection that used a ThreadLocal
  * to retain the contexts by thread in the {@link MessageHandler} instance
  */
-public class ContextRepository implements MessageRepository {
+public class ContextRepository implements MessageProvider {
 
   private final InternalContext context;
   private final MessageHandlerImpl handle;
