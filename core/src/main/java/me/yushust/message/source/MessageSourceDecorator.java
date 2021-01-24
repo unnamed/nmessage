@@ -65,7 +65,7 @@ public final class MessageSourceDecorator {
     public Object get(String language, String path) {
       Object value = delegate.get(language, path);
       if (value == null && !language.equals(fallback)) {
-        value = delegate.get(language, path);
+        value = delegate.get(fallback, path);
       }
       return value;
     }
