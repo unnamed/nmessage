@@ -4,6 +4,7 @@ import me.yushust.message.source.MessageSource;
 import me.yushust.message.util.Validate;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 
@@ -42,7 +43,7 @@ public class YamlMessageSource
   }
 
   @Override
-  public Object get(String language, String path) {
+  public Object get(@Nullable String language, String path) {
 
     if (language == null) {
       return null;
