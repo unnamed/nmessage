@@ -26,10 +26,10 @@ public class PlaceholderReplacer {
     return text.length() >= (3 + startDelimiter.length() + endDelimiter.length());
   }
 
+  @SuppressWarnings("StringEquality")
   public String setPlaceholders(
       TrackingContext context,
-      String text,
-      Object[] jitEntities
+      String text
   ) {
     if (
         startDelimiter.isEmpty()
@@ -50,9 +50,6 @@ public class PlaceholderReplacer {
 
     // cursor that indicates the progress while reading start or end delimiter
     int cursor = 0;
-
-    // boolean that determines if we are reading a placeholder or not
-    boolean readingPlaceholder = false;
 
     // boolean that determines if the identifier was already read
     boolean identified = false;
@@ -75,7 +72,7 @@ public class PlaceholderReplacer {
       } else {
         // no, then, if we were reading a placeholder
         // add the characters to the identifier or placeholder
-        if (readingPlaceholder) {
+        if (delimiter == endDelimiter) {
           // if the placeholder was already identified, then
           // append the character to the placeholder parameters
           if (identified) {
@@ -107,24 +104,29 @@ public class PlaceholderReplacer {
         // so get the value for this placeholder and re-set
         // everything to its initial state to start reading
         // another placeholder
-        if (readingPlaceholder) {
+        if (delimiter == endDelimiter) {
 
-          // boolean that determines if the identifier or the placeholder are invalids
-          boolean invalid = identifier.length() == 0 || placeholder.length() == 0;
+          String identifierStr = "";
+          String placeholderStr = "";
 
           // the value for this placeholder
-          String value;
+          String value = null;
 
-          String identifierStr = identifier.toString();
-          String placeholderStr = placeholder.toString();
+          if (identifier.length() > 0) {
+            identifierStr = identifier.toString();
+            placeholderStr = placeholder.toString();
+            if (placeholder.length() > 0) {
+              value = valueProvider.getValue(context, identifierStr, placeholderStr);
+            } else {
+              value = valueProvider.getValue(context, identifierStr);
+            }
+          }
 
-          if (invalid || (value = valueProvider.getValue(
-              context, identifierStr, placeholderStr
-          )) == null) {
+          if (value == null) {
             result.append(startDelimiter);
             result.append(identifierStr);
             if (identified) {
-              result.append("_");
+              result.append('_');
               result.append(placeholderStr);
               result.append(endDelimiter);
             }
@@ -136,11 +138,9 @@ public class PlaceholderReplacer {
           identifier.setLength(0);
 
           identified = false;
-          readingPlaceholder = false;
           delimiter = startDelimiter;
         } else {
           delimiter = endDelimiter;
-          readingPlaceholder = true;
         }
         cursor = 0;
       }

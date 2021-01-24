@@ -1,50 +1,73 @@
 package me.yushust.message.track;
 
-import java.util.*;
+import me.yushust.message.MessageProvider;
+import me.yushust.message.ReplacePack;
+import me.yushust.message.exception.MessageHandlingException;
+import me.yushust.message.exception.TrackedException;
 
 /** Context to detect cyclic-linked messages */
 public final class TrackingContext {
 
-  /** The entity used to obtain messages and replace variables*/
+  /** The entity used to obtain messages and replace variables */
   private final Object entity;
   /** The language used to obtain the messages */
   private final String language;
 
-  /** This is the real path stack, used to detect cyclic linked messages */
-  private final LinkedList<String> pathDeque;
+  /** The just-in-time entities */
+  private final Object[] jitEntities;
 
-  private final MessageHandlerImpl handle;
+  /** Pack that contains all the literal replacements for the messages */
+  private final ReplacePack literalReplacements;
+
+  /** Pack that contains all the variable replacements for the messages */
+  private final ReplacePack variableReplacements;
+
+  /** This is the real path stack, used to detect cyclic linked messages */
+  private final TrackingPathList paths;
+
+  private final MessageProvider provider;
   private final ContextRepository contextRepository;
 
-  /**
-   * The path stack (not really a stack) used to
-   * execute contains(...) method in constant time
-   */
-  private final Set<String> pathSet;
-
   private TrackingContext(
-      Object entity,
-      String language,
-      LinkedList<String> pathDeque,
-      Set<String> pathSet,
-      MessageHandlerImpl handle
+    Object entity,
+    String language,
+    Object[] jitEntities,
+    ReplacePack literalReplacements,
+    ReplacePack variableReplacements,
+    TrackingPathList paths,
+    MessageProvider provider
   ) {
     this.entity = entity;
     this.language = language;
-    this.pathDeque = pathDeque;
-    this.pathSet = pathSet;
-    this.handle = handle;
-    this.contextRepository = new ContextRepository(this, handle);
+    this.jitEntities = jitEntities;
+    this.literalReplacements = literalReplacements;
+    this.variableReplacements = variableReplacements;
+    this.paths = paths;
+    this.provider = provider;
+    this.contextRepository = new ContextRepository(this, provider);
   }
 
-  TrackingContext(Object entity, String language, MessageHandlerImpl handle) {
+  public TrackingContext(
+    Object entity,
+    String language,
+    Object[] jitEntities,
+    ReplacePack literalReplacements,
+    ReplacePack variableReplacements,
+    MessageProvider provider
+  ) {
     this(
-        entity,
-        language,
-        new LinkedList<>(),
-        new HashSet<>(),
-        handle
+      entity,
+      language,
+      jitEntities,
+      literalReplacements,
+      variableReplacements,
+      TrackingPathList.create(),
+      provider
     );
+  }
+
+  public TrackingPathList getPathList() {
+    return paths;
   }
 
   public ContextRepository getContextRepository() {
@@ -60,65 +83,43 @@ public final class TrackingContext {
     return language;
   }
 
-  boolean has(String path) {
-    return pathSet.contains(path);
-  }
-
-  void push(String path) {
-    pathDeque.addFirst(path);
-    pathSet.add(path);
-  }
-
-  void popAndCheckSame(String expected) {
-    // Illegal state, the path stack is now invalid!
-    String obtained = pop();
-    if (!expected.equals(obtained)) {
-      throw new IllegalStateException("Invalid path stack, the obtained path isn't "
-          + "equals to the previously pushed path!\n    Expected: " + expected
-          + "\n    Obtained: " + obtained);
+  public void push(String path) {
+    try {
+      paths.push(path);
+    } catch (TrackedException e) {
+      throw new MessageHandlingException(
+        "Cannot push path to stack", this, e
+      );
     }
   }
 
-  String pop() {
-    String popped = pathDeque.removeFirst();
-    pathSet.remove(popped);
-    return popped;
+  public String pop() {
+    return paths.pop();
   }
 
-  public InternalContext with(String language) {
-    return new InternalContext(
-        null,
-        language,
-        // use the same path stack and set
-        //because they back to its original
-        //state when getMessage execution ends
-        pathDeque,
-        pathSet,
-        handle
+  public TrackingContext with(String language) {
+    return new TrackingContext(
+      null,
+      language,
+      jitEntities,
+      literalReplacements,
+      variableReplacements,
+      // use the same path stack because they back
+      // to its original state when getMessage execution ends
+      paths,
+      provider
     );
-  }
-
-  public List<String> export() {
-    return Collections.unmodifiableList(pathDeque);
   }
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder("FormatContext ");
-    builder.append("(paths=");
-    builder.append(pathSet.size());
-    builder.append(", hasEntity=");
-    builder.append(entity != null);
-    builder.append(") {");
-    Iterator<String> pathIterator = pathDeque.iterator();
-    while (pathIterator.hasNext()) {
-      builder.append(pathIterator.next());
-      if (pathIterator.hasNext()) {
-        builder.append(" -> ");
-      }
-    }
-    builder.append('}');
-    return builder.toString();
+    return "TrackingContext " + "(paths=" +
+      paths.size() +
+      ", hasEntity=" +
+      (entity != null) +
+      ") {" +
+      paths.pathsToString(" <- ") +
+      '}';
   }
 
 }

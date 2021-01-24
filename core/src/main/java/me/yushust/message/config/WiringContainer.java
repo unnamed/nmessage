@@ -1,8 +1,7 @@
 package me.yushust.message.config;
 
-import me.yushust.message.internal.MessageInterceptor;
+import me.yushust.message.format.MessageInterceptor;
 import me.yushust.message.internal.EntityHandlerPack;
-import me.yushust.message.internal.InternalContext;
 import me.yushust.message.internal.TypeSpecificPlaceholderProvider;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.send.MessageSender;

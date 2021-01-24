@@ -1,4 +1,4 @@
-package me.yushust.message.internal;
+package me.yushust.message.ext;
 
 import me.yushust.message.track.ContextRepository;
 import me.yushust.message.ProviderSettings;
@@ -8,11 +8,16 @@ import org.jetbrains.annotations.Nullable;
 @ProviderSettings(
     requiresEntity = false
 )
-final class ReferencePlaceholderProvider<E> implements PlaceholderProvider<E> {
+public final class ReferencePlaceholderProvider<E>
+  implements PlaceholderProvider<E> {
 
   @Override
-  public @Nullable String replace(ContextRepository handle, E entity, String parameters) {
-    return handle.getMessage(parameters);
+  public @Nullable String replace(
+    ContextRepository handle,
+    E entity,
+    String path
+  ) {
+    return handle.get(path);
   }
 
 }

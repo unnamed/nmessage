@@ -10,10 +10,12 @@ public interface PlaceholderValueProvider {
     String parameters
   );
 
-  String getValue(
+  default String getValue(
     TrackingContext context,
     String identifier
-  );
+  ) {
+    return null;
+  }
 
 }
 

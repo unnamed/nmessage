@@ -1,11 +1,8 @@
 package me.yushust.message.track;
 
 import me.yushust.message.MessageProvider;
-import me.yushust.message.ReplacePack;
-import me.yushust.message.internal.InternalContext;
-import me.yushust.message.internal.MessageProviderImpl;
+import me.yushust.message.language.Linguist;
 import me.yushust.message.source.MessageSource;
-import me.yushust.message.strategy.Strategy;
 import me.yushust.message.util.StringList;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,46 +14,57 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ContextRepository implements MessageProvider {
 
-  private final InternalContext context;
-  private final MessageProviderImpl handle;
+  private final TrackingContext context;
+  private final MessageProvider provider;
 
   public ContextRepository(
-      InternalContext context,
-      MessageProviderImpl handle
+      TrackingContext context,
+      MessageProvider provider
   ) {
     this.context = context;
-    this.handle = handle;
+    this.provider = provider;
   }
 
-  @Override
-  public String getMessage(@Nullable String language, String messagePath) {
-    return handle.format(
+  public String get(@Nullable String language, String messagePath) {
+    return provider.format(
         language != null ?
             context.with(language)
-            : context,
-        messagePath,
-        ReplacePack.EMPTY,
-        MessageProvider.EMPTY_OBJECT_ARRAY
-    );
-  }
-
-  private StringList getMessages(InternalContext ctx, String path) {
-    return handle.formatMany(ctx, path, ReplacePack.EMPTY, MessageProvider.EMPTY_OBJECT_ARRAY);
-  }
-
-  @Override
-  public StringList getMessages(@Nullable String language, String messagePath) {
-    return getMessages(
-        language != null
-            ? context.with(language)
             : context,
         messagePath
     );
   }
 
+  public String get(String messagePath) {
+    return get(null, messagePath);
+  }
+
+  public StringList getMany(@Nullable String language, String messagePath) {
+    return provider.formatMany(
+      language != null
+        ? context.with(language)
+        : context,
+      messagePath
+    );
+  }
+
+  public StringList getMany(String messagePath) {
+    return getMany(null, messagePath);
+  }
+
   @Override
-  public MessageSource in(String lang) {
-    return handle.in(lang);
+  public String format(
+    TrackingContext context,
+    String path
+  ) {
+    return provider.format(context, path);
+  }
+
+  @Override
+  public StringList formatMany(
+    TrackingContext context,
+    String path
+  ) {
+    return provider.formatMany(context, path);
   }
 
   public Object getEntity() {
@@ -68,12 +76,18 @@ public class ContextRepository implements MessageProvider {
   }
 
   @Override
-  public Strategy getStrategy() {
-    return handle.getStrategy();
+  public MessageSource getSource() {
+    return provider.getSource();
   }
 
   @Override
-  public String getDefaultLanguage() {
-    return handle.getDefaultLanguage();
+  public String format(Object entity, String text) {
+    return provider.format(entity, text);
   }
+
+  @Override
+  public <T> Linguist<T> getLanguageProvider(Class<T> entityType) {
+    return provider.getLanguageProvider(entityType);
+  }
+
 }

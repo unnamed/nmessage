@@ -1,8 +1,9 @@
-package me.yushust.message.internal;
+package me.yushust.message.config;
 
 import me.yushust.message.config.SpecificWireHandle;
 import me.yushust.message.config.WireHandle;
 import me.yushust.message.config.WiringContainer;
+import me.yushust.message.format.MessageInterceptor;
 import me.yushust.message.util.Validate;
 
 public class WireHandleImpl implements WireHandle {

@@ -1,6 +1,6 @@
 package me.yushust.message.config;
 
-import me.yushust.message.internal.MessageInterceptor;
+import me.yushust.message.format.MessageInterceptor;
 
 public interface WireHandle {
 

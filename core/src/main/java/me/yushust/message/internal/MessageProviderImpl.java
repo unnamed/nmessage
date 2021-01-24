@@ -3,7 +3,9 @@ package me.yushust.message.internal;
 import me.yushust.message.*;
 
 import me.yushust.message.config.Specifier;
+import me.yushust.message.config.WireHandleImpl;
 import me.yushust.message.config.WiringContainer;
+import me.yushust.message.ext.ReferencePlaceholderProvider;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.resolve.EntityResolver;
 import me.yushust.message.strategy.Notify;

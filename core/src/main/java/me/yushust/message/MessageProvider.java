@@ -3,6 +3,8 @@ package me.yushust.message;
 import me.yushust.message.config.Specifier;
 import me.yushust.message.internal.MessageProviderImpl;
 import me.yushust.message.language.Linguist;
+import me.yushust.message.source.MessageSource;
+import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.StringList;
 
 public interface MessageProvider {
@@ -12,20 +14,52 @@ public interface MessageProvider {
   String format(Object entity, String text);
 
   String format(
-      Object entity,
-      String path,
-      ReplacePack replacements,
-      Object[] jitEntities,
-      Object... orderedArgs
+    TrackingContext context,
+    String path
   );
 
   StringList formatMany(
+    TrackingContext context,
+    String path
+  );
+
+  default String format(
       Object entity,
       String path,
       ReplacePack replacements,
-      Object[] jitEntities,
-      Object... orderedArgs
-  );
+      Object[] jitEntities
+  ) {
+    return format(
+      new TrackingContext(
+        entity,
+        "",
+        jitEntities,
+        replacements,
+        ReplacePack.EMPTY,
+        this
+      ),
+      path
+    );
+  }
+
+  default StringList formatMany(
+      Object entity,
+      String path,
+      ReplacePack replacements,
+      Object[] jitEntities
+  ) {
+    return formatMany(
+      new TrackingContext(
+        entity,
+        "",
+        jitEntities,
+        replacements,
+        ReplacePack.EMPTY,
+        this
+      ),
+      path
+    );
+  }
 
   default String get(Object entity, String path, Object... jitEntities) {
     return format(entity, path, ReplacePack.EMPTY, jitEntities);
@@ -33,10 +67,6 @@ public interface MessageProvider {
 
   default String replacing(Object entity, String path, Object... replacements) {
     return format(entity, path, ReplacePack.make(replacements), EMPTY_OBJECT_ARRAY);
-  }
-
-  default String formatting(Object entity, String path, Object... args) {
-    return format(entity, path, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY, args);
   }
 
   default StringList getMany(Object entity, String messagePath, Object... jitEntities) {
@@ -47,9 +77,7 @@ public interface MessageProvider {
     return formatMany(entity, messagePath, ReplacePack.make(replacements), EMPTY_OBJECT_ARRAY);
   }
 
-  default StringList formattingMany(Object entity, String path, Object... args) {
-    return formatMany(entity, path, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY, args);
-  }
+  MessageSource getSource();
 
   /**
    * Returns the {@link Linguist} for the specified entity,
