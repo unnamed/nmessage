@@ -1,6 +1,7 @@
 package me.yushust.message.format;
 
 import me.yushust.message.track.TrackingContext;
+import me.yushust.message.util.Validate;
 
 public class PlaceholderReplacer {
 
@@ -9,13 +10,13 @@ public class PlaceholderReplacer {
   private final String endDelimiter;
 
   public PlaceholderReplacer(
-      PlaceholderValueProvider valueProvider,
-      String startDelimiter,
-      String endDelimiter
+    PlaceholderValueProvider valueProvider,
+    String startDelimiter,
+    String endDelimiter
   ) {
-    this.valueProvider = valueProvider;
-    this.startDelimiter = startDelimiter;
-    this.endDelimiter = endDelimiter;
+    this.valueProvider = Validate.isNotNull(valueProvider, "valueProvider");
+    this.startDelimiter = Validate.isNotEmpty(startDelimiter);
+    this.endDelimiter = Validate.isNotEmpty(endDelimiter);
   }
 
   /**
@@ -28,14 +29,10 @@ public class PlaceholderReplacer {
 
   @SuppressWarnings("StringEquality")
   public String setPlaceholders(
-      TrackingContext context,
-      String text
+    TrackingContext context,
+    String text
   ) {
-    if (
-        startDelimiter.isEmpty()
-            || endDelimiter.isEmpty()
-            || !hasMinimumLength(text)
-    ) {
+    if (!hasMinimumLength(text)) {
       return text;
     }
 
