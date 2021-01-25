@@ -28,6 +28,11 @@ public class ConfigurationContainer {
   private final List<MessageInterceptor> interceptors
     = new LinkedList<>();
 
+  public Linguist<?> getLinguist(Class<?> clazz) {
+    HandlerPack<?> handlerPack = getHandlers(clazz);
+    return handlerPack == null ? null : handlerPack.linguist;
+  }
+
   public <E> EntityResolver<?, E> getResolver(Class<E> resolvedClass) {
     HandlerPack<?> handlerPack = handlers.get(resolvedClass);
     if (handlerPack == null) {
@@ -38,6 +43,13 @@ public class ConfigurationContainer {
         (EntityResolver<?, E>) handlerPack.resolver;
       return resolver;
     }
+  }
+
+  public String intercept(String text) {
+    for (MessageInterceptor interceptor : interceptors) {
+      text = interceptor.intercept(text);
+    }
+    return text;
   }
 
   /**

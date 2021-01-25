@@ -19,8 +19,8 @@ public final class TypeSpecificPlaceholderProvider<E> implements PlaceholderProv
   private final ProviderSettings settings;
 
   public TypeSpecificPlaceholderProvider(Class<E> type, PlaceholderProvider<E> delegate) {
-    this.type = Validate.notNull(type, "type");
-    this.delegate = Validate.notNull(delegate, "delegate");
+    this.type = Validate.isNotNull(type, "type");
+    this.delegate = Validate.isNotNull(delegate, "delegate");
     this.settings = computeSettings();
   }
 

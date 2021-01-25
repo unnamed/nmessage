@@ -1,7 +1,5 @@
 package me.yushust.message.resolve;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * A functional interface that resolves an entity using
  * a {@code T} instance
@@ -29,7 +27,6 @@ public interface EntityResolver<E, T> {
    * @param object The resolving object
    * @return The resolved entity
    */
-  @NotNull
   E resolve(T object);
 
 }

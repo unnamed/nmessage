@@ -1,6 +1,4 @@
-package me.yushust.message;
-
-import me.yushust.message.util.Validate;
+package me.yushust.message.util;
 
 import java.util.*;
 
@@ -25,6 +23,16 @@ public final class ReplacePack implements Cloneable {
 
   public List<Entry> getEntries() {
     return entries;
+  }
+
+  public StringList replace(StringList list) {
+    for (Entry entry : entries) {
+      list.replace(
+        entry.getOldValue(),
+        entry.getNewValue()
+      );
+    }
+    return list;
   }
 
   public String replace(String string) {
@@ -75,15 +83,15 @@ public final class ReplacePack implements Cloneable {
   }
 
   public static ReplacePack make(Object... replacements) {
-    Validate.argument(replacements.length % 2 == 0, "The replacement count must be pair! It's " +
+    Validate.isTrue(replacements.length % 2 == 0, "The replacement count must be pair! It's " +
         "a tuple of (String, Object)");
     ReplacePack replacePack = new ReplacePack();
     for (int i = 0; i < replacements.length; i += 2) {
       Object key = replacements[i];
-      Validate.argument(key instanceof String, "Replaced keys (arguments in 0, " +
+      Validate.isTrue(key instanceof String, "Replaced keys (arguments in 0, " +
           "2, 4, etc) must be strings. But it's '" + key + "' in index: " + i);
       Object value = replacements[i + 1];
-      Validate.notNull(value, "value cannot be null. Index: " + (i + 1));
+      Validate.isNotNull(value, "value cannot be null. Index: " + (i + 1));
       replacePack.add(key.toString(), value.toString());
     }
     return replacePack;
@@ -95,8 +103,8 @@ public final class ReplacePack implements Cloneable {
     private final String newValue;
 
     private Entry(String oldValue, String newValue) {
-      this.oldValue = Validate.notNull(oldValue, "oldValue");
-      this.newValue = Validate.notNull(newValue, "newValue");
+      this.oldValue = Validate.isNotNull(oldValue, "oldValue");
+      this.newValue = Validate.isNotNull(newValue, "newValue");
     }
 
     public String getOldValue() {

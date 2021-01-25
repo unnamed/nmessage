@@ -1,264 +1,101 @@
 package me.yushust.message.internal;
 
-import me.yushust.message.*;
-
-import me.yushust.message.config.Specifier;
-import me.yushust.message.config.WireHandleImpl;
-import me.yushust.message.config.ConfigurationContainer;
-import me.yushust.message.ext.ReferencePlaceholderProvider;
-import me.yushust.message.language.Linguist;
-import me.yushust.message.resolve.EntityResolver;
-import me.yushust.message.strategy.Notify;
-import me.yushust.message.strategy.Strategy;
+import me.yushust.message.AbstractMessageProvider;
+import me.yushust.message.MessageProvider;
+import me.yushust.message.util.ReplacePack;
+import me.yushust.message.config.WireHandle;
+import me.yushust.message.format.PlaceholderReplacer;
+import me.yushust.message.format.PlaceholderValueProviderImpl;
+import me.yushust.message.source.MessageSource;
+import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.StringList;
-import me.yushust.message.util.Validate;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public final class MessageProviderImpl
-    extends DelegatingMessageRepository
-    implements MessageProvider {
+  extends AbstractMessageProvider
+  implements MessageProvider {
 
-  private final ConfigurationContainer configurationContainer;
-  private final MessageProvider repository;
-  private final Strategy strategy;
   private final PlaceholderReplacer replacer;
 
-  public MessageProviderImpl(MessageProvider repository, Specifier... specifiers) {
-    super(repository);
-    WireHandleImpl wireHandle = new WireHandleImpl();
-    for (Specifier specifier : specifiers) {
-      specifier.configure(wireHandle);
-    }
-    this.configurationContainer = wireHandle.getWiringContainer();
-    this.repository = repository;
-    this.strategy = repository.getStrategy();
-    this.replacer = new PlaceholderReplacer(
-      configurationContainer,
-        wireHandle.getStartDelimiter(),
-        wireHandle.getEndDelimiter()
-    );
-    configurationContainer.registerProvider("path", Object.class, new ReferencePlaceholderProvider<>());
-  }
-
-  public String format(
-      InternalContext context,
-      String path,
-      ReplacePack replacements,
-      Object[] jitEntities,
-      Object... orderedArgs
+  public MessageProviderImpl(
+    MessageSource source,
+    WireHandle wireHandle
   ) {
-
-    String language = context.getLanguage();
-    String message = repository.getMessage(language, path);
-
-    if (message == null) {
-      return null;
-    }
-    message = replacements.replace(message);
-
-    if (context.has(path)) {
-      // Cycle linked messages
-      strategy.warn(Notify.Warning.CYCLIC_LINKED_MESSAGES, context.export());
-      return message;
-    }
-
-    context.push(path);
-    message = replacer.format(context, message, jitEntities);
-
-    /*
-     * The String.format method is called after
-     * placeholder replacement because the placeholder
-     * delimiters can cause an exception by being
-     * "special characters"
-     */
-    if (orderedArgs.length > 0) {
-      message = String.format(message, orderedArgs);
-    }
-
-    context.popAndCheckSame(path);
-    return message;
+    super(source, wireHandle.getWiringContainer());
+    this.replacer = new PlaceholderReplacer(
+      new PlaceholderValueProviderImpl(config),
+      wireHandle.getStartDelimiter(),
+      wireHandle.getEndDelimiter()
+    );
   }
 
   @Override
   public String format(Object entity, String text) {
-    return replacer.format(
-        new InternalContext(entity, languageOf(entity), this),
-        text,
-        EMPTY_OBJECT_ARRAY
+    text = replacer.setPlaceholders(
+      new TrackingContext(
+        entity,
+        getLanguage(entity),
+        EMPTY_OBJECT_ARRAY,
+        ReplacePack.EMPTY,
+        Collections.emptyMap(),
+        this
+      ),
+      text
     );
+    return config.intercept(text);
   }
 
   @Override
-  public String format(
-      Object resolvableEntity,
-      String path,
-      ReplacePack replacements,
-      Object[] jitEntities,
-      Object... orderedArgs
-  ) {
-    Validate.isNotNull(path, "path");
-    return format(makeContext(resolvableEntity), path, replacements, jitEntities, orderedArgs);
-  }
-
-  private InternalContext makeContext(Object resolvableEntity) {
-    Object entity = asEntity(resolvableEntity);
-    String language = languageOf(entity);
-    return new InternalContext(entity, language, this);
-  }
-
-  public StringList formatMany(
-      InternalContext context,
-      String path,
-      ReplacePack replacements,
-      Object[] jitEntities,
-      Object... orderedArgs
-  ) {
+  public String format(TrackingContext context, String path) {
     String language = context.getLanguage();
-    StringList messages = repository.getMessages(language, path);
+    String message = convertObjectToString(source.get(language, path));
 
-    for (ReplacePack.Entry entry : replacements.getEntries()) {
-      messages.replace(entry.getOldValue(), entry.getNewValue());
-    }
-
-    context.push(path);
-
-    messages.replaceAll(
-        line -> {
-          line = replacer.format(context, line, jitEntities);
-          if (orderedArgs.length > 0) {
-            line = String.format(line, orderedArgs);
-          }
-          return line;
-        }
-    );
-    context.popAndCheckSame(path);
-    return messages;
-  }
-
-  @Override
-  public StringList formatMany(
-      Object resolvableEntity,
-      String path,
-      ReplacePack replacements,
-      Object[] jitEntities,
-      Object... orderedArgs
-  ) {
-    Validate.isNotNull(path, "path");
-    return formatMany(makeContext(resolvableEntity), path, replacements, jitEntities, orderedArgs);
-  }
-
-  @Override
-  public <T> Linguist<T> getLanguageProvider(Class<T> entityType) {
-    ConfigurationContainer.HandlerPack<?> handlerPack =
-        configurationContainer.getHandlers().get(entityType);
-
-    if (handlerPack == null) {
-      return Linguist.dummy();
-    }
-
-    @SuppressWarnings("unchecked")
-    Linguist<T> languageProvider =
-        (Linguist<T>) handlerPack.getLanguageProvider();
-    return languageProvider;
-  }
-
-  @Nullable
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  @Contract("!null -> !null")
-  public Object asEntity(Object resolvableEntity) {
-    if (resolvableEntity == null) {
+    if (message == null) {
       return null;
     }
-    Class<?> clazz = resolvableEntity.getClass();
-    EntityResolver resolver = configurationContainer.getResolver(clazz);
-    if (resolver == null) {
-      return resolvableEntity;
-    } else {
-      return resolver.resolve(resolvableEntity);
-    }
-  }
 
-  @Override
-  public String getMessage(@Nullable String language, String messagePath) {
-    language = orDefault(language);
-    InternalContext context = new InternalContext(null, language, this);
-    context.push(messagePath);
-    String message = repository.getMessage(language, messagePath);
-    if (message != null) {
-      message = replacer.format(context, message, EMPTY_OBJECT_ARRAY);
-    }
-    context.popAndCheckSame(messagePath);
+    message = context.getLiteralReplacements().replace(message);
+
+    context.push(path);
+    message = replacer.setPlaceholders(context, message);
+
+    context.pop();
     return message;
   }
 
   @Override
-  public StringList getMessages(@Nullable String language, String messagePath) {
-    language = orDefault(language);
-    InternalContext context = new InternalContext(null, language, this);
-    context.push(messagePath);
-    StringList messages = repository.getMessages(language, messagePath);
-    if (messages != null) {
-      messages.replaceAll(message -> replacer.format(context, message, EMPTY_OBJECT_ARRAY));
-    }
-    context.popAndCheckSame(messagePath);
+  public StringList formatMany(TrackingContext context, String path) {
+    String language = context.getLanguage();
+    StringList messages = convertObjectToStringList(source.get(language, path));
+
+    context.getLiteralReplacements().replace(messages);
+
+    context.push(path);
+    messages.replaceAll(line -> replacer.setPlaceholders(context, line));
+    context.pop();
     return messages;
   }
 
-  private String orDefault(String language) {
-    return language == null ? repository.getDefaultLanguage() : language;
-  }
-
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  private String languageOf(Object entity) {
-    if (entity == null) {
-      return getDefaultLanguage();
+  private StringList convertObjectToStringList(Object object) {
+    if (object instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<String> list = (List<String>) object;
+      return new StringList(list);
+    } else if (object == null) {
+      return null;
     } else {
-      Linguist languageProvider =
-          getLanguageProvider(entity.getClass());
-
-      if (languageProvider == null) {
-        return getDefaultLanguage();
-      } else {
-        return orDefault(languageProvider.getLanguage(entity));
-      }
+      return new StringList(
+        Arrays.asList(object.toString().split("\n"))
+      );
     }
   }
-/*
-  @Override
-  public Mode defaultMode() {
-    return defaultMode;
+
+  private String convertObjectToString(Object object) {
+    return Objects.toString(object, null);
   }
 
-  @Override
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  public void dispatch(
-      Object entityOrEntities,
-      String path,
-      Mode mode,
-      ReplacePack replacements,
-      Object[] jitEntities,
-      Object[] orderedArgs
-  ) {
-    Validate.isNotNull(entityOrEntities, "entityOrEntities");
-    if (mode == null) {
-      mode = defaultMode;
-    } else if (modeType != null && !modeType.isInstance(mode)) {
-      throw new IllegalArgumentException("Invalid mode: " + mode);
-    }
-    if (entityOrEntities instanceof Iterable) {
-      // supports Iterable<Iterable<Iterable<?>>>>. why? i don't know but it's supported
-      for (Object resolvableEntity : (Iterable<?>) entityOrEntities) {
-        dispatch(resolvableEntity, path, mode, replacements, jitEntities, orderedArgs);
-      }
-    } else {
-      Object entity = asEntity(entityOrEntities);
-      EntityHandlerPack<?> handlerPack = wiringContainer.getHandlers().get(entity.getClass());
-      Validate.isTrue(handlerPack != null, "No handlers registered for " + entity.getClass());
-      String message = format(entity, path, replacements, jitEntities, orderedArgs);
-      MessageSender sender = handlerPack.getMessageSender();
-      Validate.isTrue(sender != null, "No message sender specified for " + entity.getClass());
-      sender.send(entity, mode, message);
-    }
-  }*/
 }

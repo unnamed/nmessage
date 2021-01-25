@@ -1,6 +1,6 @@
 package me.yushust.message.send;
 
-import me.yushust.message.ReplacePack;
+import me.yushust.message.util.ReplacePack;
 
 public interface Messenger {
 

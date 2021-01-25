@@ -1,7 +1,7 @@
 package me.yushust.message.track;
 
 import me.yushust.message.MessageProvider;
-import me.yushust.message.ReplacePack;
+import me.yushust.message.util.ReplacePack;
 import me.yushust.message.exception.MessageHandlingException;
 import me.yushust.message.exception.TrackedException;
 
@@ -73,6 +73,9 @@ public final class TrackingContext {
     return paths;
   }
 
+  public ReplacePack getLiteralReplacements() {
+    return literalReplacements;
+  }
 
   public Map<String, Object> getVariableReplacements() {
     return variableReplacements;
