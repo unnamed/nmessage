@@ -1,13 +1,13 @@
 package me.yushust.message.test.base;
 
 import me.yushust.message.format.PlaceholderProvider;
+import me.yushust.message.source.MessageSource;
+import me.yushust.message.source.MessageSourceDecorator;
 import org.junit.jupiter.api.BeforeEach;
-
-import java.io.File;
 
 public class HandlerTestCase {
 
-  protected MessageProvider repository;
+  protected MessageSource source;
 
   protected PlaceholderProvider<Entity> testProvider() {
     return (handle, entity, placeholder) -> {
@@ -24,17 +24,10 @@ public class HandlerTestCase {
 
   @BeforeEach
   public void createRepository() {
-    this.repository = MessageProvider.builder()
-        .setDefaultLanguage("en")
-        .setNodeFileLoader(NodeFileLoader.forProperties())
-        .setFileFormat("messages_%lang%.properties")
-        .setLoadSource(
-            new LoadSource(
-                getClass().getClassLoader(),
-                new File(getClass().getProtectionDomain().getCodeSource().getLocation().getFile())
-            )
-        )
-        .build();
+    this.source = MessageSourceDecorator
+      .decorate((lang, path) -> null)
+      .addFallbackLanguage("en")
+      .get();
   }
 
 }
