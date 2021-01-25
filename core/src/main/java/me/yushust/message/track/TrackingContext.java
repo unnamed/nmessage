@@ -5,6 +5,8 @@ import me.yushust.message.ReplacePack;
 import me.yushust.message.exception.MessageHandlingException;
 import me.yushust.message.exception.TrackedException;
 
+import java.util.Map;
+
 /** Context to detect cyclic-linked messages */
 public final class TrackingContext {
 
@@ -20,8 +22,8 @@ public final class TrackingContext {
   /** Pack that contains all the literal replacements for the messages */
   private final ReplacePack literalReplacements;
 
-  /** Pack that contains all the variable replacements for the messages */
-  private final ReplacePack variableReplacements;
+  /** Map that contains all the variable replacements for the messages */
+  private final Map<String, Object> variableReplacements;
 
   /** This is the real path stack, used to detect cyclic linked messages */
   private final TrackingPathList paths;
@@ -34,7 +36,7 @@ public final class TrackingContext {
     String language,
     Object[] jitEntities,
     ReplacePack literalReplacements,
-    ReplacePack variableReplacements,
+    Map<String, Object> variableReplacements,
     TrackingPathList paths,
     MessageProvider provider
   ) {
@@ -53,7 +55,7 @@ public final class TrackingContext {
     String language,
     Object[] jitEntities,
     ReplacePack literalReplacements,
-    ReplacePack variableReplacements,
+    Map<String, Object> variableReplacements,
     MessageProvider provider
   ) {
     this(
@@ -71,6 +73,11 @@ public final class TrackingContext {
     return paths;
   }
 
+
+  public Map<String, Object> getVariableReplacements() {
+    return variableReplacements;
+  }
+
   public ContextRepository getContextRepository() {
     return contextRepository;
   }
@@ -82,6 +89,10 @@ public final class TrackingContext {
   /** The language used to obtain the messages */
   public String getLanguage() {
     return language;
+  }
+
+  public Object[] getJitEntities() {
+    return jitEntities;
   }
 
   public void push(String path) {

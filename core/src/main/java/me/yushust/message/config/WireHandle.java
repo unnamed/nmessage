@@ -4,7 +4,7 @@ import me.yushust.message.format.MessageInterceptor;
 
 public interface WireHandle {
 
-  WiringContainer getWiringContainer();
+  ConfigurationContainer getWiringContainer();
 
   String getStartDelimiter();
 

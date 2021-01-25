@@ -4,7 +4,7 @@ import me.yushust.message.*;
 
 import me.yushust.message.config.Specifier;
 import me.yushust.message.config.WireHandleImpl;
-import me.yushust.message.config.WiringContainer;
+import me.yushust.message.config.ConfigurationContainer;
 import me.yushust.message.ext.ReferencePlaceholderProvider;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.resolve.EntityResolver;
@@ -19,7 +19,7 @@ public final class MessageProviderImpl
     extends DelegatingMessageRepository
     implements MessageProvider {
 
-  private final WiringContainer wiringContainer;
+  private final ConfigurationContainer configurationContainer;
   private final MessageProvider repository;
   private final Strategy strategy;
   private final PlaceholderReplacer replacer;
@@ -30,15 +30,15 @@ public final class MessageProviderImpl
     for (Specifier specifier : specifiers) {
       specifier.configure(wireHandle);
     }
-    this.wiringContainer = wireHandle.getWiringContainer();
+    this.configurationContainer = wireHandle.getWiringContainer();
     this.repository = repository;
     this.strategy = repository.getStrategy();
     this.replacer = new PlaceholderReplacer(
-        wiringContainer,
+      configurationContainer,
         wireHandle.getStartDelimiter(),
         wireHandle.getEndDelimiter()
     );
-    wiringContainer.registerProvider("path", Object.class, new ReferencePlaceholderProvider<>());
+    configurationContainer.registerProvider("path", Object.class, new ReferencePlaceholderProvider<>());
   }
 
   public String format(
@@ -150,8 +150,8 @@ public final class MessageProviderImpl
 
   @Override
   public <T> Linguist<T> getLanguageProvider(Class<T> entityType) {
-    EntityHandlerPack<?> handlerPack =
-        wiringContainer.getHandlers().get(entityType);
+    ConfigurationContainer.HandlerPack<?> handlerPack =
+        configurationContainer.getHandlers().get(entityType);
 
     if (handlerPack == null) {
       return Linguist.dummy();
@@ -171,7 +171,7 @@ public final class MessageProviderImpl
       return null;
     }
     Class<?> clazz = resolvableEntity.getClass();
-    EntityResolver resolver = wiringContainer.getResolver(clazz);
+    EntityResolver resolver = configurationContainer.getResolver(clazz);
     if (resolver == null) {
       return resolvableEntity;
     } else {

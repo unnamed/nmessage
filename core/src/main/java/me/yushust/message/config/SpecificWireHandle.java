@@ -8,14 +8,14 @@ import me.yushust.message.util.Validate;
 
 public class SpecificWireHandle<E> {
 
-  private final WiringContainer wiringContainer;
+  private final ConfigurationContainer configurationContainer;
   private final Class<E> entityType;
 
   public SpecificWireHandle(
-      WiringContainer wiringContainer,
+      ConfigurationContainer configurationContainer,
       Class<E> entityType
   ) {
-    this.wiringContainer = wiringContainer;
+    this.configurationContainer = configurationContainer;
     this.entityType = entityType;
   }
 
@@ -25,7 +25,7 @@ public class SpecificWireHandle<E> {
   ) {
     Validate.isNotNull(resolvedClass, "resolvedClass");
     Validate.isNotNull(resolver, "resolver");
-    wiringContainer.addResolver(resolvedClass, resolver);
+    configurationContainer.addResolver(resolvedClass, resolver);
     return this;
   }
 
@@ -33,7 +33,7 @@ public class SpecificWireHandle<E> {
       Linguist<E> linguist
   ) {
     Validate.isNotNull(linguist, "linguist");
-    wiringContainer.setLinguist(entityType, linguist);
+    configurationContainer.setLinguist(entityType, linguist);
     return this;
   }
 
@@ -43,7 +43,7 @@ public class SpecificWireHandle<E> {
   ) {
     Validate.isNotNull(identifier, "identifier");
     Validate.isNotNull(provider, "provider");
-    wiringContainer.registerProvider(identifier, entityType, provider);
+    configurationContainer.registerProvider(identifier, entityType, provider);
     return this;
   }
 
@@ -51,7 +51,7 @@ public class SpecificWireHandle<E> {
       MessageSender<E> sender
   ) {
     Validate.isNotNull(sender, "sender");
-    wiringContainer.setMessageSender(entityType, sender);
+    configurationContainer.setMessageSender(entityType, sender);
     return this;
   }
 

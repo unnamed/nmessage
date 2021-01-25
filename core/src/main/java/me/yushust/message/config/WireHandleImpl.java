@@ -1,14 +1,11 @@
 package me.yushust.message.config;
 
-import me.yushust.message.config.SpecificWireHandle;
-import me.yushust.message.config.WireHandle;
-import me.yushust.message.config.WiringContainer;
 import me.yushust.message.format.MessageInterceptor;
 import me.yushust.message.util.Validate;
 
 public class WireHandleImpl implements WireHandle {
 
-  private final WiringContainer wiringContainer = new WiringContainer();
+  private final ConfigurationContainer configurationContainer = new ConfigurationContainer();
   private String startDelimiter = "%";
   private String endDelimiter = "%";
 
@@ -22,7 +19,7 @@ public class WireHandleImpl implements WireHandle {
   @Override
   public WireHandle intercept(MessageInterceptor interceptor) {
     Validate.isNotNull(interceptor, "interceptor");
-    wiringContainer.registerInterceptor(interceptor);
+    configurationContainer.registerInterceptor(interceptor);
     return this;
   }
 
@@ -30,13 +27,13 @@ public class WireHandleImpl implements WireHandle {
   public <E> SpecificWireHandle<E> specify(Class<E> entityType) {
     Validate.isNotNull(entityType, "entityType");
     return new SpecificWireHandle<>(
-        wiringContainer,
+        configurationContainer,
         entityType
     );
   }
 
-  public WiringContainer getWiringContainer() {
-    return wiringContainer;
+  public ConfigurationContainer getWiringContainer() {
+    return configurationContainer;
   }
 
   public String getStartDelimiter() {

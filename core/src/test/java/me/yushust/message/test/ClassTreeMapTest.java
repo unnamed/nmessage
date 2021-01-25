@@ -1,6 +1,5 @@
 package me.yushust.message.test;
 
-import me.yushust.message.util.ClassTreeMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
