@@ -1,6 +1,8 @@
 rootProject.name = 'nmessage'
 
-include 'core'
-include 'bukkit'
-include 'sourcetype-properties'
+include (
+  'core',
+  'sourcetype-bukkit-yml',
+  'sourcetype-properties'
+)
 
