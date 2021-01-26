@@ -118,6 +118,16 @@ public abstract class AbstractMessageProvider
 
   //#region Convenience methods
   @Override
+  public String getMessage(String path) {
+    return format(null, path, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY);
+  }
+
+  @Override
+  public StringList getMessages(String path) {
+    return formatMany(null, path, ReplacePack.EMPTY, EMPTY_OBJECT_ARRAY);
+  }
+
+  @Override
   public String get(Object entity, String path, Object... jitEntities) {
     return format(entity, path, ReplacePack.EMPTY, jitEntities);
   }

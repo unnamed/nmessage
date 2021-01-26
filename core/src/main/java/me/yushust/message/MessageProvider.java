@@ -38,6 +38,10 @@ public interface MessageProvider {
       Object[] jitEntities
   );
 
+  String getMessage(String path);
+
+  StringList getMessages(String path);
+
   String get(Object entity, String path, Object... jitEntities);
 
   String replacing(Object entity, String path, Object... replacements);
