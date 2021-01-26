@@ -1,7 +1,7 @@
 package me.yushust.message.format;
 
 import me.yushust.message.config.ConfigurationContainer;
-import me.yushust.message.internal.TypeSpecificPlaceholderProvider;
+import me.yushust.message.impl.TypeSpecificPlaceholderProvider;
 import me.yushust.message.track.TrackingContext;
 import org.jetbrains.annotations.Nullable;
 

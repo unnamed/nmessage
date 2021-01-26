@@ -4,7 +4,7 @@ import me.yushust.message.config.ConfigurationContainer;
 import me.yushust.message.config.Specifier;
 import me.yushust.message.config.WireHandle;
 import me.yushust.message.config.WireHandleImpl;
-import me.yushust.message.internal.MessageProviderImpl;
+import me.yushust.message.impl.MessageProviderImpl;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.ReplacePack;

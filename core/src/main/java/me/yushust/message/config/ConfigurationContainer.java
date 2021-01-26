@@ -3,7 +3,7 @@ package me.yushust.message.config;
 import me.yushust.message.ext.ReferencePlaceholderProvider;
 import me.yushust.message.format.MessageInterceptor;
 import me.yushust.message.format.PlaceholderProvider;
-import me.yushust.message.internal.TypeSpecificPlaceholderProvider;
+import me.yushust.message.impl.TypeSpecificPlaceholderProvider;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.resolve.EntityResolver;
 import me.yushust.message.send.MessageSender;

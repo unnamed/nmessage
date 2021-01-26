@@ -2,7 +2,7 @@ package me.yushust.message.source.properties;
 
 import me.yushust.message.MessageProvider;
 import me.yushust.message.config.WireHandleImpl;
-import me.yushust.message.internal.MessageProviderImpl;
+import me.yushust.message.impl.MessageProviderImpl;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.source.MessageSourceDecorator;
 import org.junit.jupiter.api.Test;

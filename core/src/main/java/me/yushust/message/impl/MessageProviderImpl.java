@@ -1,4 +1,4 @@
-package me.yushust.message.internal;
+package me.yushust.message.impl;
 
 import me.yushust.message.AbstractMessageProvider;
 import me.yushust.message.MessageProvider;
