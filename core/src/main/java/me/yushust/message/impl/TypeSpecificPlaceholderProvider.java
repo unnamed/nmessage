@@ -1,7 +1,7 @@
 package me.yushust.message.impl;
 
 import me.yushust.message.track.ContextRepository;
-import me.yushust.message.ProviderSettings;
+import me.yushust.message.format.ProviderSettings;
 import me.yushust.message.format.PlaceholderProvider;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;

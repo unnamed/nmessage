@@ -1,6 +1,6 @@
 package me.yushust.message.track;
 
-import me.yushust.message.AbstractMessageProvider;
+import me.yushust.message.impl.AbstractMessageProvider;
 import me.yushust.message.MessageProvider;
 import me.yushust.message.util.StringList;
 import org.jetbrains.annotations.Nullable;

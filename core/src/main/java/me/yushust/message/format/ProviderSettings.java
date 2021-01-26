@@ -1,4 +1,4 @@
-package me.yushust.message;
+package me.yushust.message.format;
 
 import java.lang.annotation.*;
 

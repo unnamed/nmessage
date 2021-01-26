@@ -1,6 +1,5 @@
 package me.yushust.message.impl;
 
-import me.yushust.message.AbstractMessageProvider;
 import me.yushust.message.MessageProvider;
 import me.yushust.message.util.ReplacePack;
 import me.yushust.message.config.WireHandle;

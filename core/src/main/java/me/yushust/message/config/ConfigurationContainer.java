@@ -37,6 +37,11 @@ public class ConfigurationContainer {
     );
   }
 
+  public MessageSender<?> getSender(Class<?> clazz) {
+    HandlerPack<?> handlerPack = getHandlers(clazz);
+    return handlerPack == null ? null : handlerPack.sender;
+  }
+
   public Linguist<?> getLinguist(Class<?> clazz) {
     HandlerPack<?> handlerPack = getHandlers(clazz);
     return handlerPack == null ? null : handlerPack.linguist;

@@ -1,5 +1,6 @@
-package me.yushust.message;
+package me.yushust.message.impl;
 
+import me.yushust.message.MessageProvider;
 import me.yushust.message.config.ConfigurationContainer;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.resolve.EntityResolver;
