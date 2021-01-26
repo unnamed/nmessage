@@ -6,5 +6,6 @@
 .gradle
 
 # target folders
+/sourcetype-properties/build/
 /core/build/
 /bukkit/build/
