@@ -11,8 +11,10 @@ public class JitEntitiesFormattingTest extends HandlerTestCase {
   public void test() {
 
     MessageProvider handler = MessageProvider.create(
-        repository,
-        wiring -> wiring.specify(NamedEntity.class).addProvider("ent", (ctx, entity, param) -> entity.name)
+        source,
+        wiring -> wiring
+          .specify(NamedEntity.class)
+          .addProvider("ent", (ctx, entity, param) -> entity.name)
     );
 
     Entity entity = new Entity();

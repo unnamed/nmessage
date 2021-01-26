@@ -9,9 +9,9 @@ public class MessageGetTest extends HandlerTestCase {
 
   @Test
   public void test() {
-    MessageProvider messageProvider = MessageProvider.create(repository);
+    MessageProvider messageProvider = MessageProvider.create(source);
 
-    Assertions.assertEquals("I don't know", messageProvider.getMessage("message-get-test"));
+    Assertions.assertEquals("I don't know", messageProvider.get(null, "message-get-test"));
   }
 
 }

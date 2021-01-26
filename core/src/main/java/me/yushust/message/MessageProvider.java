@@ -1,6 +1,10 @@
 package me.yushust.message;
 
+import me.yushust.message.config.ConfigurationContainer;
 import me.yushust.message.config.Specifier;
+import me.yushust.message.config.WireHandle;
+import me.yushust.message.config.WireHandleImpl;
+import me.yushust.message.internal.MessageProviderImpl;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.ReplacePack;
@@ -46,11 +50,16 @@ public interface MessageProvider {
 
   String getLanguage(Object entity);
 
+  ConfigurationContainer getConfig();
+
   MessageSource getSource();
 
-  static MessageProvider create(MessageProvider provider, Specifier... specifiers) {
-    // TODO: I'm tired, end this
-    return null;
+  static MessageProvider create(MessageSource source, Specifier... specifiers) {
+    WireHandle wireHandle = new WireHandleImpl();
+    for (Specifier specifier : specifiers) {
+      specifier.configure(wireHandle);
+    }
+    return new MessageProviderImpl(source, wireHandle);
   }
 
 }

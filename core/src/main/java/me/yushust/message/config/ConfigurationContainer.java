@@ -1,5 +1,6 @@
 package me.yushust.message.config;
 
+import me.yushust.message.ext.ReferencePlaceholderProvider;
 import me.yushust.message.format.MessageInterceptor;
 import me.yushust.message.format.PlaceholderProvider;
 import me.yushust.message.internal.TypeSpecificPlaceholderProvider;
@@ -27,6 +28,14 @@ public class ConfigurationContainer {
 
   private final List<MessageInterceptor> interceptors
     = new LinkedList<>();
+
+  public ConfigurationContainer() {
+    registerProvider(
+      "path",
+      Object.class,
+      new ReferencePlaceholderProvider<>()
+    );
+  }
 
   public Linguist<?> getLinguist(Class<?> clazz) {
     HandlerPack<?> handlerPack = getHandlers(clazz);

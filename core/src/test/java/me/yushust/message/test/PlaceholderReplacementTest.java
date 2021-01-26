@@ -12,7 +12,7 @@ public class PlaceholderReplacementTest extends HandlerTestCase {
   public void test() {
 
     MessageProvider handler = MessageProvider.create(
-        repository,
+        source,
         wiring -> wiring
             .specify(Entity.class)
             .addProvider("obj", testProvider())

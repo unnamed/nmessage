@@ -82,7 +82,7 @@ public abstract class AbstractMessageProvider
         entity.getClass()
       );
       if (resolver == null) {
-        return null;
+        return entity;
       } else {
         return resolver.resolve(entity);
       }
@@ -104,6 +104,11 @@ public abstract class AbstractMessageProvider
         return linguist.getLanguage(entity);
       }
     }
+  }
+
+  @Override
+  public ConfigurationContainer getConfig() {
+    return config;
   }
 
   @Override

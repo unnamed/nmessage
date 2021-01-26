@@ -10,10 +10,10 @@ public class CyclicMessagesTest extends HandlerTestCase {
   @Test
   public void test() {
 
-    MessageProvider handler = MessageProvider.create(repository);
+    MessageProvider handler = MessageProvider.create(source);
 
     Assertions.assertEquals("Check Check Check Check %path_linked-message-2%",
-        handler.getMessage("linked-message-1"));
+        handler.get(null, "linked-message-1"));
 
   }
 

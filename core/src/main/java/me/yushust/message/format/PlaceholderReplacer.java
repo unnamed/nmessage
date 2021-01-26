@@ -55,6 +55,9 @@ public class PlaceholderReplacer {
     // then it's the end delimiter
     String delimiter = startDelimiter;
 
+    // boolean that determines if we are reading a placeholder
+    boolean readingPlaceholder = false;
+
     // start reading character by character the text
     for (int i = 0; i < text.length(); i++) {
 
@@ -69,7 +72,7 @@ public class PlaceholderReplacer {
       } else {
         // no, then, if we were reading a placeholder
         // add the characters to the identifier or placeholder
-        if (delimiter == endDelimiter) {
+        if (readingPlaceholder) {
           // if the placeholder was already identified, then
           // append the character to the placeholder parameters
           if (identified) {
@@ -101,7 +104,7 @@ public class PlaceholderReplacer {
         // so get the value for this placeholder and re-set
         // everything to its initial state to start reading
         // another placeholder
-        if (delimiter == endDelimiter) {
+        if (readingPlaceholder) {
 
           String identifierStr = "";
           String placeholderStr = "";
@@ -136,8 +139,10 @@ public class PlaceholderReplacer {
 
           identified = false;
           delimiter = startDelimiter;
+          readingPlaceholder = false;
         } else {
           delimiter = endDelimiter;
+          readingPlaceholder = true;
         }
         cursor = 0;
       }

@@ -26,7 +26,7 @@ public class HandlerTestCase {
   @BeforeEach
   public void createRepository() {
     this.source = MessageSourceDecorator
-      .decorate(new PropertiesResourceSource("lang_%lang%.properties"))
+      .decorate(new PropertiesResourceSource("messages_%lang%.properties"))
       .addFallbackLanguage("en")
       .get();
   }

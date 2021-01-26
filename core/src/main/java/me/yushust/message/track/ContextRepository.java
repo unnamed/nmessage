@@ -1,18 +1,19 @@
 package me.yushust.message.track;
 
+import me.yushust.message.AbstractMessageProvider;
 import me.yushust.message.MessageProvider;
-import me.yushust.message.language.Linguist;
-import me.yushust.message.source.MessageSource;
 import me.yushust.message.util.StringList;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a {@link MessageProvider} linked to
- * a {@link InternalContext}. This replaces the old
+ * a {@link TrackingContext}. This replaces the old
  * cyclic linked messages detection that used a ThreadLocal
  * to retain the contexts by thread in the {@link MessageProvider} instance
  */
-public class ContextRepository implements MessageProvider {
+public class ContextRepository
+  extends AbstractMessageProvider
+  implements MessageProvider {
 
   private final TrackingContext context;
   private final MessageProvider provider;
@@ -21,6 +22,7 @@ public class ContextRepository implements MessageProvider {
       TrackingContext context,
       MessageProvider provider
   ) {
+    super(provider.getSource(), provider.getConfig());
     this.context = context;
     this.provider = provider;
   }
@@ -76,18 +78,7 @@ public class ContextRepository implements MessageProvider {
   }
 
   @Override
-  public MessageSource getSource() {
-    return provider.getSource();
-  }
-
-  @Override
   public String format(Object entity, String text) {
     return provider.format(entity, text);
   }
-
-  @Override
-  public <T> Linguist<T> getLanguageProvider(Class<T> entityType) {
-    return provider.getLanguageProvider(entityType);
-  }
-
 }
