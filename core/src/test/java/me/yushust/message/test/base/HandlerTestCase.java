@@ -3,6 +3,7 @@ package me.yushust.message.test.base;
 import me.yushust.message.format.PlaceholderProvider;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.source.MessageSourceDecorator;
+import me.yushust.message.source.properties.PropertiesResourceSource;
 import org.junit.jupiter.api.BeforeEach;
 
 public class HandlerTestCase {
@@ -25,7 +26,7 @@ public class HandlerTestCase {
   @BeforeEach
   public void createRepository() {
     this.source = MessageSourceDecorator
-      .decorate((lang, path) -> null)
+      .decorate(new PropertiesResourceSource("lang_%lang%.properties"))
       .addFallbackLanguage("en")
       .get();
   }

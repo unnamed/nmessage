@@ -1,1 +1,3 @@
-
+dependencies {
+  testImplementation project(':sourcetype-properties')
+}

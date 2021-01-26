@@ -1,5 +1,6 @@
 package me.yushust.message;
 
+import me.yushust.message.config.Specifier;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.ReplacePack;
@@ -46,5 +47,10 @@ public interface MessageProvider {
   String getLanguage(Object entity);
 
   MessageSource getSource();
+
+  static MessageProvider create(MessageProvider provider, Specifier... specifiers) {
+    // TODO: I'm tired, end this
+    return null;
+  }
 
 }

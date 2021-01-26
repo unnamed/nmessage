@@ -1,39 +1,22 @@
 package me.yushust.message.bukkit;
 
-import me.yushust.message.source.MessageSource;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 
-public abstract class AbstractYamlMessageSource
-  implements MessageSource {
+public final class YamlParse {
 
-  /**
-   * Sentinel value that indicates that
-   * a message source isn't present for
-   * a specific language
-   */
-  protected static final Object ABSENT =
-    new Object();
-
-  /**
-   * Map that contains the stored
-   * results while obtaining a message
-   * source
-   */
-  protected final Map<String, Object> cache
-    = new HashMap<>();
+  private YamlParse() {
+  }
 
   /**
    * Reads the data in the {@code input} stream
    * and creates a new {@link YamlConfiguration} instance
    */
-  protected final YamlConfiguration fromInputStream(
+  public static YamlConfiguration fromInputStream(
     InputStream input
   ) {
     YamlConfiguration config = new YamlConfiguration();
