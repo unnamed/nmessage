@@ -6,9 +6,22 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractCachedFileSource
+/**
+ * Represents a {@link MessageSource} that uses
+ * a file name and a class {@code T} representing
+ * the loaded data.
+ * @param <T> The class representing the loaded data,
+ *           for example, for a properties implementation
+ *           it should be {@link java.util.Properties}
+ */
+public abstract class AbstractCachedFileSource<T>
   implements MessageSource {
 
+  /**
+   * The language placeholder to difference the
+   * filenames by languages. File formats must
+   * contain this variable.
+   */
   private static final String LANGUAGE_VARIABLE = "%lang%";
 
   /**
@@ -57,7 +70,9 @@ public abstract class AbstractCachedFileSource
       }
     }
 
-    return getValue(source, path);
+    @SuppressWarnings("unchecked")
+    T castedSource = (T) source;
+    return getValue(castedSource, path);
   }
 
   protected String getFilename(String language) {
@@ -65,9 +80,9 @@ public abstract class AbstractCachedFileSource
   }
 
   @Nullable
-  protected abstract Object getValue(Object source, String path);
+  protected abstract Object getValue(T source, String path);
 
   @Nullable
-  protected abstract Object getSource(String filename);
+  protected abstract T getSource(String filename);
 
 }
