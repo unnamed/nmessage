@@ -1,7 +1,11 @@
 repositories {
   maven {
-    name 'codemc-repo'
-    url 'https://repo.codemc.io/repository/nms/'
+    name 'oss-sonatype'
+    url = 'https://oss.sonatype.org/content/repositories/snapshots'
+  }
+  maven {
+    name 'spigot-repo'
+    url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
   }
 }
 
