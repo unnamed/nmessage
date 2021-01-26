@@ -10,29 +10,44 @@ I have seen many things in languages ​​that I do not understand, to avoid th
 Read the wiki [here](https://github.com/yusshu/nmessage/wiki)
 
 ## Installation
-Maven repository
+
+Latest snapshot: [![Latest Snapshot](https://img.shields.io/nexus/s/me.yushust.message/core.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-snapshots)
+Latest release: [![Latest Release](https://img.shields.io/nexus/r/me.yushust.message/core.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-releases/)
+
+### Gradle
+Add the repositories into your `repositories` section (`build.gradle`)
+```groovy
+maven {
+  name 'unnamed-releases'
+  url 'https://repo.unnamed.team/repository/unnamed-releases/'
+}
+maven {
+  name 'unnamed-snapshots'
+  url 'https://repo.unnamed.team/repository/unnamed-releases/'
+}
+```
+Add the dependency into your `dependencies` section (`build.gradle`)
+```groovy
+compile 'me.yushust.message:core:VERSION'
+```
+
+### Maven
+Add the repositories into your `<repositories>` tag (`pom.xml`)
 ```xml
 <repository>
   <id>unnamed-releases</id>
-  <url>https://repo.unnamed.team/repository/unnamed-releases</url>
+  <url>https://repo.unnamed.team/repository/unnamed-releases/</url>
+</repository>
+<repository>
+  <id>unnamed-snapshots</id>
+  <url>https://repo.unnamed.team/repository/unnamed-snapshots/</url>
 </repository>
 ```
-Maven dependency
+Add the dependency into your `<dependencies>` tag (`pom.xml`)
 ```xml
 <dependency>
   <groupId>me.yushust.message</groupId>
-  <artifactId>message-dispatch-core</artifactId>
+  <artifactId>core</artifactId>
   <version>VERSION</version>
 </dependency>
 ```
-
-Bukkit adapters maven dependency
-(Adds support for YML using Bukkit's `YamlConfiguration`)
-```xml
-<dependency>
-  <groupId>me.yushust.message</groupId>
-  <artifactId>bukkit-message-dispatch</artifactId>
-  <version>VERSION</version>
-</dependency>
-```
-> "Yes."
