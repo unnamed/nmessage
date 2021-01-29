@@ -168,7 +168,7 @@ public class ConfigurationContainer {
         }
       } else {
         type = interfaces[nextInterface];
-        if (++nextInterface > interfaces.length) {
+        if (++nextInterface >= interfaces.length) {
           nextInterface = -1;
         }
       }

@@ -3,7 +3,7 @@ subprojects {
   apply plugin: 'maven-publish'
 
   group 'me.yushust.message'
-  version '6.0.0'
+  version '6.0.1'
 
   publishing {
     repositories {
