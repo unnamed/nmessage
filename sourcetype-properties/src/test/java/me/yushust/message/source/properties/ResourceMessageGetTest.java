@@ -1,7 +1,7 @@
 package me.yushust.message.source.properties;
 
 import me.yushust.message.MessageProvider;
-import me.yushust.message.config.WireHandleImpl;
+import me.yushust.message.config.ConfigurationHandle;
 import me.yushust.message.impl.MessageProviderImpl;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.source.MessageSourceDecorator;
@@ -17,7 +17,7 @@ public class ResourceMessageGetTest {
       .decorate(new PropertiesResourceSource("test_%lang%.properties"))
       .addFallbackLanguage("en")
       .get();
-    MessageProvider provider = new MessageProviderImpl(source, new WireHandleImpl());
+    MessageProvider provider = new MessageProviderImpl(source, new ConfigurationHandle());
 
     assertEquals("nefasto", provider.get(null, "test1"));
     assertEquals("terrible", provider.get(null, "test2"));

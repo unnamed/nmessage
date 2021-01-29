@@ -15,17 +15,33 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class that holds all the configurations for
+ * entities, this class isn't designed to be
+ * used by the final users
+ */
 public class ConfigurationContainer {
 
+  /**
+   * Map containing the cached compatible supertypes,
+   * avoiding checking for all super-types when a
+   * handler pack is required.
+   */
   private final Map<Class<?>, Class<?>> compatibleSupertypes
     = new HashMap<>();
 
+  /**
+   * Map containing all the handlers for specific
+   * entity types used as keys.
+   */
   private final Map<Class<?>, HandlerPack<?>> handlers
     = new HashMap<>();
 
+  /** Registry of placeholder providers by its identifier */
   private final Map<String, TypeSpecificPlaceholderProvider<?>> providers
     = new HashMap<>();
 
+  /** List containing all the message interceptors */
   private final List<MessageInterceptor> interceptors
     = new LinkedList<>();
 
@@ -37,28 +53,34 @@ public class ConfigurationContainer {
     );
   }
 
+  //#region Getters
+  /** Gets the {@link MessageSender} registered for the given {@code clazz} */
   public MessageSender<?> getSender(Class<?> clazz) {
     HandlerPack<?> handlerPack = getHandlers(clazz);
     return handlerPack == null ? null : handlerPack.sender;
   }
 
+  /** Gets the {@link Linguist} registered for the given {@code clazz} */
   public Linguist<?> getLinguist(Class<?> clazz) {
     HandlerPack<?> handlerPack = getHandlers(clazz);
     return handlerPack == null ? null : handlerPack.linguist;
   }
 
+  /** Gets the {@link EntityResolver} for to the given {@code clazz} */
   public EntityResolver<?, ?> getResolver(Class<?> clazz) {
     HandlerPack<?> handlerPack = handlers.get(clazz);
     return handlerPack == null ? null : handlerPack.resolver;
   }
 
-  public String intercept(String text) {
-    for (MessageInterceptor interceptor : interceptors) {
-      text = interceptor.intercept(text);
-    }
-    return text;
+  /** Finds a provider using its identifier */
+  @Nullable
+  public TypeSpecificPlaceholderProvider<?> getProvider(String identifier) {
+    Validate.isNotEmpty(identifier);
+    return providers.get(identifier.toLowerCase());
   }
+  //#endregion
 
+  //#region Setters
   /**
    * Registers a message interceptor in
    * this {@link ConfigurationContainer}. If the
@@ -73,27 +95,23 @@ public class ConfigurationContainer {
   /**
    * Registers a placeholder provider in this
    * {@link ConfigurationContainer} using the specified
-   * entity type. Used for Just-In-Time entities
+   * entity type.
    */
-  public <E> void registerProvider(String identifier, Class<E> entityType, PlaceholderProvider<E> provider) {
+  public <E> void registerProvider(
+    String identifier,
+    Class<E> entityType,
+    PlaceholderProvider<E> provider
+  ) {
     TypeSpecificPlaceholderProvider<?> resolvedProvider =
       new TypeSpecificPlaceholderProvider<>(entityType, provider);
     providers.put(identifier, resolvedProvider);
   }
 
-  /** Finds a provider using its identifier */
-  @Nullable
-  public TypeSpecificPlaceholderProvider<?> getProvider(String identifier) {
-    Validate.isNotEmpty(identifier);
-    return providers.get(identifier.toLowerCase());
-  }
-
-  /** A list containing all the registered interceptors */
-  public List<MessageInterceptor> getInterceptors() {
-    return interceptors;
-  }
-
-  public <T> void addResolver(
+  /**
+   * Adds a resolver, the given {@code resolvedType}
+   * is transformed to another type
+   */
+  public <T> void setResolver(
     Class<T> resolvedType,
     EntityResolver<?, T> resolver
   ) {
@@ -109,6 +127,19 @@ public class ConfigurationContainer {
   public <E> void setMessageSender(Class<E> entityType, MessageSender<E> sender) {
     HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
     handlerPack.sender = sender;
+  }
+  //#endregion
+
+  //#region Handler methods
+  /**
+   * Executes all the {@link MessageInterceptor} using
+   * the provided {@code text}
+   */
+  public String intercept(String text) {
+    for (MessageInterceptor interceptor : interceptors) {
+      text = interceptor.intercept(text);
+    }
+    return text;
   }
 
   private HandlerPack<?> getHandlers(Class<?> entityType) {
@@ -160,6 +191,7 @@ public class ConfigurationContainer {
 
     return (HandlerPack<E>) handlerPack;
   }
+  //#endregion
 
   private static class HandlerPack<E> {
 

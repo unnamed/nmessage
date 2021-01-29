@@ -6,12 +6,24 @@ import me.yushust.message.resolve.EntityResolver;
 import me.yushust.message.format.PlaceholderProvider;
 import me.yushust.message.util.Validate;
 
-public class SpecificWireHandle<E> {
+/**
+ * It's a {@link ConfigurationHandle} linked
+ * to an entity type
+ * @param <E> The linked entity type
+ */
+public class SpecificConfigurationHandle<E> {
 
+  /**
+   * It's the real configuration container, functions
+   * are delegated to this method, passing the linked
+   * {@link SpecificConfigurationHandle#entityType}
+   */
   private final ConfigurationContainer configurationContainer;
+
+  /** The entity type for this configuration handle */
   private final Class<E> entityType;
 
-  public SpecificWireHandle(
+  public SpecificConfigurationHandle(
       ConfigurationContainer configurationContainer,
       Class<E> entityType
   ) {
@@ -19,17 +31,25 @@ public class SpecificWireHandle<E> {
     this.entityType = entityType;
   }
 
-  public <R> SpecificWireHandle<E> resolveFrom(
+  /**
+   * Adds a resolver from the specified {@code resolvedClass}
+   * to the entity class linked to this class.
+   */
+  public <R> SpecificConfigurationHandle<E> resolveFrom(
       Class<R> resolvedClass,
       EntityResolver<E, R> resolver
   ) {
     Validate.isNotNull(resolvedClass, "resolvedClass");
     Validate.isNotNull(resolver, "resolver");
-    configurationContainer.addResolver(resolvedClass, resolver);
+    configurationContainer.setResolver(resolvedClass, resolver);
     return this;
   }
 
-  public SpecificWireHandle<E> setLinguist(
+  /**
+   * Sets the language provider (linguist) for the
+   * entity class linked to this class
+   */
+  public SpecificConfigurationHandle<E> setLinguist(
       Linguist<E> linguist
   ) {
     Validate.isNotNull(linguist, "linguist");
@@ -37,7 +57,11 @@ public class SpecificWireHandle<E> {
     return this;
   }
 
-  public SpecificWireHandle<E> addProvider(
+  /**
+   * Adds a placeholder provider with same entity type
+   * as the linked to this class.
+   */
+  public SpecificConfigurationHandle<E> addProvider(
       String identifier,
       PlaceholderProvider<E> provider
   ) {
@@ -47,7 +71,11 @@ public class SpecificWireHandle<E> {
     return this;
   }
 
-  public SpecificWireHandle<E> setMessageSender(
+  /**
+   * Sets the message sender for the entity type
+   * linked to this class
+   */
+  public SpecificConfigurationHandle<E> setMessageSender(
       MessageSender<E> sender
   ) {
     Validate.isNotNull(sender, "sender");

@@ -3,33 +3,36 @@ package me.yushust.message.config;
 import me.yushust.message.format.MessageInterceptor;
 import me.yushust.message.util.Validate;
 
-public class WireHandleImpl implements WireHandle {
+public class ConfigurationHandle {
 
   private final ConfigurationContainer configurationContainer = new ConfigurationContainer();
   private String startDelimiter = "%";
   private String endDelimiter = "%";
 
-  @Override
-  public WireHandle delimiting(String start, String end) {
+  public ConfigurationHandle delimiting(String start, String end) {
     this.startDelimiter = start;
     this.endDelimiter = end;
     return this;
   }
 
-  @Override
-  public WireHandle intercept(MessageInterceptor interceptor) {
+  public ConfigurationHandle intercept(MessageInterceptor interceptor) {
     Validate.isNotNull(interceptor, "interceptor");
     configurationContainer.registerInterceptor(interceptor);
     return this;
   }
 
-  @Override
-  public <E> SpecificWireHandle<E> specify(Class<E> entityType) {
+  public <E> SpecificConfigurationHandle<E> specify(Class<E> entityType) {
     Validate.isNotNull(entityType, "entityType");
-    return new SpecificWireHandle<>(
+    return new SpecificConfigurationHandle<>(
         configurationContainer,
         entityType
     );
+  }
+
+  public void install(ConfigurationModule... modules) {
+    for (ConfigurationModule module : modules) {
+      module.configure(this);
+    }
   }
 
   public ConfigurationContainer getWiringContainer() {

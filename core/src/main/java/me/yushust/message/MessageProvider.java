@@ -1,9 +1,8 @@
 package me.yushust.message;
 
 import me.yushust.message.config.ConfigurationContainer;
-import me.yushust.message.config.Specifier;
-import me.yushust.message.config.WireHandle;
-import me.yushust.message.config.WireHandleImpl;
+import me.yushust.message.config.ConfigurationModule;
+import me.yushust.message.config.ConfigurationHandle;
 import me.yushust.message.impl.MessageProviderImpl;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.track.TrackingContext;
@@ -58,12 +57,12 @@ public interface MessageProvider {
 
   MessageSource getSource();
 
-  static MessageProvider create(MessageSource source, Specifier... specifiers) {
-    WireHandle wireHandle = new WireHandleImpl();
-    for (Specifier specifier : specifiers) {
-      specifier.configure(wireHandle);
+  static MessageProvider create(MessageSource source, ConfigurationModule... specifiers) {
+    ConfigurationHandle configurationHandle = new ConfigurationHandle();
+    for (ConfigurationModule specifier : specifiers) {
+      specifier.configure(configurationHandle);
     }
-    return new MessageProviderImpl(source, wireHandle);
+    return new MessageProviderImpl(source, configurationHandle);
   }
 
 }

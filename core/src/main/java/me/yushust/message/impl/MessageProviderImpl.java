@@ -2,7 +2,6 @@ package me.yushust.message.impl;
 
 import me.yushust.message.MessageProvider;
 import me.yushust.message.util.ReplacePack;
-import me.yushust.message.config.WireHandle;
 import me.yushust.message.format.PlaceholderReplacer;
 import me.yushust.message.format.PlaceholderValueProviderImpl;
 import me.yushust.message.source.MessageSource;
