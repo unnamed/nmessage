@@ -61,6 +61,7 @@ public final class MessageProviderImpl
 
     context.push(path);
     message = replacer.setPlaceholders(context, message);
+    message = config.intercept(message);
 
     context.pop();
     return message;
@@ -74,7 +75,10 @@ public final class MessageProviderImpl
     context.getLiteralReplacements().replace(messages);
 
     context.push(path);
-    messages.replaceAll(line -> replacer.setPlaceholders(context, line));
+    messages.replaceAll(line -> {
+      line = replacer.setPlaceholders(context, line);
+      return config.intercept(line);
+    });
     context.pop();
     return messages;
   }

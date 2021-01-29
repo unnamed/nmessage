@@ -5,7 +5,8 @@ import me.yushust.message.util.Validate;
 
 public class ConfigurationHandle {
 
-  private final ConfigurationContainer configurationContainer = new ConfigurationContainer();
+  private final ConfigurationContainer configurationContainer =
+    new ConfigurationContainer();
   private String startDelimiter = "%";
   private String endDelimiter = "%";
 
