@@ -3,18 +3,18 @@ package me.yushust.message.send.impl;
 import me.yushust.message.MessageProvider;
 import me.yushust.message.impl.AbstractDelegatingMessageProvider;
 import me.yushust.message.send.MessageSender;
-import me.yushust.message.send.Messenger;
+import me.yushust.message.MessageHandler;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.ReplacePack;
 import me.yushust.message.util.Validate;
 
 import java.util.Collections;
 
-public class MessengerImpl
+public class MessageHandlerImpl
   extends AbstractDelegatingMessageProvider
-  implements Messenger, MessageProvider { // I just like to explicitly add the interfaces
+  implements MessageHandler, MessageProvider { // I just like to explicitly add the interfaces
 
-  private MessengerImpl(MessageProvider delegate) {
+  private MessageHandlerImpl(MessageProvider delegate) {
     super(delegate);
   }
 
@@ -58,12 +58,12 @@ public class MessengerImpl
     }
   }
 
-  public static Messenger of(MessageProvider provider) {
+  public static MessageHandler of(MessageProvider provider) {
     Validate.isNotNull(provider, "provider");
-    if (provider instanceof Messenger) {
-      return (Messenger) provider;
+    if (provider instanceof MessageHandler) {
+      return (MessageHandler) provider;
     } else {
-      return new MessengerImpl(provider);
+      return new MessageHandlerImpl(provider);
     }
   }
 

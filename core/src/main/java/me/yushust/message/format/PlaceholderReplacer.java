@@ -128,8 +128,8 @@ public class PlaceholderReplacer {
             if (identified) {
               result.append('_');
               result.append(placeholderStr);
-              result.append(endDelimiter);
             }
+            result.append(endDelimiter);
           } else {
             result.append(value);
           }

@@ -47,16 +47,9 @@ public class ConfigurationContainer {
     return handlerPack == null ? null : handlerPack.linguist;
   }
 
-  public <E> EntityResolver<?, E> getResolver(Class<E> resolvedClass) {
-    HandlerPack<?> handlerPack = handlers.get(resolvedClass);
-    if (handlerPack == null) {
-      return null;
-    } else {
-      @SuppressWarnings("unchecked")
-      EntityResolver<?, E> resolver =
-        (EntityResolver<?, E>) handlerPack.resolver;
-      return resolver;
-    }
+  public EntityResolver<?, ?> getResolver(Class<?> clazz) {
+    HandlerPack<?> handlerPack = handlers.get(clazz);
+    return handlerPack == null ? null : handlerPack.resolver;
   }
 
   public String intercept(String text) {
@@ -149,7 +142,7 @@ public class ConfigurationContainer {
         }
       }
 
-    } while (type != Object.class);
+    } while (type != null && type != Object.class);
 
     return null;
   }

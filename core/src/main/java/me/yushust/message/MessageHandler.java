@@ -1,10 +1,9 @@
-package me.yushust.message.send;
+package me.yushust.message;
 
-import me.yushust.message.MessageProvider;
-import me.yushust.message.send.impl.MessengerImpl;
+import me.yushust.message.send.impl.MessageHandlerImpl;
 import me.yushust.message.util.ReplacePack;
 
-public interface Messenger extends MessageProvider {
+public interface MessageHandler extends MessageProvider {
 
   String DEFAULT_MODE = "default";
 
@@ -34,8 +33,8 @@ public interface Messenger extends MessageProvider {
     sendReplacing(entityOrEntities, DEFAULT_MODE, path, replacements);
   }
 
-  static Messenger of(MessageProvider provider) {
-    return MessengerImpl.of(provider);
+  static MessageHandler of(MessageProvider provider) {
+    return MessageHandlerImpl.of(provider);
   }
 
 }

@@ -3,13 +3,17 @@ subprojects {
   apply plugin: 'maven-publish'
 
   group 'me.yushust.message'
-  version '6.0.0-SNAPSHOT'
+  version '6.0.0'
 
   publishing {
     repositories {
       maven {
-        name = 'unnamed-snapshots'
-        url = 'https://repo.unnamed.team/repository/unnamed-snapshots/'
+        def snapshot = version.toString().endsWith("-SNAPSHOT")
+        def typeName = snapshot ? 'snapshots' : 'releases'
+        def repoUrl = 'https://repo.unnamed.team/repository/unnamed-' + typeName
+
+        name = snapshot ? 'unnamed-snapshots' : 'unnamed-releases'
+        url = repoUrl
         credentials {
           username = System.getenv('REPO_USER')
           password = System.getenv('REPO_PASSWORD')

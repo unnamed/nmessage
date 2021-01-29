@@ -1,13 +1,13 @@
 package me.yushust.message.impl;
 
 import me.yushust.message.MessageProvider;
-import me.yushust.message.send.Messenger;
+import me.yushust.message.MessageHandler;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.StringList;
 
 public abstract class AbstractDelegatingMessageProvider
   extends AbstractMessageProvider
-  implements Messenger {
+  implements MessageHandler {
 
   protected final MessageProvider provider;
 
