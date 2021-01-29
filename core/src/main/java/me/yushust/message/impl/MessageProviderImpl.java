@@ -1,6 +1,7 @@
 package me.yushust.message.impl;
 
 import me.yushust.message.MessageProvider;
+import me.yushust.message.config.ConfigurationHandle;
 import me.yushust.message.util.ReplacePack;
 import me.yushust.message.format.PlaceholderReplacer;
 import me.yushust.message.format.PlaceholderValueProviderImpl;
@@ -21,13 +22,13 @@ public final class MessageProviderImpl
 
   public MessageProviderImpl(
     MessageSource source,
-    WireHandle wireHandle
+    ConfigurationHandle configHandle
   ) {
-    super(source, wireHandle.getWiringContainer());
+    super(source, configHandle.getWiringContainer());
     this.replacer = new PlaceholderReplacer(
       new PlaceholderValueProviderImpl(config),
-      wireHandle.getStartDelimiter(),
-      wireHandle.getEndDelimiter()
+      configHandle.getStartDelimiter(),
+      configHandle.getEndDelimiter()
     );
   }
 
