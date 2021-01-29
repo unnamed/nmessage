@@ -1,5 +1,6 @@
 package me.yushust.message.track;
 
+import me.yushust.message.format.PlaceholderReplacer;
 import me.yushust.message.impl.AbstractMessageProvider;
 import me.yushust.message.MessageProvider;
 import me.yushust.message.util.StringList;
@@ -67,6 +68,11 @@ public class ContextRepository
     String path
   ) {
     return provider.formatMany(context, path);
+  }
+
+  @Override
+  public PlaceholderReplacer getReplacer() {
+    return provider.getReplacer();
   }
 
   public Object getEntity() {

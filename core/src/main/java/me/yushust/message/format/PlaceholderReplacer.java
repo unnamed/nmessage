@@ -5,7 +5,7 @@ import me.yushust.message.util.Validate;
 
 public class PlaceholderReplacer {
 
-  private final PlaceholderValueProvider valueProvider;
+  private PlaceholderValueProvider valueProvider;
   private final String startDelimiter;
   private final String endDelimiter;
 
@@ -27,7 +27,6 @@ public class PlaceholderReplacer {
     return text.length() >= (3 + startDelimiter.length() + endDelimiter.length());
   }
 
-  @SuppressWarnings("StringEquality")
   public String setPlaceholders(
     TrackingContext context,
     String text
@@ -162,6 +161,10 @@ public class PlaceholderReplacer {
     }
 
     return result.toString();
+  }
+
+  public void setValueProvider(PlaceholderValueProvider valueProvider) {
+    this.valueProvider = Validate.isNotNull(valueProvider, "valueProvider");
   }
 
 }

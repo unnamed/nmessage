@@ -2,6 +2,7 @@ package me.yushust.message.impl;
 
 import me.yushust.message.MessageProvider;
 import me.yushust.message.MessageHandler;
+import me.yushust.message.format.PlaceholderReplacer;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.StringList;
 
@@ -31,6 +32,12 @@ public abstract class AbstractDelegatingMessageProvider
   public StringList formatMany(TrackingContext context, String path) {
     return provider.formatMany(context, path);
   }
+
+  @Override
+  public PlaceholderReplacer getReplacer() {
+    return provider.getReplacer();
+  }
+
   //#endregion
 
 }

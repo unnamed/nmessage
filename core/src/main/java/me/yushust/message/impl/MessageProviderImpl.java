@@ -83,6 +83,11 @@ public final class MessageProviderImpl
     return messages;
   }
 
+  @Override
+  public PlaceholderReplacer getReplacer() {
+    return replacer;
+  }
+
   private StringList convertObjectToStringList(Object object) {
     if (object instanceof List) {
       @SuppressWarnings("unchecked")

@@ -3,6 +3,7 @@ package me.yushust.message;
 import me.yushust.message.config.ConfigurationContainer;
 import me.yushust.message.config.ConfigurationModule;
 import me.yushust.message.config.ConfigurationHandle;
+import me.yushust.message.format.PlaceholderReplacer;
 import me.yushust.message.impl.MessageProviderImpl;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.track.TrackingContext;
@@ -56,6 +57,8 @@ public interface MessageProvider {
   ConfigurationContainer getConfig();
 
   MessageSource getSource();
+
+  PlaceholderReplacer getReplacer();
 
   static MessageProvider create(MessageSource source, ConfigurationModule... specifiers) {
     ConfigurationHandle configurationHandle = new ConfigurationHandle();
