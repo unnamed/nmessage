@@ -163,8 +163,10 @@ public class ConfigurationContainer {
       }
       if (nextInterface == -1) {
         type = type.getSuperclass();
-        interfaces = type.getInterfaces();
-        if (interfaces.length > 0) {
+        if (
+          type != null
+          && (interfaces = type.getInterfaces()).length > 0
+        ) {
           type = interfaces[++nextInterface];
           if (++nextInterface >= interfaces.length) {
             nextInterface = -1;
