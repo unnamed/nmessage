@@ -152,6 +152,7 @@ public class ConfigurationContainer {
 
     HandlerPack<?> handlerPack;
     Class<?> type = entityType;
+    Class<?>[] interfaces = entityType.getInterfaces();
     int nextInterface = -1;
 
     do {
@@ -160,9 +161,9 @@ public class ConfigurationContainer {
         compatibleSupertypes.put(entityType, type);
         return handlerPack;
       }
-      Class<?>[] interfaces = type.getInterfaces();
       if (nextInterface == -1) {
         type = type.getSuperclass();
+        interfaces = type.getInterfaces();
         if (interfaces.length > 0) {
           type = interfaces[++nextInterface];
           if (++nextInterface >= interfaces.length) {
