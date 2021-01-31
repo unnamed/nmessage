@@ -150,36 +150,30 @@ public class ConfigurationContainer {
       return handlers.get(cachedCompatibleType);
     }
 
-    HandlerPack<?> handlerPack;
     Class<?> type = entityType;
-    Class<?>[] interfaces = entityType.getInterfaces();
-    int nextInterface = -1;
 
-    do {
-      handlerPack = handlers.get(type);
+    while (type != Object.class && type != null) {
+      HandlerPack<?> handlerPack = handlers.get(type);
       if (handlerPack != null) {
         compatibleSupertypes.put(entityType, type);
         return handlerPack;
       }
-      if (nextInterface == -1) {
-        type = type.getSuperclass();
-        if (
-          type != null
-          && (interfaces = type.getInterfaces()).length > 0
-        ) {
-          type = interfaces[++nextInterface];
-          if (++nextInterface >= interfaces.length) {
-            nextInterface = -1;
+      for (Class<?> interfaceType : type.getInterfaces()) {
+        handlerPack = handlers.get(interfaceType);
+        if (handlerPack != null) {
+          compatibleSupertypes.put(entityType, interfaceType);
+          return handlerPack;
+        }
+        for (Class<?> superInterface : interfaceType.getInterfaces()) {
+          handlerPack = handlers.get(superInterface);
+          if (handlerPack != null) {
+            compatibleSupertypes.put(entityType, superInterface);
+            return handlerPack;
           }
         }
-      } else {
-        type = interfaces[nextInterface];
-        if (++nextInterface >= interfaces.length) {
-          nextInterface = -1;
-        }
       }
-
-    } while (type != null && type != Object.class);
+      type = type.getSuperclass();
+    }
 
     return null;
   }
