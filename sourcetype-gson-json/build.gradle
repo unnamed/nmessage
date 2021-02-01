@@ -1,0 +1,4 @@
+dependencies {
+  compile project(':core')
+  compile 'com.google.code.gson:gson:2.8.6'
+}
