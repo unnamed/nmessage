@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 
 public class YamlMessageSource
-  extends AbstractCachedFileSource
+  extends AbstractCachedFileSource<YamlConfiguration>
   implements MessageSource {
 
   private final Plugin plugin;
@@ -36,7 +36,7 @@ public class YamlMessageSource
 
   @Override
   @Nullable
-  protected Object getSource(String filename) {
+  protected YamlConfiguration getSource(String filename) {
 
     File file = new File(folder, filename);
 
@@ -68,8 +68,8 @@ public class YamlMessageSource
 
   @Override
   @Nullable
-  protected Object getValue(Object source, String path) {
-    return ((YamlConfiguration) source).get(path);
+  protected Object getValue(YamlConfiguration source, String path) {
+    return source.get(path);
   }
 
 }
