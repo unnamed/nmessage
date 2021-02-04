@@ -3,6 +3,7 @@ package me.yushust.message.test;
 import me.yushust.message.MessageProvider;
 import me.yushust.message.test.base.Entity;
 import me.yushust.message.test.base.HandlerTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class JitEntitiesFormattingTest extends HandlerTestCase {
@@ -21,12 +22,18 @@ public class JitEntitiesFormattingTest extends HandlerTestCase {
     NamedEntity namedEntity = new NamedEntity();
     namedEntity.name = "OcNo";
 
-    System.out.println(handler.getMany(entity, "jit-entity-test", namedEntity));
+    Assertions.assertEquals(
+      "The name of the external entity is OcNo",
+      handler.get(entity, "jit-entity-test", namedEntity)
+    );
 
     NamedEntity namedEntity2 = new NamedEntity();
     namedEntity2.name = "Fixed";
 
-    System.out.println(handler.getMany(entity, "jit-entity-test", namedEntity2));
+    Assertions.assertEquals(
+      "The name of the external entity is Fixed",
+      handler.get(entity, "jit-entity-test", namedEntity2)
+    );
 
   }
 

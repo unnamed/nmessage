@@ -46,7 +46,7 @@ public class PlaceholderValueProviderImpl
       if (!provider.isCompatible(entity)) {
         entity = null;
         for (Object ext : context.getJitEntities()) {
-          if (provider.isCompatible(entity)) {
+          if (provider.isCompatible(ext)) {
             entity = ext;
             break;
           }
