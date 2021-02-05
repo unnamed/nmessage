@@ -6,7 +6,6 @@ import me.yushust.message.track.TrackingContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Default implementation of {@link PlaceholderValueProvider}
@@ -76,13 +75,6 @@ public class PlaceholderValueProviderImpl
     Map<String, Object> replacements = context.getVariableReplacements();
     Object value = replacements == null ? null : replacements.get(identifier);
     return convertObjectToString(value);
-  }
-
-  protected String convertObjectToString(@Nullable Object object) {
-    // designed to ve overwritten when other
-    // behaviour of (object -> string) conversion
-    // is required
-    return Objects.toString(object, null);
   }
 
 }

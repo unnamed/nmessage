@@ -9,10 +9,7 @@ import me.yushust.message.source.MessageSource;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.StringList;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 public final class MessageProviderImpl
   extends AbstractMessageProvider
@@ -51,7 +48,8 @@ public final class MessageProviderImpl
   @Override
   public String format(TrackingContext context, String path) {
     String language = context.getLanguage();
-    String message = convertObjectToString(source.get(language, path));
+    String message = replacer.getValueProvider()
+      .convertObjectToString(source.get(language, path));
 
     if (message == null) {
       return null;
@@ -70,7 +68,8 @@ public final class MessageProviderImpl
   @Override
   public StringList formatMany(TrackingContext context, String path) {
     String language = context.getLanguage();
-    StringList messages = convertObjectToStringList(source.get(language, path));
+    StringList messages = replacer.getValueProvider()
+      .convertObjectToStringList(source.get(language, path));
 
     context.getLiteralReplacements().replace(messages);
 
@@ -86,24 +85,6 @@ public final class MessageProviderImpl
   @Override
   public PlaceholderReplacer getReplacer() {
     return replacer;
-  }
-
-  private StringList convertObjectToStringList(Object object) {
-    if (object instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<String> list = (List<String>) object;
-      return new StringList(list);
-    } else if (object == null) {
-      return null;
-    } else {
-      return new StringList(
-        Arrays.asList(object.toString().split("\n"))
-      );
-    }
-  }
-
-  private String convertObjectToString(Object object) {
-    return Objects.toString(object, null);
   }
 
 }

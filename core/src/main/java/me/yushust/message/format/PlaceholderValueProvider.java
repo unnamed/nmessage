@@ -1,7 +1,11 @@
 package me.yushust.message.format;
 
 import me.yushust.message.track.TrackingContext;
+import me.yushust.message.util.StringList;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Responsible of obtaining the value
@@ -34,6 +38,34 @@ public interface PlaceholderValueProvider {
     String identifier
   ) {
     return null;
+  }
+
+  /** Converts the given {@code object} to a {@link StringList} */
+  default StringList convertObjectToStringList(Object object) {
+    if (object == null) {
+      return null;
+    } else if (object instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<String> list = (List<String>) object;
+      return new StringList(list);
+    } else {
+      return new StringList(
+        Arrays.asList(object.toString().split("\n"))
+      );
+    }
+  }
+
+  /** Converts the given {@code object} to a string */
+  default String convertObjectToString(Object object) {
+    if (object == null) {
+      return null;
+    } else if (object instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<String> list = (List<String>) object;
+      return String.join("\n", list);
+    } else {
+      return object.toString();
+    }
   }
 
 }

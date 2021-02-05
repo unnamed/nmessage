@@ -163,6 +163,10 @@ public class PlaceholderReplacer {
     return result.toString();
   }
 
+  public PlaceholderValueProvider getValueProvider() {
+    return valueProvider;
+  }
+
   public void setValueProvider(PlaceholderValueProvider valueProvider) {
     this.valueProvider = Validate.isNotNull(valueProvider, "valueProvider");
   }
