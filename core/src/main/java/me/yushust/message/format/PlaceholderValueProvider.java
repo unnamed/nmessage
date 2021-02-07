@@ -5,6 +5,7 @@ import me.yushust.message.util.StringList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,9 +42,10 @@ public interface PlaceholderValueProvider {
   }
 
   /** Converts the given {@code object} to a {@link StringList} */
-  default StringList convertObjectToStringList(Object object) {
+  @Nullable
+  default StringList convertObjectToStringList(@Nullable String path, Object object) {
     if (object == null) {
-      return null;
+      return new StringList(Collections.singletonList(path));
     } else if (object instanceof List) {
       @SuppressWarnings("unchecked")
       List<String> list = (List<String>) object;
@@ -56,9 +58,10 @@ public interface PlaceholderValueProvider {
   }
 
   /** Converts the given {@code object} to a string */
-  default String convertObjectToString(Object object) {
+  @Nullable
+  default String convertObjectToString(@Nullable String path, Object object) {
     if (object == null) {
-      return null;
+      return path;
     } else if (object instanceof List) {
       @SuppressWarnings("unchecked")
       List<String> list = (List<String>) object;

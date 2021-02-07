@@ -63,7 +63,7 @@ public class PlaceholderValueProviderImpl
       }
     }
 
-    return convertObjectToString(value);
+    return convertObjectToString(null, value);
   }
 
   @Override
@@ -74,7 +74,7 @@ public class PlaceholderValueProviderImpl
   ) {
     Map<String, Object> replacements = context.getVariableReplacements();
     Object value = replacements == null ? null : replacements.get(identifier);
-    return convertObjectToString(value);
+    return convertObjectToString(null, value);
   }
 
 }

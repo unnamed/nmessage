@@ -49,7 +49,7 @@ public final class MessageProviderImpl
   public String format(TrackingContext context, String path) {
     String language = context.getLanguage();
     String message = replacer.getValueProvider()
-      .convertObjectToString(source.get(language, path));
+      .convertObjectToString(path, source.get(language, path));
 
     if (message == null) {
       return null;
@@ -69,7 +69,7 @@ public final class MessageProviderImpl
   public StringList formatMany(TrackingContext context, String path) {
     String language = context.getLanguage();
     StringList messages = replacer.getValueProvider()
-      .convertObjectToStringList(source.get(language, path));
+      .convertObjectToStringList(path, source.get(language, path));
 
     context.getLiteralReplacements().replace(messages);
 
