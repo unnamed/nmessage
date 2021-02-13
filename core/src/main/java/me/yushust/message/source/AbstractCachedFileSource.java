@@ -72,6 +72,7 @@ public abstract class AbstractCachedFileSource<T>
 
     @SuppressWarnings("unchecked")
     T castedSource = (T) source;
+    cache.put(language, source);
     return getValue(castedSource, path);
   }
 

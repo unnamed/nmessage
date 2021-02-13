@@ -1,6 +1,6 @@
 package me.yushust.message.test;
 
-import me.yushust.message.MessageProvider;
+import me.yushust.message.MessageHandler;
 import me.yushust.message.test.base.Entity;
 import me.yushust.message.test.base.HandlerTestCase;
 import org.junit.jupiter.api.Assertions;
@@ -11,17 +11,31 @@ public class PlaceholderReplacementTest extends HandlerTestCase {
   @Test
   public void test() {
 
-    MessageProvider handler = MessageProvider.create(
+    MessageHandler handler = MessageHandler.of(
         source,
         wiring -> wiring
-            .specify(Entity.class)
-            .addProvider("obj", testProvider())
+          .specify(Entity.class)
+          .addProvider("obj", testProvider())
+          .setMessageSender((entity, mode, message) -> {
+            Assertions.assertEquals(
+              "Your object hashcode is 0 and as string it's i'manentity",
+              message
+            );
+          })
     );
 
     Entity entity = new Entity();
-    Assertions.assertEquals("Your object hashcode is 0 and as string it's i'manentity",
-        handler.get(entity, "replace-this"));
-
+    Assertions.assertEquals(
+      "Your object hashcode is 0 and as string it's i'manentity",
+        handler.replacing(
+          entity, "replace-this",
+          "%thing%", "object"
+        )
+    );
+    handler.sendReplacing(
+      entity, "replace-this",
+      "%thing%", "object"
+    );
   }
 
 }
