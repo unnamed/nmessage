@@ -24,6 +24,14 @@ public class PlaceholderReplacementTest extends HandlerTestCase {
           })
     );
 
+    Assertions.assertEquals(
+      "Test this i'manentity bruh",
+      handler.get(
+        new Object(), "test-this",
+        new Entity()
+      )
+    );
+
     Entity entity = new Entity();
     Assertions.assertEquals(
       "Your object hashcode is 0 and as string it's i'manentity",
