@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 public final class Validate {
 
   private Validate() {
-    throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
   /**
