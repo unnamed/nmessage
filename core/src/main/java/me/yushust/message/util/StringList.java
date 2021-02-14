@@ -1,54 +1,77 @@
 package me.yushust.message.util;
 
-import java.util.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.Collections;
 
 /**
- * A wrapper for a List of Strings, adds methods for
- * facilitate handling
+ * Wrapper of {@link List} of {@link String}s
+ * used to ease its element handling by adding
+ * some utility methods
  */
-public final class StringList extends AbstractList<String> {
+public final class StringList
+  extends AbstractList<String>
+  implements List<String> {
 
-  /** Random number generator used to get a random element from the list*/
-  private static final Random RANDOM = new Random();
+  /** The wrapped original list */
+  private final List<String> value;
 
-  private final List<String> stringList;
-
-  public StringList(List<String> stringList) {
-    this.stringList = new ArrayList<>(stringList);
+  /**
+   * Constructs a new {@link StringList} from
+   * the given {@code value}. The internal list
+   * isn't defined to the given {@code value},
+   * the stored internal list is a just copy of
+   * the given {@code value}
+   */
+  @Contract("null -> fail")
+  public StringList(List<String> value) {
+    Validate.isNotNull(value, "value");
+    this.value = new ArrayList<>(value);
   }
 
   /**
-   * Uses {@link String#replace} in all elements
-   *
-   * @param key         The old sequence
-   * @param replacement The new sequence
-   * @return The string list, for a fluent api
+   * Executes the {@link String#replace} with the
+   * given {@code key} and {@code replacements} as
+   * arguments in all the elements, so the internal
+   * list mutates.
+   * @return The same string list represented by {@code this},
+   * for a fluent api
    */
-  public StringList replace(String key, Object replacement) {
-    if (key != null) {
-      stringList.replaceAll(line ->
-          line.replace(key, String.valueOf(replacement))
-      );
-    }
+  @Contract("null, _ -> fail")
+  public StringList replace(String key, @Nullable Object replacement) {
+    Validate.isNotNull(key, "key");
+    // convert null literal to "null"
+    String replacementStr = String.valueOf(replacement);
+    value.replaceAll(line -> line.replace(key, replacementStr));
     return this;
   }
 
   /**
-   * Calls {@link String#join} and returns the result
-   *
+   * Calls {@link String#join} passing as arguments the
+   * given {@code delimiter} and the internal list.
    * @param delimiter The joined elements delimiter
    * @return The joined elements
    */
+  @Contract("null -> fail")
   public String join(String delimiter) {
-    return String.join(delimiter, stringList);
+    return String.join(delimiter, value);
   }
 
   /**
-   * @return Random element from the list, or
+   * Returns a random element from the list, or
    * {@code valueIfEmpty} if the list is empty
+   * @deprecated Getting random elements should
+   * be made by library users, not by the library
+   * itself.
    */
+  @Deprecated
   public String random(String valueIfEmpty) {
-    if (stringList.isEmpty()) {
+    if (value.isEmpty()) {
       return valueIfEmpty;
     } else {
       return getRandomElement();
@@ -56,63 +79,56 @@ public final class StringList extends AbstractList<String> {
   }
 
   /**
-   * @return Random element from the list
+   * Returns a random element from the list
    * @throws NoSuchElementException if list is empty
+   * @deprecated Getting random elements should
+   * be made by library users, not by the library
+   * itself.
    */
+  @Deprecated
   public String random() {
-    if (stringList.isEmpty()) {
+    if (value.isEmpty()) {
       throw new NoSuchElementException("No elements in the list");
     } else {
       return getRandomElement();
     }
   }
 
-  /** @return Random element from the list */
-  private String getRandomElement() {
-    return stringList.get(
-        RANDOM.nextInt(stringList.size())
-    );
-  }
-
   /**
-   * @return Returns the original string list
+   * Returns a random element from the list
+   * @deprecated Getting random elements should
+   * be made by library users, not by the library
+   * itself.
    */
-  public List<String> getContents() {
-    return stringList;
-  }
-
-  // delegate methods to original string list
-  @Override
-  public String get(int index) {
-    return stringList.get(index);
-  }
-
-  @Override
-  public int size() {
-    return stringList.size();
-  }
-
-  @Override
-  public String set(int index, String element) {
-    return stringList.set(index, element);
-  }
-
-  @Override
-  public void add(int index, String element) {
-    stringList.add(index, element);
-  }
-
-  @Override
-  public String remove(int index) {
-    return stringList.remove(index);
+  @Deprecated
+  private String getRandomElement() {
+    // random isn't supported
+    return value.get(0);
   }
 
   /**
-   * Creates an immutable list of just a string, wrapped
-   * with {@link StringList}
-   *
+   * @return Returns the internal string list
+   * @deprecated We shouldn't expose the internal
+   * list, it's internal!
+   */
+  @Deprecated
+  public List<String> getContents() {
+    return value;
+  }
+
+  //#region Delegate methods functionality to internal string list
+  @Override public String get(int index) { return value.get(index); }
+  @Override public int size() { return value.size(); }
+  @Override public String set(int index, String element) { return value.set(index, element); }
+  @Override public void add(int index, String element) { value.add(index, element); }
+  @Override public String remove(int index) { return value.remove(index); }
+  //#endregion
+
+  /**
+   * Creates an immutable list of a single string element,
+   * and then it's wrapped with {@link StringList} (mutable)
    * @param element The unique element
-   * @return The string list
+   * @see Collections#singletonList
    */
   public static StringList singleton(String element) {
     return new StringList(Collections.singletonList(element));
