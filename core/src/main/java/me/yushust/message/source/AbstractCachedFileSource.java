@@ -66,6 +66,7 @@ public abstract class AbstractCachedFileSource<T>
     } else if (source == null) {
       source = getSource(getFilename(language));
       if (source == null) {
+        cache.put(language, ABSENT);
         return null;
       }
     }
