@@ -26,7 +26,7 @@ maven {
 ```
 Add the dependency into your `dependencies` section (`build.gradle`)
 ```groovy
-compile 'me.yushust.message:core:VERSION'
+implementation 'me.yushust.message:core:VERSION'
 ```
 
 ### Maven
