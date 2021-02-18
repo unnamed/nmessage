@@ -6,9 +6,11 @@ import me.yushust.message.send.MessageSender;
 import me.yushust.message.MessageHandler;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.ReplacePack;
+import me.yushust.message.util.StringList;
 import me.yushust.message.util.Validate;
 
 import java.util.Collections;
+import java.util.List;
 
 public class MessageHandlerImpl
   extends AbstractDelegatingMessageProvider
@@ -40,20 +42,39 @@ public class MessageHandlerImpl
         Validate.isNotNull(sender, "No sender specified for " +
           "entity type " + entity.getClass() + " or supertypes");
 
-        String message = format(
-          new TrackingContext(
-            entity,
-            getLanguage(entity),
-            jitEntities,
-            replacements,
-            Collections.emptyMap(),
-            this
-          ),
-          path
+        String language = getLanguage(entity);
+        Object message = source.get(language, path);
+
+        TrackingContext context = new TrackingContext(
+          entity,
+          language,
+          jitEntities,
+          replacements,
+          Collections.emptyMap(),
+          this
         );
-        if (message != null) {
-          sender.send(entity, mode, message);
+
+        context.push(path);
+
+        if (message instanceof String) {
+          String messageStr = message.toString();
+          messageStr = replacements.replace(messageStr);
+          messageStr = getReplacer().setPlaceholders(context, messageStr);
+          messageStr = config.intercept(messageStr);
+          sender.send(entity, mode, messageStr);
+        } else if (message instanceof List) {
+          @SuppressWarnings("unchecked")
+          StringList messages = new StringList((List<String>) message);
+          replacements
+            .replace(messages)
+            .replaceAll(text -> {
+              text = getReplacer().setPlaceholders(context, text);
+              return config.intercept(text);
+            });
+          sender.send(entity, mode, messages);
         }
+
+        context.pop();
       }
     }
   }
