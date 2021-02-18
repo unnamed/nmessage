@@ -77,6 +77,15 @@ public abstract class AbstractCachedFileSource<T>
     return getValue(castedSource, path);
   }
 
+  /**
+   * Removes all the loaded data about
+   * the language files from the internal
+   * cache map
+   */
+  public void invalidateCaches() {
+    cache.clear();
+  }
+
   protected String getFilename(String language) {
     return fileFormat.replace(LANGUAGE_VARIABLE, language);
   }
