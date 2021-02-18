@@ -181,7 +181,7 @@ public class ConfigurationContainer {
   @SuppressWarnings("unchecked")
   private <E> HandlerPack<E> getHandlersOrCreate(Class<?> entityType) {
 
-    HandlerPack<?> handlerPack = getHandlers(entityType);
+    HandlerPack<?> handlerPack = handlers.get(entityType);
 
     if (handlerPack == null) {
       handlerPack = new HandlerPack<>();
