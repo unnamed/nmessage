@@ -10,8 +10,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Linguist<E> {
 
-  Linguist<?> DUMMY = languageHolder -> null;
-
   /**
    * Gets the language of the specified
    * property holder.
@@ -22,17 +20,5 @@ public interface Linguist<E> {
    */
   @Nullable
   String getLanguage(E entity);
-
-  /**
-   * The dummy language provider instance
-   * casted to "T"
-   *
-   * @param <T> The type to convert
-   * @return The language provider casted to "T"
-   */
-  @SuppressWarnings("unchecked")
-  static <T> Linguist<T> dummy() {
-    return (Linguist<T>) DUMMY;
-  }
 
 }

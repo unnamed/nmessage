@@ -1,12 +1,23 @@
 package me.yushust.message;
 
 import me.yushust.message.config.ConfigurationModule;
+import me.yushust.message.send.MessageSender;
 import me.yushust.message.send.impl.MessageHandlerImpl;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.util.ReplacePack;
 
-public interface MessageHandler extends MessageProvider {
+/**
+ * Extension of {@link MessageProvider} that adds
+ * methods for directly send the messages to the
+ * entities.
+ *
+ * <p>This class requires a {@link MessageSender}
+ * specified for all the used entities to work</p>
+ */
+public interface MessageHandler
+  extends MessageProvider {
 
+  /** The default send mode*/
   String DEFAULT_MODE = "default";
 
   Object[] EMPTY_OBJECT_ARRAY = new Object[0];

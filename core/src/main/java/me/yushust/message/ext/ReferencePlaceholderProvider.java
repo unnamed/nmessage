@@ -5,6 +5,13 @@ import me.yushust.message.format.ProviderSettings;
 import me.yushust.message.format.PlaceholderProvider;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Implementation of {@link PlaceholderProvider} used
+ * to reference another path by using its placeholders.
+ *
+ * <p>For example, given a '%path_other_path%', it will
+ * check for the message at 'other_path' and return it.</p>
+ */
 @ProviderSettings(
     requiresEntity = false
 )
