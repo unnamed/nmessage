@@ -56,6 +56,13 @@ public class MessageHandlerImpl
 
         context.push(path);
 
+        if (message == null) {
+          // Try convert the null reference to a
+          // string
+          message = getReplacer().getValueProvider()
+            .convertObjectToString(path, message);
+        }
+
         if (message instanceof String) {
           String messageStr = message.toString();
           messageStr = replacements.replace(messageStr);
