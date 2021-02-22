@@ -56,20 +56,7 @@ public class MessageHandlerImpl
 
         context.push(path);
 
-        if (message == null) {
-          // Try convert the null reference to a
-          // string
-          message = getReplacer().getValueProvider()
-            .convertObjectToString(path, message);
-        }
-
-        if (message instanceof String) {
-          String messageStr = message.toString();
-          messageStr = replacements.replace(messageStr);
-          messageStr = getReplacer().setPlaceholders(context, messageStr);
-          messageStr = config.intercept(messageStr);
-          sender.send(entity, mode, messageStr);
-        } else if (message instanceof List) {
+        if (message instanceof List) {
           @SuppressWarnings("unchecked")
           StringList messages = new StringList((List<String>) message);
           replacements
@@ -79,6 +66,13 @@ public class MessageHandlerImpl
               return config.intercept(text);
             });
           sender.send(entity, mode, messages);
+        } else {
+          String messageStr = getReplacer().getValueProvider()
+            .convertObjectToString(path, message);
+          messageStr = replacements.replace(messageStr);
+          messageStr = getReplacer().setPlaceholders(context, messageStr);
+          messageStr = config.intercept(messageStr);
+          sender.send(entity, mode, messageStr);
         }
 
         context.pop();
