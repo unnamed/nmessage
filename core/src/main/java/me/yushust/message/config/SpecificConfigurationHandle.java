@@ -18,16 +18,16 @@ public class SpecificConfigurationHandle<E> {
    * are delegated to this method, passing the linked
    * {@link SpecificConfigurationHandle#entityType}
    */
-  private final ConfigurationContainer configurationContainer;
+  private final ConfigurationHandle configurationHandle;
 
   /** The entity type for this configuration handle */
   private final Class<E> entityType;
 
   public SpecificConfigurationHandle(
-      ConfigurationContainer configurationContainer,
+      ConfigurationHandle configurationHandle,
       Class<E> entityType
   ) {
-    this.configurationContainer = configurationContainer;
+    this.configurationHandle = configurationHandle;
     this.entityType = entityType;
   }
 
@@ -41,7 +41,7 @@ public class SpecificConfigurationHandle<E> {
   ) {
     Validate.isNotNull(resolvedClass, "resolvedClass");
     Validate.isNotNull(resolver, "resolver");
-    configurationContainer.setResolver(resolvedClass, resolver);
+    configurationHandle.setResolver(resolvedClass, resolver);
     return this;
   }
 
@@ -53,7 +53,7 @@ public class SpecificConfigurationHandle<E> {
       Linguist<E> linguist
   ) {
     Validate.isNotNull(linguist, "linguist");
-    configurationContainer.setLinguist(entityType, linguist);
+    configurationHandle.setLinguist(entityType, linguist);
     return this;
   }
 
@@ -67,7 +67,7 @@ public class SpecificConfigurationHandle<E> {
   ) {
     Validate.isNotNull(identifier, "identifier");
     Validate.isNotNull(provider, "provider");
-    configurationContainer.registerProvider(identifier, entityType, provider);
+    configurationHandle.registerProvider(identifier, entityType, provider);
     return this;
   }
 
@@ -79,7 +79,7 @@ public class SpecificConfigurationHandle<E> {
       MessageSender<E> sender
   ) {
     Validate.isNotNull(sender, "sender");
-    configurationContainer.setMessageSender(entityType, sender);
+    configurationHandle.setMessageSender(entityType, sender);
     return this;
   }
 

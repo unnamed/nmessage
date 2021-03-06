@@ -1,6 +1,5 @@
 package me.yushust.message;
 
-import me.yushust.message.config.ConfigurationContainer;
 import me.yushust.message.config.ConfigurationModule;
 import me.yushust.message.config.ConfigurationHandle;
 import me.yushust.message.format.PlaceholderReplacer;
@@ -54,7 +53,7 @@ public interface MessageProvider {
 
   String getLanguage(Object entity);
 
-  ConfigurationContainer getConfig();
+  ConfigurationHandle getConfig();
 
   MessageSource getSource();
 

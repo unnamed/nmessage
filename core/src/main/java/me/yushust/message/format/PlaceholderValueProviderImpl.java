@@ -1,6 +1,6 @@
 package me.yushust.message.format;
 
-import me.yushust.message.config.ConfigurationContainer;
+import me.yushust.message.config.ConfigurationHandle;
 import me.yushust.message.impl.TypeSpecificPlaceholderProvider;
 import me.yushust.message.track.TrackingContext;
 import org.jetbrains.annotations.Nullable;
@@ -19,12 +19,12 @@ import java.util.Map;
 public class PlaceholderValueProviderImpl
   implements PlaceholderValueProvider {
 
-  private final ConfigurationContainer configurationContainer;
+  private final ConfigurationHandle configuration;
 
   public PlaceholderValueProviderImpl(
-    ConfigurationContainer configurationContainer
+    ConfigurationHandle configuration
   ) {
-    this.configurationContainer = configurationContainer;
+    this.configuration = configuration;
   }
 
   @Override
@@ -35,7 +35,7 @@ public class PlaceholderValueProviderImpl
     String parameters
   ) {
     TypeSpecificPlaceholderProvider<?> provider =
-      configurationContainer.getProvider(identifier);
+      configuration.getProvider(identifier);
     Object value;
 
     if (provider == null) {

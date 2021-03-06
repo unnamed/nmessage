@@ -21,7 +21,7 @@ public final class MessageProviderImpl
     MessageSource source,
     ConfigurationHandle configHandle
   ) {
-    super(source, configHandle.getWiringContainer());
+    super(source, configHandle);
     this.replacer = new PlaceholderReplacer(
       new PlaceholderValueProviderImpl(config),
       configHandle.getStartDelimiter(),

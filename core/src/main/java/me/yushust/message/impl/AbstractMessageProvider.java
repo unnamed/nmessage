@@ -1,7 +1,7 @@
 package me.yushust.message.impl;
 
 import me.yushust.message.MessageProvider;
-import me.yushust.message.config.ConfigurationContainer;
+import me.yushust.message.config.ConfigurationHandle;
 import me.yushust.message.language.Linguist;
 import me.yushust.message.resolve.EntityResolver;
 import me.yushust.message.source.MessageSource;
@@ -19,11 +19,11 @@ public abstract class AbstractMessageProvider
   protected static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
   protected final MessageSource source;
-  protected final ConfigurationContainer config;
+  protected final ConfigurationHandle config;
 
   protected AbstractMessageProvider(
     MessageSource source,
-    ConfigurationContainer config
+    ConfigurationHandle config
   ) {
     this.source = source;
     this.config = config;
@@ -108,7 +108,7 @@ public abstract class AbstractMessageProvider
   }
 
   @Override
-  public ConfigurationContainer getConfig() {
+  public ConfigurationHandle getConfig() {
     return config;
   }
 
