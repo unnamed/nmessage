@@ -95,12 +95,9 @@ public final class ConfigurationHandle {
    * @return The created specific configuration handle
    */
   @Contract("null -> fail; _ -> new")
-  public <E> SpecificConfigurationHandle<E> specify(Class<E> entityType) {
+  public <E> Specific<E> specify(Class<E> entityType) {
     Validate.isNotNull(entityType, "entityType");
-    return new SpecificConfigurationHandle<>(
-        this,
-        entityType
-    );
+    return new Specific<>(entityType);
   }
 
   //#region Getters
@@ -127,46 +124,6 @@ public final class ConfigurationHandle {
   public TypeSpecificPlaceholderProvider<?> getProvider(String identifier) {
     Validate.isNotEmpty(identifier);
     return providers.get(identifier.toLowerCase());
-  }
-  //#endregion
-
-  //#region Setters
-
-  /**
-   * Registers a placeholder provider in this
-   * configuration class using the specified
-   * entity type.
-   */
-  public <E> void registerProvider(
-    String identifier,
-    Class<E> entityType,
-    PlaceholderProvider<E> provider
-  ) {
-    TypeSpecificPlaceholderProvider<?> resolvedProvider =
-      new TypeSpecificPlaceholderProvider<>(entityType, provider);
-    providers.put(identifier, resolvedProvider);
-  }
-
-  /**
-   * Adds a resolver, the given {@code resolvedType}
-   * is transformed to another type
-   */
-  public <T> void setResolver(
-    Class<T> resolvedType,
-    EntityResolver<?, T> resolver
-  ) {
-    HandlerPack<T> handlerPack = getHandlersOrCreate(resolvedType);
-    handlerPack.resolver = resolver;
-  }
-
-  public <E> void setLinguist(Class<E> entityType, Linguist<E> linguist) {
-    HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
-    handlerPack.linguist = linguist;
-  }
-
-  public <E> void setMessageSender(Class<E> entityType, MessageSender<E> sender) {
-    HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
-    handlerPack.sender = sender;
   }
   //#endregion
 
@@ -269,4 +226,77 @@ public final class ConfigurationHandle {
 
   }
 
+  /**
+   * It's a {@link ConfigurationHandle} linked
+   * to an entity type
+   * @param <E> The linked entity type
+   */
+  public class Specific<E> {
+
+    /** The entity type for this configuration handle */
+    private final Class<E> entityType;
+
+    private Specific(Class<E> entityType) {
+      this.entityType = entityType;
+    }
+
+    /**
+     * Adds a resolver from the specified {@code resolvedClass}
+     * to the entity class linked to this class.
+     */
+    public <R> Specific<E> resolveFrom(
+        Class<R> resolvedClass,
+        EntityResolver<E, R> resolver
+    ) {
+      Validate.isNotNull(resolvedClass, "resolvedClass");
+      Validate.isNotNull(resolver, "resolver");
+      HandlerPack<R> handlerPack = getHandlersOrCreate(resolvedClass);
+      handlerPack.resolver = resolver;
+      return this;
+    }
+
+    /**
+     * Sets the language provider (linguist) for the
+     * entity class linked to this class
+     */
+    public Specific<E> setLinguist(
+        Linguist<E> linguist
+    ) {
+      Validate.isNotNull(linguist, "linguist");
+      HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
+      handlerPack.linguist = linguist;
+      return this;
+    }
+
+    /**
+     * Adds a placeholder provider with same entity type
+     * as the linked to this class.
+     */
+    public Specific<E> addProvider(
+        String identifier,
+        PlaceholderProvider<E> provider
+    ) {
+      Validate.isNotNull(identifier, "identifier");
+      Validate.isNotNull(provider, "provider");
+
+      TypeSpecificPlaceholderProvider<?> resolvedProvider =
+        new TypeSpecificPlaceholderProvider<>(entityType, provider);
+      providers.put(identifier, resolvedProvider);
+      return this;
+    }
+
+    /**
+     * Sets the message sender for the entity type
+     * linked to this class
+     */
+    public Specific<E> setMessageSender(
+        MessageSender<E> sender
+    ) {
+      Validate.isNotNull(sender, "sender");
+      HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
+      handlerPack.sender = sender;
+      return this;
+    }
+
+  }
 }
