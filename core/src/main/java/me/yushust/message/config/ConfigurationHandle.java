@@ -139,40 +139,53 @@ public final class ConfigurationHandle {
     return text;
   }
 
+  private HandlerPack<?> computeCompatibleSuperInterfaces(
+    Class<?> originalType,
+    Class<?> checkedType
+  ) {
+    for (Class<?> interfaceType : checkedType.getInterfaces()) {
+      HandlerPack<?> found = handlers.get(interfaceType);
+      if (found == null) {
+        found = computeCompatibleSuperInterfaces(originalType, interfaceType);
+        if (found != null) {
+          return found;
+        }
+      } else {
+        compatibleSupertypes.put(originalType, interfaceType);
+        return found;
+      }
+    }
+    return null;
+  }
+
+  private HandlerPack<?> computeCompatibleSupertype(
+    Class<?> originalType,
+    Class<?> checkedType
+  ) {
+    do {
+      HandlerPack<?> found = handlers.get(checkedType);
+      if (found == null) {
+        found = computeCompatibleSuperInterfaces(originalType, checkedType);
+        if (found != null) {
+          return found;
+        }
+      } else {
+        compatibleSupertypes.put(originalType, checkedType);
+      }
+      checkedType = checkedType.getSuperclass();
+    } while (checkedType != null && checkedType != Object.class);
+    return null;
+  }
+
   private HandlerPack<?> getHandlers(Class<?> entityType) {
 
     Class<?> cachedCompatibleType = compatibleSupertypes.get(entityType);
 
     if (cachedCompatibleType != null) {
       return handlers.get(cachedCompatibleType);
+    } else {
+      return computeCompatibleSupertype(entityType, entityType);
     }
-
-    Class<?> type = entityType;
-
-    while (type != Object.class && type != null) {
-      HandlerPack<?> handlerPack = handlers.get(type);
-      if (handlerPack != null) {
-        compatibleSupertypes.put(entityType, type);
-        return handlerPack;
-      }
-      for (Class<?> interfaceType : type.getInterfaces()) {
-        handlerPack = handlers.get(interfaceType);
-        if (handlerPack != null) {
-          compatibleSupertypes.put(entityType, interfaceType);
-          return handlerPack;
-        }
-        for (Class<?> superInterface : interfaceType.getInterfaces()) {
-          handlerPack = handlers.get(superInterface);
-          if (handlerPack != null) {
-            compatibleSupertypes.put(entityType, superInterface);
-            return handlerPack;
-          }
-        }
-      }
-      type = type.getSuperclass();
-    }
-
-    return null;
   }
 
   @SuppressWarnings("unchecked")
