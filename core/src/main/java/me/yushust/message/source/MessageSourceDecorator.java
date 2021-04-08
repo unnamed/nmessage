@@ -73,6 +73,16 @@ public final class MessageSourceDecorator {
       return value;
     }
 
+    @Override
+    public char getSectionSeparator() {
+      return delegate.getSectionSeparator();
+    }
+
+    @Override
+    public void load(String language) {
+      delegate.load(language);
+    }
+
   }
 
 }

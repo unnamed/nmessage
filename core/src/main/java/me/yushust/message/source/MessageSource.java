@@ -20,6 +20,20 @@ public interface MessageSource {
   Object get(@Nullable String language, String path);
 
   /**
+   * Loads the file linked to the specified
+   * {@code language}, some implementations doesn't
+   * support this operation, so it can throw
+   * a {@link UnsupportedOperationException}
+   * @throws UnsupportedOperationException If not supported
+   * @param language The loaded language
+   */
+  default void load(String language) {
+    throw new UnsupportedOperationException(
+      "This message source type doesn't support message pre-loading"
+    );
+  }
+
+  /**
    * @return The section separator characters, specially
    * used for file message sources that use node files (like
    * YAML or JSON) to separate its sections in 'nodes'

@@ -34,20 +34,8 @@ public class YamlMessageSource
     }
   }
 
-  @Override
   @Nullable
-  protected YamlConfiguration getSource(String filename) {
-
-    File file = new File(folder, filename);
-
-    if (file.exists()) {
-      try {
-        return YamlParse.fromInputStream(new FileInputStream(file));
-      } catch (FileNotFoundException e) {
-        throw new IllegalStateException("Cannot load messages from file", e);
-      }
-    }
-
+  private YamlConfiguration loadImpl(File file, String filename) {
     InputStream resource = plugin.getResource(filename);
 
     if (resource == null) {
@@ -64,6 +52,31 @@ public class YamlMessageSource
         throw new IllegalStateException("Cannot create messages file", e);
       }
     }
+  }
+
+  @Override
+  public void load(String language) {
+    String filename = getFilename(language);
+    File file = new File(folder, filename);
+    YamlConfiguration config = loadImpl(file, filename);
+    cache.put(language, config);
+  }
+
+  @Override
+  @Nullable
+  protected YamlConfiguration getSource(String filename) {
+
+    File file = new File(folder, filename);
+
+    if (file.exists()) {
+      try {
+        return YamlParse.fromInputStream(new FileInputStream(file));
+      } catch (FileNotFoundException e) {
+        throw new IllegalStateException("Cannot load messages from file", e);
+      }
+    }
+
+    return loadImpl(file, filename);
   }
 
   @Override

@@ -62,6 +62,26 @@ public final class ConfigurationHandle {
   }
 
   /**
+   * Sets the given {@code superType} for the specified
+   * {@code type}, used on entity handlers resolution.
+   *
+   * <p>It's not required to use this method, but it can
+   * optimize the process.</p>
+   *
+   * <p>When there's no a compatible supertype registered
+   * for a type, it's computed in the first entity use by
+   * checking all its supertypes and looking for one that
+   * is registered in the {@code handlers} map</p>
+   */
+  public <T> ConfigurationHandle bindCompatibleSupertype(
+    Class<T> type,
+    Class<? extends T> superType
+  ) {
+    compatibleSupertypes.put(type, superType);
+    return this;
+  }
+
+  /**
    * Specifies the delimiters used by the placeholder
    * replacer to recognise placeholders
    * @param start The initial delimiter
