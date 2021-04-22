@@ -5,6 +5,8 @@ subprojects {
   group 'me.yushust.message'
   version '6.0.17'
 
+  // why are you reading this?
+
   publishing {
     repositories {
       maven {
