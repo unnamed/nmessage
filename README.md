@@ -49,3 +49,5 @@ Add the dependency into your `<dependencies>` tag (`pom.xml`)
   <version>VERSION</version>
 </dependency>
 ```
+
+.
