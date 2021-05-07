@@ -16,12 +16,12 @@ Latest release: [![Latest Release](https://img.shields.io/nexus/r/me.yushust.mes
 Add the repositories into your `repositories` section (`build.gradle`)
 ```groovy
 maven {
-  name 'unnamed-releases'
-  url 'https://repo.unnamed.team/repository/unnamed-releases/'
+  name = 'unnamed-releases'
+  url = 'https://repo.unnamed.team/repository/unnamed-releases/'
 }
 maven {
-  name 'unnamed-snapshots'
-  url 'https://repo.unnamed.team/repository/unnamed-releases/'
+  name = 'unnamed-snapshots'
+  url = 'https://repo.unnamed.team/repository/unnamed-snapshots/'
 }
 ```
 Add the dependency into your `dependencies` section (`build.gradle`)
