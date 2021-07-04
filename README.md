@@ -13,32 +13,38 @@ Latest snapshot: [![Latest Snapshot](https://img.shields.io/nexus/s/me.yushust.m
 Latest release: [![Latest Release](https://img.shields.io/nexus/r/me.yushust.message/core.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-releases/)
 
 ### Gradle
-Add the repositories into your `repositories` section (`build.gradle`)
+**For Groovy DSL:** (build.gradle)
+Repository:
 ```groovy
 maven {
-  name = 'unnamed-releases'
-  url = 'https://repo.unnamed.team/repository/unnamed-releases/'
-}
-maven {
-  name = 'unnamed-snapshots'
-  url = 'https://repo.unnamed.team/repository/unnamed-snapshots/'
+  name = 'unnamed-public'
+  url = 'https://repo.unnamed.team/repository/unnamed-public/'
 }
 ```
-Add the dependency into your `dependencies` section (`build.gradle`)
+Dependency:
 ```groovy
 implementation 'me.yushust.message:core:VERSION'
 ```
 
+**For Kotlin DSL:** (build.gradle.kts)
+Repository:
+```kotlin
+maven {
+  name = "unnamed-public"
+  url = uri("https://repo.unnamed.team/repository/unnamed-public/")
+}
+```
+Dependency:
+```kotlin
+implementation("me.yushust.message:core:VERSION")
+```
+
 ### Maven
-Add the repositories into your `<repositories>` tag (`pom.xml`)
+Add this repository into your `<repositories>` tag (`pom.xml`)
 ```xml
 <repository>
-  <id>unnamed-releases</id>
-  <url>https://repo.unnamed.team/repository/unnamed-releases/</url>
-</repository>
-<repository>
-  <id>unnamed-snapshots</id>
-  <url>https://repo.unnamed.team/repository/unnamed-snapshots/</url>
+  <id>unnamed-public</id>
+  <url>https://repo.unnamed.team/repository/unnamed-public/</url>
 </repository>
 ```
 Add the dependency into your `<dependencies>` tag (`pom.xml`)
@@ -49,5 +55,3 @@ Add the dependency into your `<dependencies>` tag (`pom.xml`)
   <version>VERSION</version>
 </dependency>
 ```
-
-.
