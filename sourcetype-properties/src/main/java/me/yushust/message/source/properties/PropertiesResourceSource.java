@@ -6,6 +6,7 @@ import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 /**
@@ -23,18 +24,36 @@ public class PropertiesResourceSource
   /** Class loader that holds the resources */
   private final ClassLoader classLoader;
 
+  /** Charset to read properties */
+  private final Charset charset;
+
   /**
    * Constructs a new properties message source
-   * using the provided {@code classLoader} and
-   * the specified {@code fileFormat}
+   * using the {@code classLoader} and the {@code fileFormat},
+   * will use the given {@code charset} to decode the data
+   */
+  public PropertiesResourceSource(
+    ClassLoader classLoader,
+    String fileFormat,
+    Charset charset
+  ) {
+    super(fileFormat);
+    Validate.isNotNull(classLoader, "classLoader");
+    Validate.isNotNull(charset, "charset");
+    this.classLoader = classLoader;
+    this.charset = charset;
+  }
+
+  /**
+   * Constructs a new properties message source
+   * using the {@code classLoader} and the {@code fileFormat},
+   * uses ISO-8859-1 charset by default
    */
   public PropertiesResourceSource(
     ClassLoader classLoader,
     String fileFormat
   ) {
-    super(fileFormat);
-    Validate.isNotNull(classLoader, "classLoader");
-    this.classLoader = classLoader;
+    this(classLoader, fileFormat, PropertiesParse.DEFAULT_CHARSET);
   }
 
   /**
@@ -45,13 +64,14 @@ public class PropertiesResourceSource
   public PropertiesResourceSource(String fileFormat) {
     super(fileFormat);
     this.classLoader = getClass().getClassLoader();
+    this.charset = PropertiesParse.DEFAULT_CHARSET;
   }
 
   @Override
   @Nullable
   protected Properties getSource(String filename) {
     InputStream input = classLoader.getResourceAsStream(filename);
-    return PropertiesParse.fromInputStream(input);
+    return PropertiesParse.fromInputStream(input, charset);
   }
 
   @Override

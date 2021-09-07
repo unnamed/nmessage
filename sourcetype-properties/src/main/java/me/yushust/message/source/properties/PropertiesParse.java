@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
@@ -17,6 +18,9 @@ import java.util.Properties;
  * from {@link InputStream}s or {@link File}s
  */
 public final class PropertiesParse {
+
+  public static final Charset DEFAULT_CHARSET
+    = StandardCharsets.ISO_8859_1;
 
   private PropertiesParse() {
   }
@@ -29,9 +33,9 @@ public final class PropertiesParse {
    * @see PropertiesParse#fromInputStream
    */
   @Nullable
-  public static Properties fromFile(File file) {
+  public static Properties fromFile(File file, Charset charset) {
     try (InputStream input = new FileInputStream(file)) {
-      return fromInputStream(input);
+      return fromInputStream(input, charset);
     } catch (IOException e) {
       throw new IllegalStateException("Cannot read properties from file", e);
     }
@@ -47,14 +51,15 @@ public final class PropertiesParse {
    */
   @Nullable
   public static Properties fromInputStream(
-    @Nullable InputStream input
+    @Nullable InputStream input,
+    Charset charset
   ) {
     if (input == null) {
       return null;
     }
     Properties properties = new Properties();
     // reader isn't closed so InputStream isn't
-    Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
+    Reader reader = new InputStreamReader(input, charset);
     try {
       properties.load(reader);
     } catch (IOException e) {

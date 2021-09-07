@@ -6,6 +6,7 @@ import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 /**
@@ -23,17 +24,35 @@ public class PropertiesFileSource
   /** The folder where the messages files are contained */
   private final File folder;
 
+  /** Charset to load properties */
+  private final Charset charset;
+
   public PropertiesFileSource(
     File folder,
-    String fileFormat
+    String fileFormat,
+    Charset charset
   ) {
     super(fileFormat);
-    this.folder = Validate.isNotNull(folder);
+    Validate.isNotNull(folder, "folder");
+    Validate.isNotNull(charset, "charset");
+    this.folder = folder;
+    this.charset = charset;
     if (!folder.exists() && !folder.mkdirs()) {
       throw new IllegalStateException(
         "Cannot create container folder (" + folder.getName() + ')'
       );
     }
+  }
+
+  public PropertiesFileSource(
+    File folder,
+    String fileFormat
+  ) {
+    this(
+      folder,
+      fileFormat,
+      PropertiesParse.DEFAULT_CHARSET
+    );
   }
 
   @Override
@@ -49,7 +68,7 @@ public class PropertiesFileSource
     if (!file.exists()) {
       return null;
     } else {
-      return PropertiesParse.fromFile(file);
+      return PropertiesParse.fromFile(file, charset);
     }
   }
 
