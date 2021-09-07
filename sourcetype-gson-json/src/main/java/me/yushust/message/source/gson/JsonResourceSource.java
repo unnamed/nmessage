@@ -5,6 +5,9 @@ import me.yushust.message.source.AbstractCachedFileSource;
 import me.yushust.message.source.MessageSource;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 public class JsonResourceSource
   extends AbstractCachedFileSource<JsonObject>
   implements MessageSource {
@@ -30,8 +33,10 @@ public class JsonResourceSource
 
   @Override
   protected @Nullable JsonObject getSource(String filename) {
-    return JsonParse.fromInputStream(
-      classLoader.getResourceAsStream(filename)
-    );
+    try (InputStream input = classLoader.getResourceAsStream(filename)) {
+      return JsonParse.fromInputStream(input);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to close resource " + filename);
+    }
   }
 }
