@@ -1,3 +1,5 @@
+version '6.0.18'
+
 dependencies {
   compileOnly project(':core')
   testImplementation project(':core')

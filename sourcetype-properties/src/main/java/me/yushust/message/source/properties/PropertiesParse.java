@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -50,8 +53,10 @@ public final class PropertiesParse {
       return null;
     }
     Properties properties = new Properties();
+    // reader isn't closed so InputStream isn't
+    Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
     try {
-      properties.load(input);
+      properties.load(reader);
     } catch (IOException e) {
       throw new IllegalStateException("Cannot load properties", e);
     }

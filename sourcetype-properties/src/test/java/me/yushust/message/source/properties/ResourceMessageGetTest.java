@@ -22,6 +22,7 @@ public class ResourceMessageGetTest {
     assertEquals("nefasto", provider.get(null, "test1"));
     assertEquals("terrible", provider.get(null, "test2"));
     assertEquals("oremos", provider.get(null, "test3"));
+    assertEquals("áéíóú ñ §æµŋnamed", provider.get(null, "test4"));
   }
 
 }
