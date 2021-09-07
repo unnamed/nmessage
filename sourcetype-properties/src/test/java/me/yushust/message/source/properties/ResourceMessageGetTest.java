@@ -7,6 +7,8 @@ import me.yushust.message.source.MessageSource;
 import me.yushust.message.source.MessageSourceDecorator;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ResourceMessageGetTest {
@@ -14,7 +16,11 @@ public class ResourceMessageGetTest {
   @Test
   public void test() {
     MessageSource source = MessageSourceDecorator
-      .decorate(new PropertiesResourceSource("test_%lang%.properties"))
+      .decorate(new PropertiesResourceSource(
+        getClass().getClassLoader(),
+        "test_%lang%.properties",
+        StandardCharsets.UTF_8
+      ))
       .addFallbackLanguage("en")
       .get();
     MessageProvider provider = new MessageProviderImpl(source, new ConfigurationHandle());
