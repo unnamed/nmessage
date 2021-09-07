@@ -1,3 +1,5 @@
+version '6.0.18'
+
 dependencies {
   implementation project(':core')
   implementation 'com.google.code.gson:gson:2.8.6'
