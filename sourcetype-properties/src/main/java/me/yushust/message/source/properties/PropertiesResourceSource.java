@@ -5,6 +5,7 @@ import me.yushust.message.source.MessageSource;
 import me.yushust.message.util.Validate;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Properties;
@@ -70,8 +71,11 @@ public class PropertiesResourceSource
   @Override
   @Nullable
   protected Properties getSource(String filename) {
-    InputStream input = classLoader.getResourceAsStream(filename);
-    return PropertiesParse.fromInputStream(input, charset);
+    try (InputStream input = classLoader.getResourceAsStream(filename)) {
+      return PropertiesParse.fromInputStream(input, charset);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to close resource " + filename);
+    }
   }
 
   @Override
