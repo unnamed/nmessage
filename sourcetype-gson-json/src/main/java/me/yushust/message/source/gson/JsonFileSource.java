@@ -5,22 +5,17 @@ import me.yushust.message.source.AbstractCachedFileSource;
 import me.yushust.message.source.MessageSource;
 import org.jetbrains.annotations.Nullable;
 
-public class PropertiesResourceSource
+import java.io.File;
+
+public class JsonFileSource
   extends AbstractCachedFileSource<JsonObject>
   implements MessageSource {
 
-  private final ClassLoader classLoader;
+  private final File folder;
 
-  public PropertiesResourceSource(ClassLoader classLoader, String fileFormat) {
+  public JsonFileSource(File folder, String fileFormat) {
     super(fileFormat);
-    this.classLoader = classLoader;
-  }
-
-  public PropertiesResourceSource(String fileFormat) {
-    this(
-      PropertiesResourceSource.class.getClassLoader(),
-      fileFormat
-    );
+    this.folder = folder;
   }
 
   @Override
@@ -30,8 +25,11 @@ public class PropertiesResourceSource
 
   @Override
   protected @Nullable JsonObject getSource(String filename) {
-    return JsonParse.fromInputStream(
-      classLoader.getResourceAsStream(filename)
-    );
+    File file = new File(folder, filename);
+    if (!file.exists()) {
+      return null;
+    } else {
+      return JsonParse.fromFile(file);
+    }
   }
 }

@@ -19,7 +19,6 @@ public final class JsonParse {
   private JsonParse() {
   }
 
-
   public static String getValue(JsonObject source, String path, char separator) {
     StringBuilder builder = new StringBuilder();
     JsonObject checking = source;
