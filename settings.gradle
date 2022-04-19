@@ -3,6 +3,7 @@ rootProject.name = 'nmessage'
 include (
   'core',
   'sourcetype-bukkit-yml',
+  'sourcetype-bungee-yml',
   'sourcetype-properties',
   'sourcetype-gson-json'
 )
