@@ -5,6 +5,8 @@ import me.yushust.message.source.MessageSource;
 import me.yushust.message.util.Validate;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -59,6 +61,8 @@ public class YamlMessageSource
         if (!file.createNewFile()) {
           throw new RuntimeException("already created");
         }
+
+        ConfigurationProvider.getProvider(YamlConfiguration.class).save(yaml, file);
 
         return yaml;
       } catch (IOException e) {
