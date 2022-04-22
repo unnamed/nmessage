@@ -6,7 +6,4 @@
 .gradle
 
 # target folders
-/sourcetype-bukkit-yml/build/
-/sourcetype-gson-json/build/
-/sourcetype-properties/build/
-/core/build/
+/*/build/

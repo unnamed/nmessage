@@ -4,5 +4,5 @@ plugins {
 
 dependencies {
   api(project(":core"))
-  api("com.google.code.gson:gson:2.8.6")
+  testImplementation(project(":core"))
 }
