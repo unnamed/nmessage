@@ -14,11 +14,11 @@ import org.bukkit.entity.Player;
  * {@link Player.Spigot} class</p>
  */
 public class SpigotLinguist
-  implements Linguist<Player> {
+        implements Linguist<Player> {
 
-  @Override
-  public String getLanguage(Player player) {
-    return player.spigot().getLocale().split("_")[0];
-  }
+    @Override
+    public String getLanguage(Player player) {
+        return player.spigot().getLocale().split("_")[0];
+    }
 
 }

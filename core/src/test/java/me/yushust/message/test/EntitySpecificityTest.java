@@ -7,33 +7,37 @@ import org.junit.jupiter.api.Test;
 
 public class EntitySpecificityTest extends HandlerTestCase {
 
-  @Test
-  public void test() {
-    MessageHandler messageHandler = MessageHandler.of(
-      source,
-      config -> {
-        config.specify(B.class).setLinguist(b -> "b");
-        config.specify(A.class).setLinguist(a -> "a");
-      }
-    );
+    @Test
+    public void test() {
+        MessageHandler messageHandler = MessageHandler.of(
+                source,
+                config -> {
+                    config.specify(B.class).setLinguist(b -> "b");
+                    config.specify(A.class).setLinguist(a -> "a");
+                }
+        );
 
-    A a = new AA();
-    B b = new BB();
+        A a = new AA();
+        B b = new BB();
 
-    Assertions.assertEquals("a", messageHandler.getLanguage(a));
-    Assertions.assertEquals("b", messageHandler.getLanguage(b));
-  }
+        Assertions.assertEquals("a", messageHandler.getLanguage(a));
+        Assertions.assertEquals("b", messageHandler.getLanguage(b));
+    }
 
-  public interface A {
-  }
+    public interface A {
 
-  public interface B extends A {
-  }
+    }
 
-  public static class BB implements B {
-  }
+    public interface B extends A {
 
-  public static class AA implements A {
-  }
+    }
+
+    public static class BB implements B {
+
+    }
+
+    public static class AA implements A {
+
+    }
 
 }

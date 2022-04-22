@@ -1,8 +1,8 @@
 package me.yushust.message.ext;
 
-import me.yushust.message.track.ContextRepository;
-import me.yushust.message.format.ProviderSettings;
 import me.yushust.message.format.PlaceholderProvider;
+import me.yushust.message.format.ProviderSettings;
+import me.yushust.message.track.ContextRepository;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,18 +13,18 @@ import org.jetbrains.annotations.Nullable;
  * check for the message at 'other_path' and return it.</p>
  */
 @ProviderSettings(
-    requiresEntity = false
+        requiresEntity = false
 )
 public final class ReferencePlaceholderProvider<E>
-  implements PlaceholderProvider<E> {
+        implements PlaceholderProvider<E> {
 
-  @Override
-  public @Nullable String replace(
-    ContextRepository handle,
-    E entity,
-    String path
-  ) {
-    return handle.get(path);
-  }
+    @Override
+    public @Nullable String replace(
+            ContextRepository handle,
+            E entity,
+            String path
+    ) {
+        return handle.get(path);
+    }
 
 }

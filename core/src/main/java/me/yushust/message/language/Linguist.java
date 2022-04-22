@@ -10,15 +10,15 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Linguist<E> {
 
-  /**
-   * Gets the language of the specified
-   * property holder.
-   *
-   * @param entity The entity, language holder
-   * @return The language of that holder.
-   * Returning null = use default language
-   */
-  @Nullable
-  String getLanguage(E entity);
+    /**
+     * Gets the language of the specified
+     * property holder.
+     *
+     * @param entity The entity, language holder
+     * @return The language of that holder.
+     * Returning null = use default language
+     */
+    @Nullable
+    String getLanguage(E entity);
 
 }

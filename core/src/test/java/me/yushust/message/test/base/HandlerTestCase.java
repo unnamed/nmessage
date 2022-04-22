@@ -8,27 +8,27 @@ import org.junit.jupiter.api.BeforeEach;
 
 public class HandlerTestCase {
 
-  protected MessageSource source;
+    protected MessageSource source;
 
-  protected PlaceholderProvider<Entity> testProvider() {
-    return (handle, entity, placeholder) -> {
-      switch (placeholder) {
-        case "hash":
-          return entity.hashCode();
-        case "val":
-          return entity.toString();
-        default:
-          return null;
-      }
-    };
-  }
+    protected PlaceholderProvider<Entity> testProvider() {
+        return (handle, entity, placeholder) -> {
+            switch (placeholder) {
+                case "hash":
+                    return entity.hashCode();
+                case "val":
+                    return entity.toString();
+                default:
+                    return null;
+            }
+        };
+    }
 
-  @BeforeEach
-  public void createRepository() {
-    this.source = MessageSourceDecorator
-      .decorate(new PropertiesResourceSource("messages_%lang%.properties"))
-      .addFallbackLanguage("en")
-      .get();
-  }
+    @BeforeEach
+    public void createRepository() {
+        this.source = MessageSourceDecorator
+                .decorate(new PropertiesResourceSource("messages_%lang%.properties"))
+                .addFallbackLanguage("en")
+                .get();
+    }
 
 }

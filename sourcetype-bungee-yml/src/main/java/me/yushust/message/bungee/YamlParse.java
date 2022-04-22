@@ -10,26 +10,26 @@ import java.io.InputStreamReader;
 
 public class YamlParse {
 
-  private YamlParse() {
-  }
-
-  /**
-   * Reads the data in the {@code input} stream
-   * and creates a new {@link Configuration} instance
-   */
-  public static Configuration fromInputStream(
-    InputStream input
-  ) {
-    Configuration configuration;
-
-    try (InputStreamReader reader = new InputStreamReader(input)) {
-      configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(reader);
-    } catch (IOException e) {
-      throw new IllegalStateException("Cannot load YamlConfiguration", e);
+    private YamlParse() {
     }
 
-    return configuration;
-  }
+    /**
+     * Reads the data in the {@code input} stream
+     * and creates a new {@link Configuration} instance
+     */
+    public static Configuration fromInputStream(
+            InputStream input
+    ) {
+        Configuration configuration;
+
+        try (InputStreamReader reader = new InputStreamReader(input)) {
+            configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(reader);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot load YamlConfiguration", e);
+        }
+
+        return configuration;
+    }
 
 
 }

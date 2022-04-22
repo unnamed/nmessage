@@ -18,56 +18,60 @@ import java.util.Properties;
  * {@code folder}</p>
  */
 public class PropertiesFileSource
-  extends AbstractCachedFileSource<Properties>
-  implements MessageSource {
+        extends AbstractCachedFileSource<Properties>
+        implements MessageSource {
 
-  /** The folder where the messages files are contained */
-  private final File folder;
+    /**
+     * The folder where the messages files are contained
+     */
+    private final File folder;
 
-  /** Charset to load properties */
-  private final Charset charset;
+    /**
+     * Charset to load properties
+     */
+    private final Charset charset;
 
-  public PropertiesFileSource(
-    File folder,
-    String fileFormat,
-    Charset charset
-  ) {
-    super(fileFormat);
-    Validate.isNotNull(folder, "folder");
-    Validate.isNotNull(charset, "charset");
-    this.folder = folder;
-    this.charset = charset;
-    if (!folder.exists() && !folder.mkdirs()) {
-      throw new IllegalStateException(
-        "Cannot create container folder (" + folder.getName() + ')'
-      );
+    public PropertiesFileSource(
+            File folder,
+            String fileFormat,
+            Charset charset
+    ) {
+        super(fileFormat);
+        Validate.isNotNull(folder, "folder");
+        Validate.isNotNull(charset, "charset");
+        this.folder = folder;
+        this.charset = charset;
+        if (!folder.exists() && !folder.mkdirs()) {
+            throw new IllegalStateException(
+                    "Cannot create container folder (" + folder.getName() + ')'
+            );
+        }
     }
-  }
 
-  public PropertiesFileSource(
-    File folder,
-    String fileFormat
-  ) {
-    this(
-      folder,
-      fileFormat,
-      PropertiesParse.DEFAULT_CHARSET
-    );
-  }
-
-  @Override
-  protected @Nullable Object getValue(Properties source, String path) {
-    return source.get(path);
-  }
-
-  @Override
-  protected @Nullable Properties getSource(String filename) {
-    File file = new File(folder, filename);
-    if (!file.exists()) {
-      return null;
-    } else {
-      return PropertiesParse.fromFile(file, charset);
+    public PropertiesFileSource(
+            File folder,
+            String fileFormat
+    ) {
+        this(
+                folder,
+                fileFormat,
+                PropertiesParse.DEFAULT_CHARSET
+        );
     }
-  }
+
+    @Override
+    protected @Nullable Object getValue(Properties source, String path) {
+        return source.get(path);
+    }
+
+    @Override
+    protected @Nullable Properties getSource(String filename) {
+        File file = new File(folder, filename);
+        if (!file.exists()) {
+            return null;
+        } else {
+            return PropertiesParse.fromFile(file, charset);
+        }
+    }
 
 }

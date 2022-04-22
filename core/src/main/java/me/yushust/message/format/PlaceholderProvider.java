@@ -14,12 +14,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface PlaceholderProvider<E> {
 
-  /**
-   * Returns a value corresponding to the specified
-   * parameters using the properties of
-   * the specified entity.
-   */
-  @Nullable
-  Object replace(ContextRepository repository, E entity, String parameters);
+    /**
+     * Returns a value corresponding to the specified
+     * parameters using the properties of
+     * the specified entity.
+     */
+    @Nullable
+    Object replace(ContextRepository repository, E entity, String parameters);
 
 }

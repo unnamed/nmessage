@@ -6,7 +6,12 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * Utility class for parsing
@@ -16,49 +21,53 @@ import java.io.*;
  */
 public final class JsonParse {
 
-  private JsonParse() {
-  }
+    private JsonParse() {
+    }
 
-  public static String getValue(JsonObject source, String path, char separator) {
-    StringBuilder builder = new StringBuilder();
-    JsonObject checking = source;
-    for (int i = 0; i < path.length(); i++) {
-      char c = path.charAt(i);
-      if (c == separator) {
-        String section = builder.toString();
-        builder.setLength(0);
-        checking = checking.getAsJsonObject(section);
-      } else {
-        builder.append(c);
-      }
+    public static String getValue(JsonObject source, String path, char separator) {
+        StringBuilder builder = new StringBuilder();
+        JsonObject checking = source;
+        for (int i = 0; i < path.length(); i++) {
+            char c = path.charAt(i);
+            if (c == separator) {
+                String section = builder.toString();
+                builder.setLength(0);
+                checking = checking.getAsJsonObject(section);
+            } else {
+                builder.append(c);
+            }
+        }
+        return checking.getAsString();
     }
-    return checking.getAsString();
-  }
 
-  /** Reads a json object from the given {@code file}*/
-  public static @Nullable JsonObject fromFile(File file) {
-    try (InputStream input = new FileInputStream(file)) {
-      return fromInputStream(input);
-    } catch (IOException e) {
-      throw new IllegalStateException("Error appeared while opening a file input stream", e);
+    /**
+     * Reads a json object from the given {@code file}
+     */
+    public static @Nullable JsonObject fromFile(File file) {
+        try (InputStream input = new FileInputStream(file)) {
+            return fromInputStream(input);
+        } catch (IOException e) {
+            throw new IllegalStateException("Error appeared while opening a file input stream", e);
+        }
     }
-  }
 
-  /** Reads a json object from the given {@code input} */
-  @Contract("null -> null")
-  public static @Nullable JsonObject fromInputStream(@Nullable InputStream input) {
-    if (input == null) {
-      return null;
+    /**
+     * Reads a json object from the given {@code input}
+     */
+    @Contract("null -> null")
+    public static @Nullable JsonObject fromInputStream(@Nullable InputStream input) {
+        if (input == null) {
+            return null;
+        }
+        try (Reader reader = new InputStreamReader(input)) {
+            JsonElement element = JsonParser.parseReader(reader);
+            if (!element.isJsonObject()) {
+                throw new IllegalArgumentException("Root must be a JSON object!");
+            }
+            return element.getAsJsonObject();
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot parse JSON data from input stream", e);
+        }
     }
-    try (Reader reader = new InputStreamReader(input)) {
-      JsonElement element = JsonParser.parseReader(reader);
-      if (!element.isJsonObject()) {
-        throw new IllegalArgumentException("Root must be a JSON object!");
-      }
-      return element.getAsJsonObject();
-    } catch (IOException e) {
-      throw new IllegalStateException("Cannot parse JSON data from input stream", e);
-    }
-  }
 
 }

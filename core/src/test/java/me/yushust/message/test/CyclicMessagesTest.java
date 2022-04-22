@@ -8,15 +8,15 @@ import org.junit.jupiter.api.Test;
 
 public class CyclicMessagesTest extends HandlerTestCase {
 
-  @Test
-  public void test() {
+    @Test
+    public void test() {
 
-    MessageProvider handler = MessageProvider.create(source);
+        MessageProvider handler = MessageProvider.create(source);
 
-    Assertions.assertThrows(
-      MessageHandlingException.class,
-      () -> handler.get(null, "linked-message-1")
-    );
-  }
+        Assertions.assertThrows(
+                MessageHandlingException.class,
+                () -> handler.get(null, "linked-message-1")
+        );
+    }
 
 }

@@ -16,60 +16,64 @@ import java.util.List;
  */
 public interface PlaceholderValueProvider {
 
-  /**
-   * Gets the value for a placeholder with
-   * the specified {@code identifier} and
-   * its {@code parameters}.
-   */
-  @Nullable
-  String getValue(
-    TrackingContext context,
-    String identifier,
-    String parameters
-  );
+    /**
+     * Gets the value for a placeholder with
+     * the specified {@code identifier} and
+     * its {@code parameters}.
+     */
+    @Nullable
+    String getValue(
+            TrackingContext context,
+            String identifier,
+            String parameters
+    );
 
-  /**
-   * Gets the value for a placeholder with
-   * the specified {@code identifier}, this
-   * method doesn't receive {@code parameters}
-   */
-  @Nullable
-  default String getValue(
-    TrackingContext context,
-    String identifier
-  ) {
-    return null;
-  }
-
-  /** Converts the given {@code object} to a {@link StringList} */
-  @Nullable
-  default StringList convertObjectToStringList(@Nullable String path, Object object) {
-    if (object == null) {
-      return new StringList(Collections.singletonList(path));
-    } else if (object instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<String> list = (List<String>) object;
-      return new StringList(list);
-    } else {
-      return new StringList(
-        Arrays.asList(object.toString().split("\n"))
-      );
+    /**
+     * Gets the value for a placeholder with
+     * the specified {@code identifier}, this
+     * method doesn't receive {@code parameters}
+     */
+    @Nullable
+    default String getValue(
+            TrackingContext context,
+            String identifier
+    ) {
+        return null;
     }
-  }
 
-  /** Converts the given {@code object} to a string */
-  @Nullable
-  default String convertObjectToString(@Nullable String path, Object object) {
-    if (object == null) {
-      return path;
-    } else if (object instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<String> list = (List<String>) object;
-      return String.join("\n", list);
-    } else {
-      return object.toString();
+    /**
+     * Converts the given {@code object} to a {@link StringList}
+     */
+    @Nullable
+    default StringList convertObjectToStringList(@Nullable String path, Object object) {
+        if (object == null) {
+            return new StringList(Collections.singletonList(path));
+        } else if (object instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<String> list = (List<String>) object;
+            return new StringList(list);
+        } else {
+            return new StringList(
+                    Arrays.asList(object.toString().split("\n"))
+            );
+        }
     }
-  }
+
+    /**
+     * Converts the given {@code object} to a string
+     */
+    @Nullable
+    default String convertObjectToString(@Nullable String path, Object object) {
+        if (object == null) {
+            return path;
+        } else if (object instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<String> list = (List<String>) object;
+            return String.join("\n", list);
+        } else {
+            return object.toString();
+        }
+    }
 
 }
 

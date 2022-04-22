@@ -1,8 +1,8 @@
 plugins {
-  id("message.java-conventions")
+    id("message.java-conventions")
 }
 
 dependencies {
-  api(project(":core"))
-  testImplementation(project(":core"))
+    api(project(":core"))
+    testImplementation(project(":core"))
 }

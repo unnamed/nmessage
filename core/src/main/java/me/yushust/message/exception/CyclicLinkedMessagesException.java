@@ -1,21 +1,21 @@
 package me.yushust.message.exception;
 
 public class CyclicLinkedMessagesException
-    extends TrackedException {
+        extends TrackedException {
 
-  public CyclicLinkedMessagesException() {
-  }
+    public CyclicLinkedMessagesException() {
+    }
 
-  public CyclicLinkedMessagesException(String message) {
-    super(message);
-  }
+    public CyclicLinkedMessagesException(String message) {
+        super(message);
+    }
 
-  public CyclicLinkedMessagesException(Throwable cause) {
-    super(cause);
-  }
+    public CyclicLinkedMessagesException(Throwable cause) {
+        super(cause);
+    }
 
-  public CyclicLinkedMessagesException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public CyclicLinkedMessagesException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

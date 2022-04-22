@@ -10,12 +10,16 @@ import me.yushust.message.util.StringList;
  */
 public interface MessageSender<E> {
 
-  /** Sends a list of messages to the specified receiver */
-  default void send(E receiver, String mode, StringList messages) {
-    send(receiver, mode, messages.join("\n"));
-  }
+    /**
+     * Sends a list of messages to the specified receiver
+     */
+    default void send(E receiver, String mode, StringList messages) {
+        send(receiver, mode, messages.join("\n"));
+    }
 
-  /** Sends a message to the specified receiver */
-  void send(E receiver, String mode, String message);
+    /**
+     * Sends a message to the specified receiver
+     */
+    void send(E receiver, String mode, String message);
 
 }

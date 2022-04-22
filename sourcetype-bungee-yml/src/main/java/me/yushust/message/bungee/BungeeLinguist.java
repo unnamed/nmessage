@@ -11,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BungeeLinguist implements Linguist<ProxiedPlayer> {
 
-  @Override
-  public @Nullable String getLanguage(ProxiedPlayer proxiedPlayer) {
-    return proxiedPlayer.getLocale().getLanguage();
-  }
+    @Override
+    public @Nullable String getLanguage(ProxiedPlayer proxiedPlayer) {
+        return proxiedPlayer.getLocale().getLanguage();
+    }
 
 }

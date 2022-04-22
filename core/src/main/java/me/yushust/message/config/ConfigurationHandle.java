@@ -22,314 +22,344 @@ import java.util.Map;
  */
 public final class ConfigurationHandle {
 
-  /**
-   * Map containing the cached compatible supertypes,
-   * avoiding checking for all super-types when a
-   * handler pack is required.
-   */
-  private final Map<Class<?>, Class<?>> compatibleSupertypes
-    = new HashMap<>();
+    /**
+     * Map containing the cached compatible supertypes,
+     * avoiding checking for all super-types when a
+     * handler pack is required.
+     */
+    private final Map<Class<?>, Class<?>> compatibleSupertypes
+            = new HashMap<>();
 
-  /**
-   * Map containing all the handlers for specific
-   * entity types used as keys.
-   */
-  private final Map<Class<?>, HandlerPack<?>> handlers
-    = new HashMap<>();
+    /**
+     * Map containing all the handlers for specific
+     * entity types used as keys.
+     */
+    private final Map<Class<?>, HandlerPack<?>> handlers
+            = new HashMap<>();
 
-  /** Registry of placeholder providers by its identifier */
-  private final Map<String, TypeSpecificPlaceholderProvider<?>> providers
-    = new HashMap<>();
+    /**
+     * Registry of placeholder providers by its identifier
+     */
+    private final Map<String, TypeSpecificPlaceholderProvider<?>> providers
+            = new HashMap<>();
 
-  /** List containing all the message interceptors */
-  private final List<MessageInterceptor> interceptors
-    = new LinkedList<>();
+    /**
+     * List containing all the message interceptors
+     */
+    private final List<MessageInterceptor> interceptors
+            = new LinkedList<>();
 
-  /** The initial delimiter to recognise placeholders */
-  private String startDelimiter = "%";
+    /**
+     * The initial delimiter to recognise placeholders
+     */
+    private String startDelimiter = "%";
 
-  /** The final delimiter to recognise placeholders */
-  private String endDelimiter = "%";
+    /**
+     * The final delimiter to recognise placeholders
+     */
+    private String endDelimiter = "%";
 
-  public ConfigurationHandle() {
-    providers.put(
-      "path",
-      new TypeSpecificPlaceholderProvider<>(
-        Object.class,
-        new ReferencePlaceholderProvider<>()
-      )
-    );
-  }
-
-  /**
-   * Sets the given {@code superType} for the specified
-   * {@code type}, used on entity handlers resolution.
-   *
-   * <p>It's not required to use this method, but it can
-   * optimize the process.</p>
-   *
-   * <p>When there's no a compatible supertype registered
-   * for a type, it's computed in the first entity use by
-   * checking all its supertypes and looking for one that
-   * is registered in the {@code handlers} map</p>
-   */
-  public <T> ConfigurationHandle bindCompatibleSupertype(
-    Class<T> type,
-    Class<? extends T> superType
-  ) {
-    compatibleSupertypes.put(type, superType);
-    return this;
-  }
-
-  /**
-   * Specifies the delimiters used by the placeholder
-   * replacer to recognise placeholders
-   * @param start The initial delimiter
-   * @param end The end delimiter
-   * @return A reference to {@code this}, for a fluent api
-   */
-  public ConfigurationHandle delimiting(String start, String end) {
-    this.startDelimiter = Validate.isNotEmpty(start);
-    this.endDelimiter = Validate.isNotEmpty(end);
-    return this;
-  }
-
-  /**
-   * Registers the given {@code interceptor} to the
-   * interceptors list
-   * @return A reference to {@code this}, for a fluent api
-   */
-  @Contract("null -> fail; _ -> this")
-  public ConfigurationHandle addInterceptor(MessageInterceptor interceptor) {
-    Validate.isNotNull(interceptor, "interceptor");
-    interceptors.add(interceptor);
-    return this;
-  }
-
-  /**
-   * Creates a new specific configuration handle for
-   * the given {@code entityType}. Used to avoid some
-   * repeated code when registering many handlers
-   * @param entityType The specifying entity type
-   * @param <E> The entity type
-   * @return The created specific configuration handle
-   */
-  @Contract("null -> fail; _ -> new")
-  public <E> Specific<E> specify(Class<E> entityType) {
-    Validate.isNotNull(entityType, "entityType");
-    return new Specific<>(entityType);
-  }
-
-  //#region Getters
-  /** Gets the {@link MessageSender} registered for the given {@code clazz} */
-  public MessageSender<?> getSender(Class<?> clazz) {
-    HandlerPack<?> handlerPack = getHandlers(clazz);
-    return handlerPack == null ? null : handlerPack.sender;
-  }
-
-  /** Gets the {@link Linguist} registered for the given {@code clazz} */
-  public Linguist<?> getLinguist(Class<?> clazz) {
-    HandlerPack<?> handlerPack = getHandlers(clazz);
-    return handlerPack == null ? null : handlerPack.linguist;
-  }
-
-  /** Gets the {@link EntityResolver} for to the given {@code clazz} */
-  public EntityResolver<?, ?> getResolver(Class<?> clazz) {
-    HandlerPack<?> handlerPack = handlers.get(clazz);
-    return handlerPack == null ? null : handlerPack.resolver;
-  }
-
-  /** Finds a provider using its identifier */
-  @Nullable
-  public TypeSpecificPlaceholderProvider<?> getProvider(String identifier) {
-    Validate.isNotEmpty(identifier);
-    return providers.get(identifier.toLowerCase());
-  }
-  //#endregion
-
-  //#region Handler methods
-  /**
-   * Executes all the {@link MessageInterceptor} using
-   * the provided {@code text}
-   */
-  public String intercept(String text) {
-    for (MessageInterceptor interceptor : interceptors) {
-      text = interceptor.intercept(text);
+    public ConfigurationHandle() {
+        providers.put(
+                "path",
+                new TypeSpecificPlaceholderProvider<>(
+                        Object.class,
+                        new ReferencePlaceholderProvider<>()
+                )
+        );
     }
-    return text;
-  }
 
-  private HandlerPack<?> computeCompatibleSuperInterfaces(
-    Class<?> originalType,
-    Class<?> checkedType
-  ) {
-    for (Class<?> interfaceType : checkedType.getInterfaces()) {
-      HandlerPack<?> found = handlers.get(interfaceType);
-      if (found == null) {
-        found = computeCompatibleSuperInterfaces(originalType, interfaceType);
-        if (found != null) {
-          return found;
+    /**
+     * Sets the given {@code superType} for the specified
+     * {@code type}, used on entity handlers resolution.
+     *
+     * <p>It's not required to use this method, but it can
+     * optimize the process.</p>
+     *
+     * <p>When there's no a compatible supertype registered
+     * for a type, it's computed in the first entity use by
+     * checking all its supertypes and looking for one that
+     * is registered in the {@code handlers} map</p>
+     */
+    public <T> ConfigurationHandle bindCompatibleSupertype(
+            Class<T> type,
+            Class<? extends T> superType
+    ) {
+        compatibleSupertypes.put(type, superType);
+        return this;
+    }
+
+    /**
+     * Specifies the delimiters used by the placeholder
+     * replacer to recognise placeholders
+     *
+     * @param start The initial delimiter
+     * @param end   The end delimiter
+     * @return A reference to {@code this}, for a fluent api
+     */
+    public ConfigurationHandle delimiting(String start, String end) {
+        this.startDelimiter = Validate.isNotEmpty(start);
+        this.endDelimiter = Validate.isNotEmpty(end);
+        return this;
+    }
+
+    /**
+     * Registers the given {@code interceptor} to the
+     * interceptors list
+     *
+     * @return A reference to {@code this}, for a fluent api
+     */
+    @Contract("null -> fail; _ -> this")
+    public ConfigurationHandle addInterceptor(MessageInterceptor interceptor) {
+        Validate.isNotNull(interceptor, "interceptor");
+        interceptors.add(interceptor);
+        return this;
+    }
+
+    /**
+     * Creates a new specific configuration handle for
+     * the given {@code entityType}. Used to avoid some
+     * repeated code when registering many handlers
+     *
+     * @param entityType The specifying entity type
+     * @param <E>        The entity type
+     * @return The created specific configuration handle
+     */
+    @Contract("null -> fail; _ -> new")
+    public <E> Specific<E> specify(Class<E> entityType) {
+        Validate.isNotNull(entityType, "entityType");
+        return new Specific<>(entityType);
+    }
+
+    //#region Getters
+
+    /**
+     * Gets the {@link MessageSender} registered for the given {@code clazz}
+     */
+    public MessageSender<?> getSender(Class<?> clazz) {
+        HandlerPack<?> handlerPack = getHandlers(clazz);
+        return handlerPack == null ? null : handlerPack.sender;
+    }
+
+    /**
+     * Gets the {@link Linguist} registered for the given {@code clazz}
+     */
+    public Linguist<?> getLinguist(Class<?> clazz) {
+        HandlerPack<?> handlerPack = getHandlers(clazz);
+        return handlerPack == null ? null : handlerPack.linguist;
+    }
+
+    /**
+     * Gets the {@link EntityResolver} for to the given {@code clazz}
+     */
+    public EntityResolver<?, ?> getResolver(Class<?> clazz) {
+        HandlerPack<?> handlerPack = handlers.get(clazz);
+        return handlerPack == null ? null : handlerPack.resolver;
+    }
+
+    /**
+     * Finds a provider using its identifier
+     */
+    @Nullable
+    public TypeSpecificPlaceholderProvider<?> getProvider(String identifier) {
+        Validate.isNotEmpty(identifier);
+        return providers.get(identifier.toLowerCase());
+    }
+    //#endregion
+
+    //#region Handler methods
+
+    /**
+     * Executes all the {@link MessageInterceptor} using
+     * the provided {@code text}
+     */
+    public String intercept(String text) {
+        for (MessageInterceptor interceptor : interceptors) {
+            text = interceptor.intercept(text);
         }
-      } else {
-        compatibleSupertypes.put(originalType, interfaceType);
-        return found;
-      }
+        return text;
     }
-    return null;
-  }
 
-  private HandlerPack<?> computeCompatibleSupertype(
-    Class<?> originalType,
-    Class<?> checkedType
-  ) {
-    do {
-      HandlerPack<?> found = handlers.get(checkedType);
-      if (found == null) {
-        found = computeCompatibleSuperInterfaces(originalType, checkedType);
-        if (found != null) {
-          return found;
+    private HandlerPack<?> computeCompatibleSuperInterfaces(
+            Class<?> originalType,
+            Class<?> checkedType
+    ) {
+        for (Class<?> interfaceType : checkedType.getInterfaces()) {
+            HandlerPack<?> found = handlers.get(interfaceType);
+            if (found == null) {
+                found = computeCompatibleSuperInterfaces(originalType, interfaceType);
+                if (found != null) {
+                    return found;
+                }
+            } else {
+                compatibleSupertypes.put(originalType, interfaceType);
+                return found;
+            }
         }
-      } else {
-        compatibleSupertypes.put(originalType, checkedType);
-      }
-      checkedType = checkedType.getSuperclass();
-    } while (checkedType != null && checkedType != Object.class);
-    return null;
-  }
-
-  private HandlerPack<?> getHandlers(Class<?> entityType) {
-
-    Class<?> cachedCompatibleType = compatibleSupertypes.get(entityType);
-
-    if (cachedCompatibleType != null) {
-      return handlers.get(cachedCompatibleType);
-    } else {
-      return computeCompatibleSupertype(entityType, entityType);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private <E> HandlerPack<E> getHandlersOrCreate(Class<?> entityType) {
-
-    HandlerPack<?> handlerPack = handlers.get(entityType);
-
-    if (handlerPack == null) {
-      handlerPack = new HandlerPack<>();
-      compatibleSupertypes.put(entityType, entityType);
-      handlers.put(entityType, handlerPack);
+        return null;
     }
 
-    return (HandlerPack<E>) handlerPack;
-  }
-  //#endregion
-
-  /**
-   * Installs the specified {@code modules} by calling
-   * {@link ConfigurationModule#configure} passing the
-   * {@code this} reference as argument
-   * @param modules The installed modules
-   * @return Reference to {@code this}, for a fluent api
-   */
-  @Contract("null -> fail")
-  public ConfigurationHandle install(ConfigurationModule... modules) {
-    for (ConfigurationModule module : modules) {
-      module.configure(this);
+    private HandlerPack<?> computeCompatibleSupertype(
+            Class<?> originalType,
+            Class<?> checkedType
+    ) {
+        do {
+            HandlerPack<?> found = handlers.get(checkedType);
+            if (found == null) {
+                found = computeCompatibleSuperInterfaces(originalType, checkedType);
+                if (found != null) {
+                    return found;
+                }
+            } else {
+                compatibleSupertypes.put(originalType, checkedType);
+            }
+            checkedType = checkedType.getSuperclass();
+        } while (checkedType != null && checkedType != Object.class);
+        return null;
     }
-    return this;
-  }
 
-  /** Returns the initial delimiter for detecting placeholders */
-  public String getStartDelimiter() {
-    return startDelimiter;
-  }
+    private HandlerPack<?> getHandlers(Class<?> entityType) {
 
-  /** Returns the final delimiter for detecting placeholders */
-  public String getEndDelimiter() {
-    return endDelimiter;
-  }
+        Class<?> cachedCompatibleType = compatibleSupertypes.get(entityType);
 
-  private static class HandlerPack<E> {
+        if (cachedCompatibleType != null) {
+            return handlers.get(cachedCompatibleType);
+        } else {
+            return computeCompatibleSupertype(entityType, entityType);
+        }
+    }
 
-    // resolves this type to other type. Commonly when
-    // this field isn't null, other properties are null
-    private EntityResolver<?, E> resolver;
+    @SuppressWarnings("unchecked")
+    private <E> HandlerPack<E> getHandlersOrCreate(Class<?> entityType) {
 
-    private Linguist<E> linguist;
-    private MessageSender<E> sender;
+        HandlerPack<?> handlerPack = handlers.get(entityType);
 
-  }
+        if (handlerPack == null) {
+            handlerPack = new HandlerPack<>();
+            compatibleSupertypes.put(entityType, entityType);
+            handlers.put(entityType, handlerPack);
+        }
 
-  /**
-   * It's a {@link ConfigurationHandle} linked
-   * to an entity type
-   * @param <E> The linked entity type
-   */
-  public class Specific<E> {
+        return (HandlerPack<E>) handlerPack;
+    }
+    //#endregion
 
-    /** The entity type for this configuration handle */
-    private final Class<E> entityType;
-
-    private Specific(Class<E> entityType) {
-      this.entityType = entityType;
+    /**
+     * Installs the specified {@code modules} by calling
+     * {@link ConfigurationModule#configure} passing the
+     * {@code this} reference as argument
+     *
+     * @param modules The installed modules
+     * @return Reference to {@code this}, for a fluent api
+     */
+    @Contract("null -> fail")
+    public ConfigurationHandle install(ConfigurationModule... modules) {
+        for (ConfigurationModule module : modules) {
+            module.configure(this);
+        }
+        return this;
     }
 
     /**
-     * Adds a resolver from the specified {@code resolvedClass}
-     * to the entity class linked to this class.
+     * Returns the initial delimiter for detecting placeholders
      */
-    public <R> Specific<E> resolveFrom(
-        Class<R> resolvedClass,
-        EntityResolver<E, R> resolver
-    ) {
-      Validate.isNotNull(resolvedClass, "resolvedClass");
-      Validate.isNotNull(resolver, "resolver");
-      HandlerPack<R> handlerPack = getHandlersOrCreate(resolvedClass);
-      handlerPack.resolver = resolver;
-      return this;
+    public String getStartDelimiter() {
+        return startDelimiter;
     }
 
     /**
-     * Sets the language provider (linguist) for the
-     * entity class linked to this class
+     * Returns the final delimiter for detecting placeholders
      */
-    public Specific<E> setLinguist(
-        Linguist<E> linguist
-    ) {
-      Validate.isNotNull(linguist, "linguist");
-      HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
-      handlerPack.linguist = linguist;
-      return this;
+    public String getEndDelimiter() {
+        return endDelimiter;
+    }
+
+    private static class HandlerPack<E> {
+
+        // resolves this type to other type. Commonly when
+        // this field isn't null, other properties are null
+        private EntityResolver<?, E> resolver;
+
+        private Linguist<E> linguist;
+        private MessageSender<E> sender;
+
     }
 
     /**
-     * Adds a placeholder provider with same entity type
-     * as the linked to this class.
+     * It's a {@link ConfigurationHandle} linked
+     * to an entity type
+     *
+     * @param <E> The linked entity type
      */
-    public Specific<E> addProvider(
-        String identifier,
-        PlaceholderProvider<E> provider
-    ) {
-      Validate.isNotNull(identifier, "identifier");
-      Validate.isNotNull(provider, "provider");
+    public class Specific<E> {
 
-      TypeSpecificPlaceholderProvider<?> resolvedProvider =
-        new TypeSpecificPlaceholderProvider<>(entityType, provider);
-      providers.put(identifier, resolvedProvider);
-      return this;
+        /**
+         * The entity type for this configuration handle
+         */
+        private final Class<E> entityType;
+
+        private Specific(Class<E> entityType) {
+            this.entityType = entityType;
+        }
+
+        /**
+         * Adds a resolver from the specified {@code resolvedClass}
+         * to the entity class linked to this class.
+         */
+        public <R> Specific<E> resolveFrom(
+                Class<R> resolvedClass,
+                EntityResolver<E, R> resolver
+        ) {
+            Validate.isNotNull(resolvedClass, "resolvedClass");
+            Validate.isNotNull(resolver, "resolver");
+            HandlerPack<R> handlerPack = getHandlersOrCreate(resolvedClass);
+            handlerPack.resolver = resolver;
+            return this;
+        }
+
+        /**
+         * Sets the language provider (linguist) for the
+         * entity class linked to this class
+         */
+        public Specific<E> setLinguist(
+                Linguist<E> linguist
+        ) {
+            Validate.isNotNull(linguist, "linguist");
+            HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
+            handlerPack.linguist = linguist;
+            return this;
+        }
+
+        /**
+         * Adds a placeholder provider with same entity type
+         * as the linked to this class.
+         */
+        public Specific<E> addProvider(
+                String identifier,
+                PlaceholderProvider<E> provider
+        ) {
+            Validate.isNotNull(identifier, "identifier");
+            Validate.isNotNull(provider, "provider");
+
+            TypeSpecificPlaceholderProvider<?> resolvedProvider =
+                    new TypeSpecificPlaceholderProvider<>(entityType, provider);
+            providers.put(identifier, resolvedProvider);
+            return this;
+        }
+
+        /**
+         * Sets the message sender for the entity type
+         * linked to this class
+         */
+        public Specific<E> setMessageSender(
+                MessageSender<E> sender
+        ) {
+            Validate.isNotNull(sender, "sender");
+            HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
+            handlerPack.sender = sender;
+            return this;
+        }
+
     }
 
-    /**
-     * Sets the message sender for the entity type
-     * linked to this class
-     */
-    public Specific<E> setMessageSender(
-        MessageSender<E> sender
-    ) {
-      Validate.isNotNull(sender, "sender");
-      HandlerPack<E> handlerPack = getHandlersOrCreate(entityType);
-      handlerPack.sender = sender;
-      return this;
-    }
-
-  }
 }

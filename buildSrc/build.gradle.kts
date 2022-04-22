@@ -1,15 +1,15 @@
 plugins {
-  `kotlin-dsl`
+    `kotlin-dsl`
 }
 
 repositories {
-  gradlePluginPortal()
+    gradlePluginPortal()
 }
 
 tasks {
-  compileKotlin {
-    kotlinOptions {
-      jvmTarget = "8"
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "8"
+        }
     }
-  }
 }

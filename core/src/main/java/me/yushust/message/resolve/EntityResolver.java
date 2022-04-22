@@ -21,12 +21,12 @@ package me.yushust.message.resolve;
 @FunctionalInterface
 public interface EntityResolver<E, T> {
 
-  /**
-   * Resolves an entity using a {@code T} instance.
-   *
-   * @param object The resolving object
-   * @return The resolved entity
-   */
-  E resolve(T object);
+    /**
+     * Resolves an entity using a {@code T} instance.
+     *
+     * @param object The resolving object
+     * @return The resolved entity
+     */
+    E resolve(T object);
 
 }

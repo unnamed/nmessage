@@ -8,37 +8,39 @@ import org.junit.jupiter.api.Test;
 
 public class JitEntitiesFormattingTest extends HandlerTestCase {
 
-  @Test
-  public void test() {
+    @Test
+    public void test() {
 
-    MessageProvider handler = MessageProvider.create(
-        source,
-        wiring -> wiring
-          .specify(NamedEntity.class)
-          .addProvider("ent", (ctx, entity, param) -> entity.name)
-    );
+        MessageProvider handler = MessageProvider.create(
+                source,
+                wiring -> wiring
+                        .specify(NamedEntity.class)
+                        .addProvider("ent", (ctx, entity, param) -> entity.name)
+        );
 
-    Entity entity = new Entity();
-    NamedEntity namedEntity = new NamedEntity();
-    namedEntity.name = "OcNo";
+        Entity entity = new Entity();
+        NamedEntity namedEntity = new NamedEntity();
+        namedEntity.name = "OcNo";
 
-    Assertions.assertEquals(
-      "The name of the external entity is OcNo",
-      handler.get(entity, "jit-entity-test", namedEntity)
-    );
+        Assertions.assertEquals(
+                "The name of the external entity is OcNo",
+                handler.get(entity, "jit-entity-test", namedEntity)
+        );
 
-    NamedEntity namedEntity2 = new NamedEntity();
-    namedEntity2.name = "Fixed";
+        NamedEntity namedEntity2 = new NamedEntity();
+        namedEntity2.name = "Fixed";
 
-    Assertions.assertEquals(
-      "The name of the external entity is Fixed",
-      handler.get(entity, "jit-entity-test", namedEntity2)
-    );
+        Assertions.assertEquals(
+                "The name of the external entity is Fixed",
+                handler.get(entity, "jit-entity-test", namedEntity2)
+        );
 
-  }
+    }
 
-  private static class NamedEntity {
-    private String name;
-  }
+    private static class NamedEntity {
+
+        private String name;
+
+    }
 
 }
