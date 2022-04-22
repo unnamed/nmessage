@@ -31,17 +31,14 @@ public class YamlMessageSource
     this.plugin = Validate.isNotNull(plugin, "plugin");
     this.folder = Validate.isNotNull(folder, "folder");
 
-    if (!folder.exists()) {
-      if (!folder.mkdirs()) {
-        throw new IllegalStateException(
-          "Cannot create container folder (" + folder.getName() + ')'
-        );
-      }
+    if (!folder.exists() && !folder.mkdirs()) {
+      throw new IllegalStateException(
+        "Cannot create container folder (" + folder.getName() + ')'
+      );
     }
   }
 
-  @Nullable
-  private Configuration loadImpl(File file, String filename) {
+  private @Nullable Configuration loadImpl(File file, String filename) {
 
     if (file.exists()) {
       try {
@@ -80,15 +77,13 @@ public class YamlMessageSource
   }
 
   @Override
-  @Nullable
-  protected Configuration getSource(String filename) {
+  protected @Nullable Configuration getSource(String filename) {
     File file = new File(folder, filename);
     return loadImpl(file, filename);
   }
 
   @Override
-  @Nullable
-  protected Object getValue(Configuration source, String path) {
+  protected @Nullable Object getValue(Configuration source, String path) {
     return source.get(path);
   }
 

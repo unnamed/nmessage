@@ -36,8 +36,7 @@ public final class JsonParse {
   }
 
   /** Reads a json object from the given {@code file}*/
-  @Nullable
-  public static JsonObject fromFile(File file) {
+  public static @Nullable JsonObject fromFile(File file) {
     try (InputStream input = new FileInputStream(file)) {
       return fromInputStream(input);
     } catch (IOException e) {
@@ -46,9 +45,8 @@ public final class JsonParse {
   }
 
   /** Reads a json object from the given {@code input} */
-  @Nullable
   @Contract("null -> null")
-  public static JsonObject fromInputStream(@Nullable InputStream input) {
+  public static @Nullable JsonObject fromInputStream(@Nullable InputStream input) {
     if (input == null) {
       return null;
     }

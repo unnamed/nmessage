@@ -34,8 +34,7 @@ public class YamlMessageSource
     }
   }
 
-  @Nullable
-  private YamlConfiguration loadImpl(File file, String filename) {
+  private @Nullable YamlConfiguration loadImpl(File file, String filename) {
 
     if (file.exists()) {
       try {
@@ -72,15 +71,13 @@ public class YamlMessageSource
   }
 
   @Override
-  @Nullable
-  protected YamlConfiguration getSource(String filename) {
+  protected @Nullable YamlConfiguration getSource(String filename) {
     File file = new File(folder, filename);
     return loadImpl(file, filename);
   }
 
   @Override
-  @Nullable
-  protected Object getValue(YamlConfiguration source, String path) {
+  protected @Nullable Object getValue(YamlConfiguration source, String path) {
     return source.get(path);
   }
 

@@ -12,7 +12,6 @@ import java.io.File;
  * methods for creating {@link Linguist}
  * and {@link YamlMessageSource}
  */
-
 public class BungeeMessageAdapt {
 
   private BungeeMessageAdapt() {
@@ -46,7 +45,6 @@ public class BungeeMessageAdapt {
    * plugin data folder and using the provided {@code fileFormat}
    * to get the filenames using its language
    */
-
   public static MessageSource newYamlSource(Plugin plugin, String fileFormat) {
     return newYamlSource(plugin, plugin.getDataFolder(), fileFormat);
   }
@@ -65,7 +63,6 @@ public class BungeeMessageAdapt {
    * Creates a new {@link BungeeLinguist}. It obtains the
    * player language by using {@link ProxiedPlayer#getLocale}
    */
-
   public static Linguist<ProxiedPlayer> newBungeeLinguist() {
     return new BungeeLinguist();
   }

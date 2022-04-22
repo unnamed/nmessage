@@ -56,14 +56,12 @@ public class PropertiesFileSource
   }
 
   @Override
-  @Nullable
-  protected Object getValue(Properties source, String path) {
+  protected @Nullable Object getValue(Properties source, String path) {
     return source.get(path);
   }
 
   @Override
-  @Nullable
-  protected Properties getSource(String filename) {
+  protected @Nullable Properties getSource(String filename) {
     File file = new File(folder, filename);
     if (!file.exists()) {
       return null;

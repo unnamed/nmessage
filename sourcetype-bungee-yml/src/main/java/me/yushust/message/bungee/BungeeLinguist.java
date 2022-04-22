@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
  * Bungee {@link ProxiedPlayer}. Gets its language
  * using {@link ProxiedPlayer#getLocale()}
  */
-
 public class BungeeLinguist implements Linguist<ProxiedPlayer> {
 
   @Override

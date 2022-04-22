@@ -69,8 +69,7 @@ public class PropertiesResourceSource
   }
 
   @Override
-  @Nullable
-  protected Properties getSource(String filename) {
+  protected @Nullable Properties getSource(String filename) {
     try (InputStream input = classLoader.getResourceAsStream(filename)) {
       return PropertiesParse.fromInputStream(input, charset);
     } catch (IOException e) {
@@ -79,8 +78,7 @@ public class PropertiesResourceSource
   }
 
   @Override
-  @Nullable
-  protected Object getValue(Properties source, String path) {
+  protected @Nullable Object getValue(Properties source, String path) {
     return source.get(path);
   }
 

@@ -32,8 +32,7 @@ public final class PropertiesParse {
    * with the created {@link InputStream}
    * @see PropertiesParse#fromInputStream
    */
-  @Nullable
-  public static Properties fromFile(File file, Charset charset) {
+  public static @Nullable Properties fromFile(File file, Charset charset) {
     try (InputStream input = new FileInputStream(file)) {
       return fromInputStream(input, charset);
     } catch (IOException e) {
@@ -49,8 +48,7 @@ public final class PropertiesParse {
    * <strong>This method doesn't close the
    * given {@code input} stream</strong>
    */
-  @Nullable
-  public static Properties fromInputStream(
+  public static @Nullable Properties fromInputStream(
     @Nullable InputStream input,
     Charset charset
   ) {
