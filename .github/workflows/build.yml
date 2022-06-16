@@ -17,5 +17,5 @@ jobs:
     - name: 'gradle publish'
       run: './gradlew publish'
       env:
-        REPO_USER: '${{ secrets.REPO_USER }}'
-        REPO_PASSWORD: '${{ secrets.REPO_PASSWORD }}'
+        ORG_GRADLE_PROJECT_unnamedRepositoryUsername: '${{ secrets.REPO_USER }}'
+        ORG_GRADLE_PROJECT_unnamedRepositoryPassword: '${{ secrets.REPO_PASSWORD }}'
