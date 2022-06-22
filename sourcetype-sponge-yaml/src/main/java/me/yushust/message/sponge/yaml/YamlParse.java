@@ -11,7 +11,7 @@ public class YamlParse {
     public YamlParse() {
     }
 
-    public ConfigurationNode fromFile(
+    public static ConfigurationNode fromFile(
             File file
     ) {
         try {
