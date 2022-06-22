@@ -1,6 +1,5 @@
 plugins {
-    id("java")
-    id("java-library")
+    id("message.java-conventions")
 }
 
 repositories {
