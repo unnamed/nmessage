@@ -1,6 +1,7 @@
 package me.yushust.message;
 
 import me.yushust.message.config.ConfigurationModule;
+import me.yushust.message.model.Text;
 import me.yushust.message.send.MessageSender;
 import me.yushust.message.send.impl.MessageHandlerImpl;
 import me.yushust.message.source.MessageSource;
@@ -39,6 +40,10 @@ public interface MessageHandler
             ReplacePack replacements,
             Object... jitEntities
     );
+
+    default void send(Object entityOrEntities, Text text) {
+        dispatch(entityOrEntities, text.getPath(), text.getMode(), text.getReplacements(), text.getEntities());
+    }
 
     default void sendIn(Object entityOrEntities, String mode, String path, Object... jitEntities) {
         dispatch(entityOrEntities, path, mode, ReplacePack.EMPTY, jitEntities);

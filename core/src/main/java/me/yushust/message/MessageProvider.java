@@ -4,6 +4,7 @@ import me.yushust.message.config.ConfigurationHandle;
 import me.yushust.message.config.ConfigurationModule;
 import me.yushust.message.format.PlaceholderReplacer;
 import me.yushust.message.impl.MessageProviderImpl;
+import me.yushust.message.model.Text;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.track.TrackingContext;
 import me.yushust.message.util.ReplacePack;
@@ -38,11 +39,21 @@ public interface MessageProvider {
             Object[] jitEntities
     );
 
+    String format(
+            Object entity,
+            Text text
+    );
+
     StringList formatMany(
             Object entity,
             String path,
             ReplacePack replacements,
             Object[] jitEntities
+    );
+
+    StringList formatMany(
+            Object entity,
+            Text text
     );
 
     String getMessage(String path);
