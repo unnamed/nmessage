@@ -20,13 +20,13 @@ Add the necessary dependencies
 ```kotlin
 dependencies {
     // Core API, necessary for everything
-    implementation("me.yushust.message:core:7.0.0")
+    implementation("me.yushust.message:core:7.1.0")
     
     // .PROPERTIES source type
-    implementation("me.yushust.message:sourcetype-properties:7.0.0")
+    implementation("me.yushust.message:sourcetype-properties:7.1.0")
   
     // Bukkit YAML source type and helpers
-    implementation("me.yushust.message:sourcetype-bukkit-yaml:7.0.0")
+    implementation("me.yushust.message:sourcetype-bukkit-yaml:7.1.0")
 }
 ```
 
@@ -47,6 +47,6 @@ Add the necessary dependencies
 <dependency>
     <groupId>me.yushust.message</groupId>
     <artifactId>core</artifactId>
-    <version>7.0.0</version>
+    <version>7.1.0</version>
 </dependency>
 ```
