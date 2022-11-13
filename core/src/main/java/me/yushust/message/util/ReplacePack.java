@@ -174,6 +174,12 @@ public final class ReplacePack
         }
     }
 
+    public ReplacePack merge(ReplacePack pack) {
+        List<Entry> list = new ArrayList<>(entries);
+        list.addAll(pack.entries);
+        return new ReplacePack(list);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

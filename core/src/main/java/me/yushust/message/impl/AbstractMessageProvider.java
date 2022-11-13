@@ -3,6 +3,7 @@ package me.yushust.message.impl;
 import me.yushust.message.MessageProvider;
 import me.yushust.message.config.ConfigurationHandle;
 import me.yushust.message.language.Linguist;
+import me.yushust.message.model.Text;
 import me.yushust.message.resolve.EntityResolver;
 import me.yushust.message.source.MessageSource;
 import me.yushust.message.track.TrackingContext;
@@ -51,6 +52,22 @@ public abstract class AbstractMessageProvider
     }
 
     @Override
+    public String format(Object entity, Text text) {
+        entity = resolve(entity);
+        return format(
+                new TrackingContext(
+                        entity,
+                        getLanguage(entity),
+                        text.getEntities(),
+                        text.getReplacements(),
+                        Collections.emptyMap(),
+                        this
+                ),
+                text.getPath()
+        );
+    }
+
+    @Override
     public StringList formatMany(
             Object entity,
             String path,
@@ -68,6 +85,22 @@ public abstract class AbstractMessageProvider
                         this
                 ),
                 path
+        );
+    }
+
+    @Override
+    public StringList formatMany(Object entity, Text text) {
+        entity = resolve(entity);
+        return formatMany(
+                new TrackingContext(
+                        entity,
+                        getLanguage(entity),
+                        text.getEntities(),
+                        text.getReplacements(),
+                        Collections.emptyMap(),
+                        this
+                ),
+                text.getPath()
         );
     }
 
