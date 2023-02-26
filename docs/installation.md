@@ -20,19 +20,19 @@ Add the necessary dependencies
 ```kotlin
 dependencies {
     // Core API, necessary for everything
-    implementation("me.yushust.message:core:7.1.0")
+    implementation("me.yushust.message:core:7.1.1")
     
     // .PROPERTIES source type
-    implementation("me.yushust.message:sourcetype-properties:7.1.0")
+    implementation("me.yushust.message:sourcetype-properties:7.1.1")
     
     // .JSON source type
-    implementation("me.yushust.message:sourcetype-gson-json:7.1.0")
+    implementation("me.yushust.message:sourcetype-gson-json:7.1.1")
   
     // Bukkit YAML source type and helpers
-    implementation("me.yushust.message:sourcetype-bukkit-yml:7.1.0")
+    implementation("me.yushust.message:sourcetype-bukkit-yml:7.1.1")
     
     // BungeeCord YAML source type and helpers
-    implementation("me.yushust.message:sourcetype-bungee-yml:7.1.0")
+    implementation("me.yushust.message:sourcetype-bungee-yml:7.1.1")
 }
 ```
 
@@ -54,34 +54,34 @@ Add the necessary dependencies
 <dependency>
     <groupId>me.yushust.message</groupId>
     <artifactId>core</artifactId>
-    <version>7.1.0</version>
+    <version>7.1.1</version>
 </dependency>
 
 <!-- .PROPERTIES source type -->
 <dependency>
     <groupId>me.yushust.message</groupId>
     <artifactId>sourcetype-properties</artifactId>
-    <version>7.1.0</version>
+    <version>7.1.1</version>
 </dependency>
 
 <!-- .JSON source type -->
 <dependency>
     <groupId>me.yushust.message</groupId>
     <artifactId>sourcetype-gson-json</artifactId>
-    <version>7.1.0</version>
+    <version>7.1.1</version>
 </dependency>
 
 <!-- Bukkit YAML source type and helpers -->
 <dependency>
     <groupId>me.yushust.message</groupId>
     <artifactId>sourcetype-bukkit-yml</artifactId>
-    <version>7.1.0</version>
+    <version>7.1.1</version>
 </dependency>
 
 <!-- BungeeCord YAML source type and helpers -->
 <dependency>
     <groupId>me.yushust.message</groupId>
     <artifactId>sourcetype-bungee-yml</artifactId>
-    <version>7.1.0</version>
+    <version>7.1.1</version>
 </dependency>
 ```
