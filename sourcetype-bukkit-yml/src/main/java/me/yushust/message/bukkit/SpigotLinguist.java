@@ -33,18 +33,14 @@ public class SpigotLinguist
 
     @Override
     public String getLanguage(Player player) {
-
         if (GET_LOCALE == null) {
             return player.spigot().getLocale().split("_")[0];
-        } else {
-            try {
-                return ((String) GET_LOCALE.invoke(player)).split("_")[0];
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new IllegalStateException("Failed to get locale from player", e);
-            }
         }
-
-
+        try {
+            return ((String) GET_LOCALE.invoke(player)).split("_")[0];
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Failed to get locale from player", e);
+        }
     }
 
 }
