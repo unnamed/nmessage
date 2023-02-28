@@ -37,7 +37,7 @@ public final class JsonParse {
                 builder.append(c);
             }
         }
-        return checking.getAsString();
+        return checking.get(builder.toString()).getAsString();
     }
 
     /**
@@ -69,5 +69,4 @@ public final class JsonParse {
             throw new IllegalStateException("Cannot parse JSON data from input stream", e);
         }
     }
-
 }

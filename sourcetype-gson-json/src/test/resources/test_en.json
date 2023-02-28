@@ -1,0 +1,8 @@
+{
+    "test1": "nefasto",
+    "test2": "terrible",
+    "test3": "oremos",
+    "test4": {
+        "test5": "áéíóú ñ §æµŋnamed"
+    }
+}
