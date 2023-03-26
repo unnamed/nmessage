@@ -1,0 +1,7 @@
+getting-started.md
+installation.md
+convenience-methods.md
+linguist.md
+message-sender.md
+placeholder-provider.md
+placeholders.md
