@@ -6,5 +6,5 @@
 `nmessage` is a simple, flexible and helpful library to handle messages with
 internationalization support for multiple platforms like Bukkit (Minecraft)
 
-Check the [documentation](docs/getting-started.md) for installation and usage
+Check the [documentation](https://unnamed.team/docs/nmessage) for installation and usage
 for this library
