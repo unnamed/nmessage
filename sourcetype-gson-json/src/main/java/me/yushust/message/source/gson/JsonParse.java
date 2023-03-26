@@ -24,7 +24,7 @@ public final class JsonParse {
     private JsonParse() {
     }
 
-    public static String getValue(JsonObject source, String path, char separator) {
+    public static @Nullable String getValue(JsonObject source, String path, char separator) {
         StringBuilder builder = new StringBuilder();
         JsonObject checking = source;
         for (int i = 0; i < path.length(); i++) {
@@ -33,11 +33,22 @@ public final class JsonParse {
                 String section = builder.toString();
                 builder.setLength(0);
                 checking = checking.getAsJsonObject(section);
+
+                if (checking == null) {
+                    // The section does not exist
+                    return null;
+                }
             } else {
                 builder.append(c);
             }
         }
-        return checking.get(builder.toString()).getAsString();
+
+        JsonElement valueElement = checking.get(builder.toString());
+        if (valueElement == null || valueElement.isJsonNull()) {
+            return null;
+        } else {
+            return valueElement.getAsString();
+        }
     }
 
     /**
