@@ -1,4 +1,4 @@
-package me.yushust.message.source.sponge.yml;
+package me.yushust.message.source.configurate.yml;
 
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;

@@ -1,4 +1,4 @@
-package me.yushust.message.source.sponge.yml;
+package me.yushust.message.source.configurate.yml;
 
 import me.yushust.message.source.AbstractCachedFileSource;
 import me.yushust.message.source.MessageSource;
@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-public class SpongeYamlMessageSource
+public class ConfigurateYamlMessageSource
         extends AbstractCachedFileSource<ConfigurationNode>
         implements MessageSource {
 
     private final File folder;
 
-    public SpongeYamlMessageSource(File folder, String fileFormat) {
+    public ConfigurateYamlMessageSource(File folder, String fileFormat) {
         super(fileFormat);
         this.folder = Validate.isNotNull(folder, "folder");
 
