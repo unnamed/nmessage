@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class for parsing
@@ -24,7 +26,7 @@ public final class JsonParse {
     private JsonParse() {
     }
 
-    public static @Nullable String getValue(JsonObject source, String path, char separator) {
+    public static @Nullable Object getValue(JsonObject source, String path, char separator) {
         StringBuilder builder = new StringBuilder();
         JsonObject checking = source;
         for (int i = 0; i < path.length(); i++) {
@@ -47,7 +49,15 @@ public final class JsonParse {
         if (valueElement == null || valueElement.isJsonNull()) {
             return null;
         } else {
-            return valueElement.getAsString();
+            if (valueElement.isJsonArray()) {
+                List<String> elements = new ArrayList<>();
+                for (JsonElement e : valueElement.getAsJsonArray()) {
+                    elements.add(e.getAsString());
+                }
+                return elements;
+            } else {
+                return valueElement.getAsString();
+            }
         }
     }
 
