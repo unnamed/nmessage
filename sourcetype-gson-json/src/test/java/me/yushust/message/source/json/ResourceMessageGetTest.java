@@ -9,6 +9,8 @@ import me.yushust.message.source.gson.JsonResourceSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ResourceMessageGetTest {
@@ -32,6 +34,11 @@ public class ResourceMessageGetTest {
         assertEquals("terrible", provider.get(null, "test2"));
         assertEquals("oremos", provider.get(null, "test3"));
         assertEquals("áéíóú ñ §æµŋnamed", provider.get(null, "test4.test5"));
+        assertEquals(Arrays.asList(
+                "hey", "you",
+                "i", "love", "you,",
+                "you", "are", "worth", "of love"
+        ), provider.getMany(null, "testList"));
     }
 
     @Test

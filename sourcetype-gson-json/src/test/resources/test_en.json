@@ -4,5 +4,10 @@
     "test3": "oremos",
     "test4": {
         "test5": "áéíóú ñ §æµŋnamed"
-    }
+    },
+    "testList": [
+        "hey", "you",
+        "i", "love", "you,",
+        "you", "are", "worth", "of love"
+    ]
 }
