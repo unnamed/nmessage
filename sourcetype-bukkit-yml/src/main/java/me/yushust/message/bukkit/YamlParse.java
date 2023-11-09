@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public final class YamlParse {
 
@@ -20,7 +21,7 @@ public final class YamlParse {
             InputStream input
     ) {
         YamlConfiguration config = new YamlConfiguration();
-        try (InputStreamReader reader = new InputStreamReader(input)) {
+        try (InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8)) {
             config.load(reader);
         } catch (IOException | InvalidConfigurationException e) {
             throw new IllegalStateException("Cannot load YamlConfiguration", e);
